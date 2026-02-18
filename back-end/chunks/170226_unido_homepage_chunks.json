@@ -1,0 +1,135 @@
+[
+  {
+    "id": "homepage_hero_1",
+    "content": "UNIDO Careers. Title: How will you shape the future?. Description: As a UN specialized agency that promotes industrial development for poverty reduction, inclusive globalization and environmental sustainability, we are determined to take our part in the successful implementation of the Sustainable Development Goals (SDGs), for a better planet and future for us all. But we can only go so far as our people will take us; which is why we place a great emphasis on the employment of talents, to keep our workforce efficient and effective..",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "hero",
+      "section": "hero",
+      "chunk_index": 1,
+      "total_chunks": 1,
+      "content_length": 538,
+      "embedding_version": "v1",
+      "source": "unido_careers"
+    }
+  },
+  {
+    "id": "homepage_cta_1",
+    "content": "UNIDO provides an online career portal where candidates can view and apply for job openings. Call to action: View all job openings.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "cta",
+      "url": "https://careers.unido.org/search/?createNewAlert=false&q=&optionsFacetsDD_country=&optionsFacetsDD_lang=&optionsFacetsDD_department=&optionsFacetsDD_location=&locationsearch=",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_9ca537ceb7416506954f181f265c9c4f09255aec6f8c83ce65bdee8cc227a233",
+    "content": "UNIDO offers career opportunities under the International Professionals category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "International Professionals",
+      "url": "https://careers.unido.org/go/International-Professionaal/8954455/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_439d77183a5e43206b9fe9175f3d2f221249ce264abf70c1b6185282c9d7a219",
+    "content": "UNIDO offers career opportunities under the National Professional Officers category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "National Professional Officers",
+      "url": "https://careers.unido.org/go/National-Professional-officers/8953755/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_fe9232695ad8ec0bcea187d359cc58787e6264498af0e14aebd5fe74a5c88654",
+    "content": "UNIDO offers career opportunities under the General Services category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "General Services",
+      "url": "https://careers.unido.org/go/General-Services/8954155/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_14f9a71fbd1d87ee6df919eaf6863dc5ccd1d3fd76968bc205ea04af93c18ed0",
+    "content": "UNIDO offers career opportunities under the Project Appointments category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Project Appointments",
+      "url": "https://careers.unido.org/go/Project-Appointment-Update/8953955/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_9298513ac640fa57587163dbb72db3874a89820a66505a1bb1544ab544958c83",
+    "content": "UNIDO offers career opportunities under the Consultancy opportunities category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Consultancy opportunities",
+      "url": "https://careers.unido.org/go/Consultancy-Opportunities/8954355/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_cb2e276d54a859df4b45b8842163402ed87990ab7cd437902ca8f4dfb4121996",
+    "content": "UNIDO offers career opportunities under the Temporary Support positions category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Temporary Support positions",
+      "url": "https://careers.unido.org/go/Temporary-Support-Positions/8954255/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_c4563c4b44c6c71e07a2afdf89c67993f1ea3e2975fe4b39b752bb8688172ca4",
+    "content": "UNIDO offers career opportunities under the Junior Professional Officer Programme (JPO) category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Junior Professional Officer Programme (JPO)",
+      "url": "https://careers.unido.org/go/Junior-Professional-Officer-Programme%28JPO%29/8953655/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_64d374756c418d0eec26d8c13eac8d709bc715e7fae8af2324d15a816d92ab96",
+    "content": "UNIDO offers career opportunities under the Partner Expert Programme (PE) category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Partner Expert Programme (PE)",
+      "url": "https://careers.unido.org/go/Partner-Expert-Programme%28PES%29/8953855/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_7f350dbe37f87b6df67056fd7da5c5cda5a924888ab73a1e16cd9a8073f87e72",
+    "content": "UNIDO offers career opportunities under the Internship Programme category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "Internship Programme",
+      "url": "https://careers.unido.org/go/Internship-Programe/8954055/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  }
+]

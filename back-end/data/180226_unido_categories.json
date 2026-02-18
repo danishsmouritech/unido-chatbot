@@ -1,0 +1,135 @@
+[
+  {
+    "type": "job_category",
+    "key": "project_appointments",
+    "title": "Project Appointments",
+    "url": "https://careers.unido.org/go/Project-Appointment-Update/8953955/",
+    "description": "Project Appointments Project Appointments support UNIDO in the implementation of specific programmes or projects. Individuals holding a project appointment serve in the country of programme/project implementation or at UNIDO Headquarters. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/Project-Appointments/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  },
+  {
+    "type": "job_category",
+    "key": "consultancy",
+    "title": "Consultancy Opportunities",
+    "url": "https://careers.unido.org/go/Consultancy-Opportunities/8954355/",
+    "description": "Consultancy opportunities Consultancy assignments enable you to take on challenging responsibilities and gain experience working in a specialized organization of the United Nations. Such assignments also allow you to gain insight and expose you to solving problems confronting developing economies in the area of industrialization. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/Consultancy-Opportunities-/?locale=en_US",
+    "totalJobs": 3,
+    "jobs": [
+      {
+        "title": "National Consultant - Management of Unwanted Controlled Substances National Consultant - Management of Unwanted Controlled Substances Dhaka, Bangladesh ISA-NOC",
+        "location": "Dhaka, Bangladesh",
+        "category": "Consultancy opportunities",
+        "grade": "ISA-NOC",
+        "deadline": "03-Mar-2026",
+        "url": "https://careers.unido.org/job/Dhaka-National-Consultant-Management-of-Unwanted-Controlled-Substances/1341363155/"
+      },
+      {
+        "title": "National Project Associate National Project Associate Cairo, Egypt ISA-NOA",
+        "location": "Cairo, Egypt",
+        "category": "Consultancy opportunities",
+        "grade": "ISA-NOA",
+        "deadline": "03-Mar-2026",
+        "url": "https://careers.unido.org/job/Cairo-National-Project-Associate/1341361055/"
+      },
+      {
+        "title": "Investment and Finance Specialist Investment and Finance Specialist Vienna, Austria ISA-P3",
+        "location": "Vienna, Austria",
+        "category": "Consultancy opportunities",
+        "grade": "ISA-P3",
+        "deadline": "22-Feb-2026",
+        "url": "https://careers.unido.org/job/Vienna-Investment-and-Finance-Specialist/1340458755/"
+      }
+    ]
+  },
+  {
+    "type": "job_category",
+    "key": "temporary_support",
+    "title": "Temporary Support Positions",
+    "url": "https://careers.unido.org/go/Temporary-Support-Positions/8954255/",
+    "description": "Temporary Support positions UNIDO recruits qualified candidates for short-term/temporary assignments in the General Service category to assist offices across the Organization with their workload during peak periods. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/Temporary-Support-Positions/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  },
+  {
+    "type": "job_category",
+    "key": "international_professionals",
+    "title": "International Professionals",
+    "url": "https://careers.unido.org/go/International-Professionaal/8954455/",
+    "description": "International Professional International Professionals are recruited globally and are expected to serve at different duty stations around the world throughout their career within the Organization. There are a variety of jobs in this category requiring a high degree of education, specialized technical expertise, analytical and communication skills, and management or leadership ability. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/International-Professionals/?locale=en_GB",
+    "totalJobs": 1,
+    "jobs": [
+      {
+        "title": "Director, Evaluation and Internal Oversight Director, Evaluation and Internal Oversight Vienna, Austria D1",
+        "location": "Vienna, Austria",
+        "category": "International Professionals",
+        "grade": "D1",
+        "deadline": "23-Feb-2026",
+        "url": "https://careers.unido.org/job/Vienna-Director%2C-Evaluation-and-Internal-Oversight/1340163655/"
+      }
+    ]
+  },
+  {
+    "type": "job_category",
+    "key": "national_professionals",
+    "title": "National Professional Officers",
+    "url": "https://careers.unido.org/go/National-Professional-officers/8953755/",
+    "description": "National Professional Officers National Professional Officers are recruited at the local level in UNIDO Field or Project Offices around the world. National Professional Officers are expected to bring national experience and knowledge to the work of the Organization in their country. There are a variety of jobs in this category requiring a high degree of education, specialized technical expertise, analytical and communication skills, and management or leadership ability. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/National-Professional-Officers/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  },
+  {
+    "type": "job_category",
+    "key": "general_services",
+    "title": "General Services",
+    "url": "https://careers.unido.org/go/General-Services/8954155/",
+    "description": "General Services There is a wide range of administrative, secretarial, clerical, as well as specialized support jobs in this category. General Service staff are recruited locally so they are either nationals or lawful residents of the country of the duty station. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/General-Service-/?locale=en_US",
+    "totalJobs": 1,
+    "jobs": [
+      {
+        "title": "Team Assistant Team Assistant Vienna, Austria G4",
+        "location": "Vienna, Austria",
+        "category": "General Service",
+        "grade": "G4",
+        "deadline": "04-Mar-2026",
+        "url": "https://careers.unido.org/job/Vienna-Team-Assistant/1341723855/"
+      }
+    ]
+  },
+  {
+    "type": "job_category",
+    "key": "jpo",
+    "title": "Junior Professional Officer Programme (JPO)",
+    "url": "https://careers.unido.org/go/Junior-Professional-Officer-Programme%28JPO%29/8953655/",
+    "description": "Junior Professional Officer Programme (JPO) The JPO programme is sponsored by governments and provides professionals interested in pursuing a career in international development with the opportunity to gain experience in UNIDO’s wide field of competence while bringing fresh talents to the Organization. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/JPO/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  },
+  {
+    "type": "job_category",
+    "key": "partner_expert",
+    "title": "Partner Expert Programme (PE)",
+    "url": "https://careers.unido.org/go/Partner-Expert-Programme%28PES%29/8953855/",
+    "description": "Partner Expert Programme (PE) This programme gives qualified experts sponsored by Member States or partner institutions an opportunity to gain experience working in the UN system. The programme offers challenging projects and assignments across a variety of UNIDO’s activities. Learn More",
+    "learnMoreUrl": "https://careers.unido.org/content/Partner-Expert/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  },
+  {
+    "type": "job_category",
+    "key": "internship",
+    "title": "Internship Programme",
+    "url": "https://careers.unido.org/go/Internship-Programe/8954055/",
+    "description": "UNIDO Internship Programme Are you ready to make a difference in the world while gaining valuable professional experience? The UNIDO internship programme offers motivated students and recent graduates the opportunity to Contribute to inclusive and sustainable industrial development in a dynamic, multicultural environment. With placements at our Headquarters in Vienna and field offices worldwide, interns gain hands-on exposure to international cooperation, policy, and development work. Join us and take the first step toward a meaningful global career. How to apply? Internship opportunities are regularly published on the UNIDO Careers Portal. To apply, simply explore the current listings and submit your application online for the position that best aligns with your interests and qualifications. You can find details on different internship areas and eligibility requirements for applicants here.",
+    "learnMoreUrl": "https://careers.unido.org/content/Internship/?locale=en_US",
+    "totalJobs": 0,
+    "jobs": []
+  }
+]

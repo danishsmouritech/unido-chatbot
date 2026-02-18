@@ -1,0 +1,57 @@
+{
+  "page": "faqs",
+  "faqs": [
+    {
+      "question": "Does UNIDO charge any fees regarding applications?",
+      "answer": "UNIDO does not charge any application, processing, training, interviewing, testing or other fee in connection with the application or recruitment process. If you have received a solicitation for the payment of a fee, please disregard it. Vacant positions within UNIDO are advertised on the official UNIDO website. Should you have any questions concerning persons or companies claiming to be recruiting on behalf of UNIDO and requesting payment of a fee, please contact: recruitment@unido.org For more information, please read our Scam Alert."
+    },
+    {
+      "question": "What is the difference between the various hiring modalities?",
+      "answer": "Detailed information on the various hiring modalities in UNIDO can be found here: https://www.youtube.com/watch?v=kG5uW_UJisc"
+    },
+    {
+      "question": "How do I apply?",
+      "answer": "To apply for a vacancy announcement: Please go to the UNIDO Career Portal and click on \"Sign-In/ My Profile\" to login. If you are a new user, please click on \"Create an account\" to create your account by uploading your CV and other relevant documents and updating other relevant information in your profile. After creating your profile, you may search the open vacancies and submit your application for the vacancy announcement for which you qualify. You can learn how to make your application stronger by watching the online tutorial on optimizing job applications here: https://www.youtube.com/watch?v=BnMW69qkF8E"
+    },
+    {
+      "question": "I have created a candidate profile, does that mean that I have applied?",
+      "answer": "Creating a Candidate Profile is not the same as submitting an application for an advertised position. If you wish to be considered for a specific vacancy you need to create an application either by first logging into your already established Candidate Profile and then selecting the vacancy to apply, or by selecting and applying for the vacancy directly. The receipt of applications for advertised positions will always be acknowledged by return e-mail."
+    },
+    {
+      "question": "Can I apply via e-mail or other application systems?",
+      "answer": "All applications must be submitted through the UNIDO recruitment platform. Applications sent by e-mail or any other application systems cannot be considered."
+    },
+    {
+      "question": "I have already submitted my application online. Can I still make changes?",
+      "answer": "Once the application is digitally submitted, you can still modify your Candidate Profile. Nevertheless, the data that is specific to the application, such as the cover letter, cannot be modified once reviewed by the Recruitment Team of UNIDO."
+    },
+    {
+      "question": "When do vacancies close?",
+      "answer": "All vacancies will close at 24:00 (midnight) Vienna, Austria local time on their respective closing day. Thereafter, the vacancy announcements will no longer appear on the website and you will no longer be able to submit your application."
+    },
+    {
+      "question": "What happens if I started my application before the closing time but did not manage to submit it before midnight?",
+      "answer": "Even if you started your application before the closing time but did not manage to submit it before midnight, the system will no longer accept it. We recommend you apply well in advance of the deadline."
+    },
+    {
+      "question": "I have forgotten my username/password. How can I retrieve it?",
+      "answer": "On the logon screen, please click on \"Forgot your password?\". You will then be asked to enter your registered email. After doing so, you will receive an email sent to your registered email with a link to reset the password."
+    },
+    {
+      "question": "For how long will my Candidate Profile remain in the system?",
+      "answer": "The Candidate Profile is stored in the system for a period of 24 months from the last access. That means if an account is not used for a period of two years, it will be removed from the system."
+    },
+    {
+      "question": "What does a Job Alert do?",
+      "answer": "It is a functionality of the system which enables you to customize your job search to suit your qualifications and preferences. By activating a Job Alert, you will be automatically notified by e-mail of the job postings matching your established search criteria. You can find the Job Alerts options by logging onto your Candidate Profile, clicking on Options and then selecting Job Alerts."
+    },
+    {
+      "question": "What are the salary levels for full-time, fixed-term staff positions?",
+      "answer": "UNIDO adheres to the UN Common System of salaries, allowances and benefits. More information can be found on the ICSC website. Please note that consultancy contracts (Individual Service Agreements) do not follow this salary scale."
+    },
+    {
+      "question": "Whom should I contact if I experience problems with the submission of my application?",
+      "answer": "In such cases, please contact: recruitment@unido.org"
+    }
+  ]
+}

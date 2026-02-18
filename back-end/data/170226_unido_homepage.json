@@ -1,0 +1,49 @@
+{
+  "page": "homepage",
+  "hero": {
+    "title": "How will you shape the future?",
+    "description": "As a UN specialized agency that promotes industrial development for poverty reduction, inclusive globalization and environmental sustainability, we are determined to take our part in the successful implementation of the Sustainable Development Goals (SDGs), for a better planet and future for us all. But we can only go so far as our people will take us; which is why we place a great emphasis on the employment of talents, to keep our workforce efficient and effective."
+  },
+  "cta": {
+    "label": "View all job openings",
+    "url": "https://careers.unido.org/search/?createNewAlert=false&q=&optionsFacetsDD_country=&optionsFacetsDD_lang=&optionsFacetsDD_department=&optionsFacetsDD_location=&locationsearch="
+  },
+  "categories": [
+    {
+      "title": "International Professionals",
+      "url": "https://careers.unido.org/go/International-Professionaal/8954455/"
+    },
+    {
+      "title": "National Professional Officers",
+      "url": "https://careers.unido.org/go/National-Professional-officers/8953755/"
+    },
+    {
+      "title": "General Services",
+      "url": "https://careers.unido.org/go/General-Services/8954155/"
+    },
+    {
+      "title": "Project Appointments",
+      "url": "https://careers.unido.org/go/Project-Appointment-Update/8953955/"
+    },
+    {
+      "title": "Consultancy opportunities",
+      "url": "https://careers.unido.org/go/Consultancy-Opportunities/8954355/"
+    },
+    {
+      "title": "Temporary Support positions",
+      "url": "https://careers.unido.org/go/Temporary-Support-Positions/8954255/"
+    },
+    {
+      "title": "Junior Professional Officer Programme (JPO)",
+      "url": "https://careers.unido.org/go/Junior-Professional-Officer-Programme%28JPO%29/8953655/"
+    },
+    {
+      "title": "Partner Expert Programme (PE)",
+      "url": "https://careers.unido.org/go/Partner-Expert-Programme%28PES%29/8953855/"
+    },
+    {
+      "title": "Internship Programme",
+      "url": "https://careers.unido.org/go/Internship-Programe/8954055/"
+    }
+  ]
+}
