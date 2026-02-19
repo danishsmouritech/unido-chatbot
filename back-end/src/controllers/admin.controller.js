@@ -126,9 +126,35 @@ export async function getAdminScrapeStatus(_req, res) {
   res.json(getScrapeStatus());
 }
 
+
 export async function exportChatLogsCsv(req, res) {
-  const limit = Math.min(Number(req.query.limit || 1000), 5000);
-  const logs = await ChatLog.find({})
+  const { startDate, endDate, type = "all" } = req.query;
+
+  const limit = Math.min(Number(req.query.limit || 5000), 10000);
+
+  const filter = {};
+
+  // Date filter
+  if (startDate || endDate) {
+    filter.createdAt = {};
+
+    if (startDate) {
+      filter.createdAt.$gte = new Date(startDate);
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      filter.createdAt.$lte = end;
+    }
+  }
+
+  // Conversations only
+  if (type === "conversations") {
+    filter.status = { $in: ["success", "fallback"] };
+  }
+
+  const logs = await ChatLog.find(filter)
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean();
@@ -141,24 +167,38 @@ export async function exportChatLogsCsv(req, res) {
     "answer",
     "sourceCount",
     "responseMs",
-    "ip"
+    "ip",
   ];
 
   const rows = logs.map((log) => [
-    toCsvValue(log.createdAt?.toISOString?.() || ""),
-    toCsvValue(log.sessionId),
-    toCsvValue(log.status),
-    toCsvValue(log.question),
-    toCsvValue(log.answer),
-    toCsvValue(log.sources?.length || 0),
-    toCsvValue(log.timingMs?.total || 0),
-    toCsvValue(log.requestMeta?.ip || "")
+    log.createdAt?.toISOString?.() || "",
+    log.sessionId,
+    log.status,
+    log.question,
+    log.answer,
+    log.sources?.length || 0,
+    log.timingMs?.total || 0,
+    log.requestMeta?.ip || "",
   ]);
 
-  const csv = [header.join(","), ...rows.map((row) => row.join(","))].join("\n");
-  const fileName = `chat-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+  const csv = [
+    header.join(","),
+    ...rows.map((row) =>
+      row.map((val) =>
+        `"${String(val ?? "").replace(/"/g, '""')}"`
+      ).join(",")
+    ),
+  ].join("\n");
+
+  const fileName = `chat-logs-${new Date()
+    .toISOString()
+    .slice(0, 10)}.csv`;
 
   res.setHeader("Content-Type", "text/csv; charset=utf-8");
-  res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${fileName}"`
+  );
+
   res.send(csv);
 }

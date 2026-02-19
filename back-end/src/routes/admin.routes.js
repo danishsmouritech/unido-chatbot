@@ -17,6 +17,6 @@ router.get("/settings", getAdminSettings);
 router.put("/settings", updateAdminSettings);
 router.post("/scrape/trigger", triggerAdminScrape);
 router.get("/scrape/status", getAdminScrapeStatus);
-router.get("/reports/chat-logs.csv", exportChatLogsCsv);
+router.get("/reports/chat-logs", exportChatLogsCsv);
 
 export default router;

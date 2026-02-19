@@ -1,85 +1,51 @@
-import crypto from "crypto";
-import AdminUser from "../models/adminUser.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import AdminUser from "../models/AdminUser.js";
 
-const TOKEN_TTL_HOURS = Number(process.env.ADMIN_TOKEN_TTL_HOURS || 12);
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES = "8h";
 
-function hashPassword(password, salt) {
-  return crypto.scryptSync(password, salt, 64).toString("hex");
-}
+// Create default admin
+export async function ensureDefaultAdmin() {
+  const email = process.env.ADMIN_EMAIL || "admin@unido.local";
+  const password = process.env.ADMIN_PASSWORD || "Admin@123";
 
-export function verifyPassword(password, user) {
-  const hash = hashPassword(password, user.passwordSalt);
-  return hash === user.passwordHash;
-}
+  const exists = await AdminUser.findOne({ email });
+  if (exists) return;
 
-export async function ensureDefaultAdminUser() {
-  const defaultEmail = (process.env.ADMIN_EMAIL || "admin@unido.local").toLowerCase();
-  const defaultUsername = process.env.ADMIN_USERNAME || "admin";
-  const defaultPassword = process.env.ADMIN_PASSWORD || "Admin@123";
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const existing = await AdminUser.findOne({ email: defaultEmail });
-  if (existing) return existing;
-
-  const salt = crypto.randomBytes(16).toString("hex");
-  const passwordHash = hashPassword(defaultPassword, salt);
-
-  return AdminUser.create({
-    username: defaultUsername,
-    email: defaultEmail,
-    passwordHash,
-    passwordSalt: salt
+  await AdminUser.create({
+    username: "admin",
+    email,
+    password: hashedPassword
   });
+
+  console.log("Default admin created");
 }
 
-export async function loginAdminUser({ email, password }) {
-  const normalizedEmail = String(email || "").toLowerCase().trim();
-  const user = await AdminUser.findOne({ email: normalizedEmail, isActive: true });
+export async function loginAdmin(email, password) {
+  const user = await AdminUser.findOne({ email, isActive: true });
+  if (!user) return null;
 
-  if (!user || !verifyPassword(String(password || ""), user)) {
-    return null;
-  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) return null;
 
-  const authToken = crypto.randomBytes(48).toString("hex");
-  const authTokenExpiresAt = new Date(Date.now() + TOKEN_TTL_HOURS * 60 * 60 * 1000);
-
-  user.authToken = authToken;
-  user.authTokenExpiresAt = authTokenExpiresAt;
-  user.lastLoginAt = new Date();
-  await user.save();
+  const token = jwt.sign(
+    {
+      id: user._id,
+      role: user.role
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES }
+  );
 
   return {
-    token: authToken,
-    expiresAt: authTokenExpiresAt,
+    token,
     admin: {
       id: user._id,
       username: user.username,
       email: user.email
     }
   };
-}
-
-export async function getAdminByToken(token) {
-  if (!token) return null;
-
-  const user = await AdminUser.findOne({
-    authToken: token,
-    isActive: true,
-    authTokenExpiresAt: { $gt: new Date() }
-  });
-
-  return user;
-}
-
-export async function logoutAdminByToken(token) {
-  if (!token) return;
-
-  await AdminUser.updateOne(
-    { authToken: token },
-    {
-      $set: {
-        authToken: null,
-        authTokenExpiresAt: null
-      }
-    }
-  );
 }

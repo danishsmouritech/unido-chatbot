@@ -107,11 +107,12 @@ export function useAdminDashboard() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (scrapeStatus.lastStatus !== "running") return;
     const timer = setInterval(() => {
       refreshScrapeStatus().catch(() => {});
     }, 5000);
     return () => clearInterval(timer);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [scrapeStatus.lastStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
  
 
@@ -126,15 +127,25 @@ export function useAdminDashboard() {
     }
   }
 
-  async function exportCsv() {
-    try {
-      setMessage("");
-      const blob = await downloadChatLogsCsv(getAdminHeaders());
-      downloadBlob(blob, `chat-logs-${new Date().toISOString().slice(0, 10)}.csv`);
-    } catch (error) {
-      handleError(error);
-    }
+async function exportCsv(filters) {
+  try {
+    const { startDate, endDate, format, type } = filters;
+    setMessage("");
+    const query = new URLSearchParams({
+      startDate,
+      endDate,
+      type,
+    }).toString();
+        const blob = await downloadChatLogsCsv(query,getAdminHeaders());
+    const fileName = `chat-logs-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+
+    downloadBlob(blob, fileName);
+  } catch (error) {
+    handleError(error);
   }
+}
 
   return {
     activeTab,

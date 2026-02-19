@@ -1,19 +1,19 @@
+import jwt from "jsonwebtoken";
+
 export function requireAdminAuth(req, res, next) {
-  const expectedToken = process.env.ADMIN_TOKEN;
+  const authHeader = req.headers.authorization;
 
-  // If token not configured, keep admin endpoints open for local/dev use.
-  if (!expectedToken) return next();
-
-  const authHeader = req.get("authorization") || "";
-  const bearerToken = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7).trim()
-    : null;
-  const headerToken = req.get("x-admin-token");
-  const token = bearerToken || headerToken;
-
-  if (token !== expectedToken) {
-    return res.status(401).json({ error: "Unauthorized admin request" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  next();
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
 }

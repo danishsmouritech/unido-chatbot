@@ -1,9 +1,25 @@
 .admin-layout {
-  min-height: 100vh;
+  min-height:100vh;
   display: grid;
   grid-template-columns: 280px 1fr;
   background: linear-gradient(135deg, #edf3fb 0%, #f8fbff 100%);
   width: 100%;
+  position: fixed;
+}
+.hide-scrollbar {
+  overflow-y: scroll;
+  overflow-x: hidden;
+   height: 450px;
+  /* Firefox */
+  scrollbar-width: 0px;
+   padding:0px 0px 30px 0px;
+  /* IE and Edge */
+  -ms-overflow-style: none;
+}
+
+/* Chrome, Safari */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-sidebar {
@@ -80,7 +96,9 @@
   padding: 28px 24px 36px;
   width: 100%;
 }
-
+.admin-header {
+  margin-bottom: 20px;
+}
 .admin-header h1 {
   margin: 0;
   font-size: 34px;
@@ -125,7 +143,7 @@
   border: 1px solid #d9e2ef;
   border-radius: 14px;
   padding: 16px 18px;
-  box-shadow: 0 4px 16px rgba(10, 36, 64, 0.04);
+ box-shadow: 0 6px 18px rgba(15, 36, 74, 0.06);
 }
 
 .card-label {
@@ -210,7 +228,6 @@
   padding: 16px 18px;
   display: grid;
   gap: 12px;
-  max-width: 900px;
   box-shadow: 0 4px 16px rgba(10, 36, 64, 0.04);
 }
 
@@ -269,72 +286,77 @@
 }
 
 .scraping-panel {
-  max-width: 760px;
-  gap: 14px;
+  margin-top: 20px;
+  gap: 18px;
 }
 
+/* Header */
 .scraping-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 .scraping-header h3 {
   margin: 0;
-  font-size: 30px;
-  color: #24354d;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1f2f46;
 }
 
+/* Icon */
 .scraping-icon-wrap {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   display: grid;
   place-items: center;
-  background: #f1ebff;
-  color: #8a63df;
-  font-size: 18px;
+  background: #f3ecff;
+  color: #7d5ad6;
+  font-size: 20px;
 }
 
+/* Status Card */
 .scraping-status-card {
   border-radius: 12px;
   background: #f3f6fb;
-  padding: 14px 16px;
+  padding: 16px;
   display: flex;
-  align-items: stretch;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .scraping-status-col {
-  display: grid;
-  gap: 8px;
-}
-
-.scraping-last-col {
-  text-align: right;
-}
-
-.scraping-label {
-  color: #8aa0bc;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 12px;
-  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
 }
 
 .scraping-badge {
-  width: fit-content;
   border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 14px;
+  padding: 8px 14px;
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
 .scraping-badge.in-progress {
-  background: #fff0cf;
-  color: #c57002;
+  background: #fff4d6;
+  color: #b7791f;
+}
+
+.scraping-badge.success {
+  background: #e6f6ed;
+  color: #2f855a;
+}
+
+.scraping-badge.error {
+  background: #fde8e8;
+  color: #c53030;
 }
 
 .scraping-badge.idle {
@@ -342,37 +364,29 @@
   color: #375a8e;
 }
 
-.scraping-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-.scraping-last-text {
-  font-size: clamp(14px, 2vw, 22px);
-  font-weight: 700;
-  color: #314761;
-  word-break: break-word;
-}
-
 .scraping-trigger-btn {
-  width: 100% !important;
+  width: 100%;
+  border-radius: 12px;
+  background: #aa87e8;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  display: flex;
   justify-content: center;
-  display: inline-flex;
   align-items: center;
   gap: 10px;
-  border-radius: 12px !important;
-  background: #aa87e8 !important;
-  border-color: #aa87e8 !important;
-  font-size: 18px;
-  font-weight: 600;
-  padding: 14px 18px !important;
+  transition: all 0.2s ease;
 }
 
 .scraping-trigger-btn:hover:not(:disabled) {
-  background: #9a74df !important;
-  border-color: #9a74df !important;
+  background: #9a74df;
+}
+
+.scraping-trigger-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1400px) {

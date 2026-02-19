@@ -1,13 +1,32 @@
-export default function ScrapingSection({ scrapeStatus, settings, onTriggerScrape }) {
-  const statusText = scrapeStatus.running
-    ? "In Progress"
-    : scrapeStatus.lastStatus === "success"
+export default function ScrapingSection({
+  scrapeStatus,
+  settings,
+  onTriggerScrape
+}) {
+  const isRunning = scrapeStatus.lastStatus === "running";
+
+  const statusText =
+    scrapeStatus.lastStatus === "running"
+      ? "In Progress"
+      : scrapeStatus.lastStatus === "success"
       ? "Completed"
       : scrapeStatus.lastStatus === "error"
-        ? "Failed"
-        : "Idle";
+      ? "Failed"
+      : "Idle";
 
-  const lastScrapeDate = settings.lastScrapeAt ? new Date(settings.lastScrapeAt) : null;
+  const badgeClass =
+    scrapeStatus.lastStatus === "running"
+      ? "in-progress"
+      : scrapeStatus.lastStatus === "success"
+      ? "success"
+      : scrapeStatus.lastStatus === "error"
+      ? "error"
+      : "idle";
+
+  const lastScrapeDate = settings.lastScrapeAt
+    ? new Date(settings.lastScrapeAt)
+    : null;
+
   const lastScrapeText = lastScrapeDate
     ? lastScrapeDate.toLocaleString()
     : "Not available";
@@ -21,32 +40,36 @@ export default function ScrapingSection({ scrapeStatus, settings, onTriggerScrap
         <h3>Scraping Control</h3>
       </div>
 
-      <div className="scraping-status-card row g-3">
-        <div className="scraping-status-col col-12 col-md-6">
+      <div className="scraping-status-card">
+        <div className="scraping-status-col">
           <div className="scraping-label">Current Status</div>
-          <div className={`scraping-badge ${scrapeStatus.running ? "in-progress" : "idle"}`}>
+          <div className={`scraping-badge ${badgeClass}`}>
             <span className="scraping-badge-dot" />
             {statusText}
           </div>
         </div>
 
-        <div className="scraping-status-col scraping-last-col col-12 col-md-6">
+        <div className="scraping-status-col">
           <div className="scraping-label">Last Scrape</div>
-          <div className="scraping-last-text">{lastScrapeText}</div>
+          <div className="scraping-last-text">
+            {lastScrapeText}
+          </div>
         </div>
       </div>
 
-      {scrapeStatus.lastError ? (
-        <div className="status-error">Last error: {scrapeStatus.lastError}</div>
-      ) : null}
+      {scrapeStatus.lastError && (
+        <div className="status-error">
+          Last error: {scrapeStatus.lastError}
+        </div>
+      )}
 
       <button
-        className="scraping-trigger-btn btn btn-primary"
-        disabled={scrapeStatus.running}
+        className="scraping-trigger-btn"
+        disabled={isRunning}
         onClick={onTriggerScrape}
       >
         <i className="bi bi-arrow-repeat" />
-        Trigger Re-Scraping
+        {isRunning ? "Scraping..." : "Trigger Re-Scraping"}
       </button>
     </div>
   );

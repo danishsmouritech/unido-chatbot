@@ -9,6 +9,10 @@ import { assertElasticConnection } from "./config/elasticsearch.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { ensureDefaultAdminUser } from "./services/adminAuth.service.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
+import adminAuthRoutes from "./routes/adminAuth.routes.js";
+import { ensureDefaultAdmin } from "./services/adminAuth.service.js";
+
+
 //preventing cron from running everywhere automatically on different environments
 if (process.env.ENABLE_CRON === "true") {
  await import("./cron/cronjob.js");
@@ -34,8 +38,10 @@ app.get("/health", async(_req, res) => {
 });
 
 app.use("/api/chat", chatRoutes);
+app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 
+await ensureDefaultAdmin();
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {

@@ -47,8 +47,8 @@ export function triggerScrape(headers) {
   });
 }
 
-export async function downloadChatLogsCsv(headers) {
-  const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/admin/reports/chat-logs.csv`, {
+export async function downloadChatLogsCsv(query,headers) {
+  const response = await fetch(`${APP_CONFIG.API_BASE_URL}/api/admin/reports/chat-logs?${query}`, {
     headers
   });
 

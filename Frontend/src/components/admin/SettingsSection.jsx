@@ -4,9 +4,9 @@ export default function SettingsSection({
   onSaveSettings
 }) {
   return (
-    <div className="admin-panel-block row g-3">
-      <div className="col-12 col-lg-8">
-        <label className="form-label">System Prompt</label>
+    <div className="admin-panel-block row g-1">
+      <div className="col-12 col-lg-12">
+        <label className="form-label fs-4">System Prompt</label>
         <textarea
           className="form-control"
           rows="10"

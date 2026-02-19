@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "../styles/adminPanel.css";
 import { ADMIN_TABS } from "../constants/adminDashboard";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
@@ -6,7 +7,8 @@ import AnalyticsSection from "./admin/AnalyticsSection";
 import SettingsSection from "./admin/SettingsSection";
 import ScrapingSection from "./admin/ScrapingSection";
 import ExportSection from "./admin/ExportSection";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 function ActiveSection({
   activeTab,
   analytics,
@@ -58,7 +60,12 @@ export default function AdminPanel() {
     triggerScrape,
     exportCsv,
   } = useAdminDashboard();
-
+  
+  useEffect(() => {
+    if (message) {
+      toast.success(message);
+    }
+  }, [message]);
   const activeLabel = ADMIN_TABS.find((tab) => tab.key === activeTab)?.label || "Dashboard";
 
   return (
@@ -85,11 +92,11 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        <div className="admin-section-title">
+        <div className="admin-section-title fs-3 fw-bolder over">
           <span>{activeLabel}</span>
         </div>
-
-        {message ? <div className="admin-message alert alert-info mb-0">{message}</div> : null}
+        <div className="hide-scrollbar" >
+          {/* {message ? div: null} */}
 
         <ActiveSection
           activeTab={activeTab}
@@ -101,6 +108,8 @@ export default function AdminPanel() {
           triggerScrape={triggerScrape}
           exportCsv={exportCsv}
         />
+        </div>
+       
       </main>
     </div>
   );
