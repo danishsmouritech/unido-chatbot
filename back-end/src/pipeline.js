@@ -11,6 +11,19 @@ import { saveJSONBackup } from "./storage/file.storage.js";
 import { createChunksByType } from "./chunking/chunker.js";
 import { bulkIndexChunks } from "./services/indexing.service.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
+import { generateEmbedding } from "./services/embedding.service.js";
+
+async function withEmbeddings(chunks = []) {
+  const enriched = [];
+  for (const chunk of chunks) {
+    const embedding = await generateEmbedding(chunk.content);
+    enriched.push({
+      ...chunk,
+      embedding
+    });
+  }
+  return enriched;
+}
 
 async function runScraper() {
   const { browser, page } = await getBrowser();
@@ -76,8 +89,9 @@ for (const [type, chunks] of Object.entries(chunksByType)) {
     console.log(" Indexing chunks into Elasticsearch...");
 
     for (const chunks of Object.values(chunksByType)) {
-  //sends all your chunks (content + embedding + metadata) to Elasticsearch and stores them in the index
-  await bulkIndexChunks(chunks);
+  // Sends chunks (content + embedding + metadata) to Elasticsearch.
+  const chunksWithEmbeddings = await withEmbeddings(chunks);
+  await bulkIndexChunks(chunksWithEmbeddings);
 }
     console.log("All chunks indexed into Elasticsearch");
     const totalChunks = Object.values(chunksByType).reduce((sum, arr) => sum + arr.length, 0);

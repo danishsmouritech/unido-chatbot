@@ -18,7 +18,7 @@ export default function AdminLogin() {
       const res = await loginAdmin(form);
       localStorage.setItem("adminToken", res.token);
       navigate("/admin");
-    } catch (err) {
+    } catch {
       setError("Invalid email or password");
     } finally {
       setLoading(false);

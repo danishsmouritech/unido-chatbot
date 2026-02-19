@@ -167,7 +167,7 @@ export async function exportChatLogsCsv(req, res) {
     "answer",
     "sourceCount",
     "responseMs",
-    "ip",
+    "ip"
   ];
 
   const rows = logs.map((log) => [

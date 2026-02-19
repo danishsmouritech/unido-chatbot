@@ -51,7 +51,7 @@ export function useAdminDashboard() {
     try {
       const payload = await getAdminAnalytics(getAdminHeaders());
       setAnalytics(payload);
-    } catch (err) {
+    } catch (error) {
       handleError(error);
     }
   }
@@ -129,7 +129,7 @@ export function useAdminDashboard() {
 
 async function exportCsv(filters) {
   try {
-    const { startDate, endDate, format, type } = filters;
+    const { startDate, endDate, type } = filters;
     setMessage("");
     const query = new URLSearchParams({
       startDate,

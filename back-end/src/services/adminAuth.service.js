@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import AdminUser from "../models/AdminUser.js";
+import AdminUser from "../models/adminUser.model.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES = "8h";
@@ -23,6 +23,7 @@ export async function ensureDefaultAdmin() {
 
   console.log("Default admin created");
 }
+
 
 export async function loginAdmin(email, password) {
   const user = await AdminUser.findOne({ email, isActive: true });

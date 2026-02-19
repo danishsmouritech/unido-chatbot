@@ -7,7 +7,6 @@ import adminRoutes from "./routes/admin.routes.js";
 import { assertOpenAIConfig } from "./config/openai.js";
 import { assertElasticConnection } from "./config/elasticsearch.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
-import { ensureDefaultAdminUser } from "./services/adminAuth.service.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import { ensureDefaultAdmin } from "./services/adminAuth.service.js";
@@ -41,14 +40,14 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 
-await ensureDefaultAdmin();
+
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
     if (process.env.MONGO_URI) {
       await connectDB();
-      await ensureDefaultAdminUser();
+      await ensureDefaultAdmin();
       await getAdminSettingsRecord();
     }
     await ensureChunkIndex();
