@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { uploadJSONToAzure, deleteOldBlobs } from "./azure.storage.js";
 // Generate file name like: 110226_unido_full.json
  
 function generateFileName(type = "full",file) {
@@ -30,6 +31,10 @@ export async function saveJSONBackup(data, type,folder,file) {
   await fs.writeJson(filePath, data, { spaces: 2 });
 
   console.log(`Backup saved at: ${filePath}`);
+   //  Upload to Azure
+  await uploadJSONToAzure(data, fileName);
 
+  // Delete old Azure files
+  await deleteOldBlobs();
   return filePath;
 }

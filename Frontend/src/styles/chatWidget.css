@@ -20,16 +20,14 @@
 }
 
 .chat-panel {
-  width: 320px;
-  height: 460px;
-  border-radius: 10px;
+  width: 340px;
+  height: 470px;
   overflow: hidden;
   background: #fff;
-  border: 1px solid #cfd8e5;
   box-shadow: 0 18px 34px rgba(7, 24, 48, 0.2);
   display: grid;
   grid-template-rows: auto 1fr auto;
-  margin-bottom: 12px;
+  margin-bottom: 68px;
 }
 
 .chat-panel-header {

@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import { connectDB } from "./config/db.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -10,17 +11,22 @@ import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import { ensureDefaultAdmin } from "./services/adminAuth.service.js";
+import { openApiSpec } from "./docs/openapi.js";
 
 
+dotenv.config();
 //preventing cron from running everywhere automatically on different environments
 if (process.env.ENABLE_CRON === "true") {
  await import("./cron/cronjob.js");
 }
 
-dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.get("/api/docs.json", (_req, res) => {
+  res.json(openApiSpec);
+});
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 app.get("/health", async(_req, res) => {
   try {
