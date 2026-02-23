@@ -8,7 +8,7 @@ function App() {
   return (
     <div className="app-shell">
       <Routes>
-        <Route path="/" element={<Navigate to="/admin/login" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AdminLogin />} />
         <Route path="/admin" element={ <AdminPanel />}/>
         {/* <Route

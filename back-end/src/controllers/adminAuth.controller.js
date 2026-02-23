@@ -11,3 +11,7 @@ export async function loginAdminController(req, res) {
 
   res.json(result);
 }
+
+export async function logoutAdminController(_req, res) {
+  res.json({ success: true });
+}

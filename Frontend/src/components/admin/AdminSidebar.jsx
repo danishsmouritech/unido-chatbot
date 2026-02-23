@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { logoutAdmin } from "../../services/adminService";
 
 export default function AdminSidebar({
   navItems,
@@ -14,8 +15,18 @@ export default function AdminSidebar({
     onRequestClose?.();
   };
 
-  const handleLogout = () => {
-    navigate("/login");
+  const handleLogout = async () => {
+    const token = localStorage.getItem("adminToken");
+    try {
+      if (token) {
+        await logoutAdmin({ Authorization: `Bearer ${token}` });
+      }
+    } catch {
+      // best-effort logout
+    } finally {
+      localStorage.removeItem("adminToken");
+    }
+    navigate("/admin/login");
     onRequestClose?.();
   };
 

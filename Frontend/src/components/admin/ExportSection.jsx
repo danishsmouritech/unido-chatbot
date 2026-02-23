@@ -4,8 +4,27 @@ export default function ExportSection({ onExport }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState("all");
+  const [errors, setErrors] = useState({});
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!startDate) {
+      newErrors.startDate = "Start date is required";
+    }
+
+    if (!endDate) {
+      newErrors.endDate = "End date is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleDownload = () => {
+    if (!validate()) return;
+
     onExport({
       startDate,
       endDate,
@@ -23,20 +42,36 @@ export default function ExportSection({ onExport }) {
           <label>From</label>
           <input
             type="date"
+            min="2026-02-12"
+            max={today}
             className="form-control"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              if (e.target.value) {
+                setEndDate("");
+                setErrors({})
+              }
+            }}
           />
+          {errors.startDate && (
+            <small className="text-danger">{errors.startDate}</small>
+          )}
         </div>
 
         <div className="col">
           <label>To</label>
           <input
             type="date"
+            min={startDate || "2026-02-12"}
+            max={today}
             className="form-control"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
           />
+          {errors.endDate && (
+            <small className="text-danger">{errors.endDate}</small>
+          )}
         </div>
       </div>
 
