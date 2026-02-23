@@ -3,18 +3,30 @@ export default function SettingsSection({
   onSettingsChange,
   onSaveSettings
 }) {
+  const systemPrompt = settings?.systemPrompt || "";
+  const maxPromptLength = 500;
+  const isSystemPromptTooLong = systemPrompt.length > maxPromptLength;
+
   return (
     <div className="admin-panel-block row g-1">
       <div className="col-12 col-lg-12">
         <label className="form-label fs-4">System Prompt</label>
         <textarea
-          className="form-control"
+          className={`form-control ${isSystemPromptTooLong ? "is-invalid" : ""}`}
           rows="10"
-          value={settings?.systemPrompt || ""}
-          onChange={(event) =>
-            onSettingsChange((prev) => ({ ...prev, systemPrompt: event.target.value }))
-          }
+          value={systemPrompt}
+          onChange={(event) => {
+            onSettingsChange((prev) => ({ ...prev, systemPrompt: event.target.value }));
+          }}
         />
+        <div className={`mt-1 small ${isSystemPromptTooLong ? "text-danger" : "text-muted"}`}>
+          {systemPrompt.length}/{maxPromptLength} characters
+        </div>
+        {isSystemPromptTooLong ? (
+          <div className="invalid-feedback d-block">
+            System Prompt must be 500 characters or less.
+          </div>
+        ) : null}
       </div>
 
       <div className="col-12 col-lg-4 d-grid gap-3 align-content-start">
@@ -33,7 +45,11 @@ export default function SettingsSection({
             Enable Chatbot
           </label>
         </div>
-        <button className="btn btn-primary" onClick={onSaveSettings}>
+        <button
+          className="btn btn-primary"
+          onClick={onSaveSettings}
+          disabled={isSystemPromptTooLong}
+        >
           Save Settings
         </button>
       </div>

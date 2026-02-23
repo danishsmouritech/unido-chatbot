@@ -1,21 +1,30 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../services/adminService";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function onSubmit(formData) {
     setError("");
     setLoading(true);
 
     try {
-      const res = await loginAdmin(form);
+      const res = await loginAdmin(formData);
       localStorage.setItem("adminToken", res.token);
       navigate("/admin");
     } catch {
@@ -26,40 +35,79 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow-lg p-4" style={{ width: "400px" }}>
-        <h4 className="text-center mb-3">UNIDO Admin Portal</h4>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Email"
-              required
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
+    <div className="admin-login-shell">
+      <div className="admin-login-layout">
+        <section className="admin-login-left">
+          <div className="admin-login-overlay" />
+          <div className="admin-login-left-content">
+            <span className="admin-login-badge">UNIDO Secure Access</span>
+            <h1>Admin Control Center</h1>
+            <p>
+              Monitor chatbot operations, manage system prompts, and export reports from one secure workspace.
+            </p>
           </div>
+        </section>
 
-          <div className="mb-3">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Password"
-              required
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-            />
+        <section className="admin-login-right">
+          <div className="admin-login-card">
+            <h2>Sign in</h2>
+            <p>Use your admin credentials to continue.</p>
+
+            {error ? <div className="alert alert-danger mt-3 mb-3">{error}</div> : null}
+
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <div className="mb-3">
+                <label htmlFor="admin-email" className="form-label">
+                  Email address
+                </label>
+                <input
+                  id="admin-email"
+                  type="email"
+                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                  placeholder="you@unido.org"
+                  autoComplete="email"
+                  {...register("email", {
+                    required: "Email is required.",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Enter a valid email address.",
+                    },
+                  })}
+                />
+                {errors.email ? (
+                  <div className="invalid-feedback d-block">{errors.email.message}</div>
+                ) : null}
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="admin-password" className="form-label">
+                  Password
+                </label>
+                <input
+                  id="admin-password"
+                  type="password"
+                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  {...register("password", {
+                    required: "Password is required.",
+                    minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters.",
+                    },
+                  })}
+                />
+                {errors.password ? (
+                  <div className="invalid-feedback d-block">{errors.password.message}</div>
+                ) : null}
+              </div>
+
+              <button className="btn btn-primary w-100" disabled={loading}>
+                {loading ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
           </div>
-
-          <button
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
+        </section>
       </div>
     </div>
   );
