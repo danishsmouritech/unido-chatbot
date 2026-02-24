@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { logoutAdmin } from "../../services/adminService";
 
 export default function AdminSidebar({
@@ -9,6 +10,7 @@ export default function AdminSidebar({
   onRequestClose
 }) {
   const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleTabClick = (tabKey) => {
     onTabChange(tabKey);
@@ -16,6 +18,8 @@ export default function AdminSidebar({
   };
 
   const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
     const token = localStorage.getItem("adminToken");
     try {
       if (token) {
@@ -25,8 +29,9 @@ export default function AdminSidebar({
       // best-effort logout
     } finally {
       localStorage.removeItem("adminToken");
+      setLoggingOut(false);
     }
-    navigate("/admin/login");
+    navigate("/login");
     onRequestClose?.();
   };
 
@@ -58,8 +63,12 @@ export default function AdminSidebar({
             <span>{item.label}</span>
           </button>
         ))}
-        <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>
-          <i className="bi bi-box-arrow-left" /> Logout
+        <button
+          className="btn btn-outline-secondary btn-sm"
+          onClick={handleLogout}
+          disabled={loggingOut}
+        >
+          <i className="bi bi-box-arrow-left" /> {loggingOut ? "Logging out..." : "Logout"}
         </button>
       </nav>
     </aside>

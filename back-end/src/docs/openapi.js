@@ -69,8 +69,8 @@ export const openApiSpec = {
         type: "object",
         required: ["email", "password"],
         properties: {
-          email: { type: "string", example: "admin@unido.local" },
-          password: { type: "string", example: "Admin@123" }
+          email: { type: "string", example: "admin@your-org.org" },
+          password: { type: "string", example: "StrongPassword123!" }
         }
       },
       LoginResponse: {
@@ -300,6 +300,36 @@ export const openApiSpec = {
           },
           "401": {
             description: "Invalid credentials",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/auth/logout": {
+      post: {
+        tags: ["Admin Auth"],
+        summary: "Admin logout",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          "200": {
+            description: "Logout success",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            description: "Unauthorized",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ErrorResponse" }

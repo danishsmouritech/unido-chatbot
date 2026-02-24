@@ -9,7 +9,10 @@ import { CONTENT_CATEGORIES } from "./constants/categoriesContent.js";
 import { writeFileSync } from "fs";
 import { saveJSONBackup } from "./storage/file.storage.js";
 import { createChunksByType } from "./chunking/chunker.js";
-import { bulkIndexChunks } from "./services/indexing.service.js";
+import {
+  bulkIndexChunks,
+  clearChunkIndex
+} from "./services/indexing.service.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { generateEmbedding } from "./services/embedding.service.js";
 
@@ -86,6 +89,7 @@ for (const [type, chunks] of Object.entries(chunksByType)) {
     }
     // checks whether the index exists in Elasticsearch, and if not, creates it with the correct vector (dense_vector) mapping so your chunks can be stored and searched semantically.
     await ensureChunkIndex();
+    await clearChunkIndex();
     console.log(" Indexing chunks into Elasticsearch...");
 
     for (const chunks of Object.values(chunksByType)) {

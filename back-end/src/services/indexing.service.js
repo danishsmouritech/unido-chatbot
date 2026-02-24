@@ -1,5 +1,14 @@
 import { esClient } from "../config/elasticsearch.js";
 
+export async function clearChunkIndex() {
+  await esClient.deleteByQuery({
+    index: "unido_careers_index",
+    query: { match_all: {} },
+    refresh: true,
+    conflicts: "proceed"
+  });
+}
+
 export async function bulkIndexChunks(chunks) {
   const operations = [];
 

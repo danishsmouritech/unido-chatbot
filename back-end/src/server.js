@@ -10,7 +10,10 @@ import { assertElasticConnection } from "./config/elasticsearch.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
-import { ensureDefaultAdmin } from "./services/adminAuth.service.js";
+import {
+  assertAdminAuthConfig,
+  ensureDefaultAdmin
+} from "./services/adminAuth.service.js";
 import { openApiSpec } from "./docs/openapi.js";
 
 
@@ -51,6 +54,8 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
+    assertAdminAuthConfig();
+
     if (process.env.MONGO_URI) {
       await connectDB();
       await ensureDefaultAdmin();

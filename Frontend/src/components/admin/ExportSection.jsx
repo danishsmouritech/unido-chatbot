@@ -48,10 +48,7 @@ export default function ExportSection({ onExport }) {
             value={startDate}
             onChange={(e) => {
               setStartDate(e.target.value);
-              if (e.target.value) {
-                setEndDate("");
-                setErrors({})
-              }
+              setErrors({});
             }}
           />
           {errors.startDate && (
@@ -67,7 +64,10 @@ export default function ExportSection({ onExport }) {
             max={today}
             className="form-control"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+              setErrors({});
+            }}
           />
           {errors.endDate && (
             <small className="text-danger">{errors.endDate}</small>

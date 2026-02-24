@@ -5,10 +5,20 @@ import AdminUser from "../models/adminUser.model.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES = "8h";
 
+export function assertAdminAuthConfig() {
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is required for admin authentication");
+  }
+}
+
 // Create default admin
 export async function ensureDefaultAdmin() {
-  const email = process.env.ADMIN_EMAIL || "admin@unido.local";
-  const password = process.env.ADMIN_PASSWORD || "Admin@123";
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD are required to bootstrap admin user");
+  }
 
   const exists = await AdminUser.findOne({ email });
   if (exists) return;
@@ -26,6 +36,8 @@ export async function ensureDefaultAdmin() {
 
 
 export async function loginAdmin(email, password) {
+  assertAdminAuthConfig();
+
   const user = await AdminUser.findOne({ email, isActive: true });
   if (!user) return null;
 

@@ -94,7 +94,7 @@ export default function ChatWidget() {
               onClick={sendMessage}
               disabled={sending}
             >
-              {sending ? "..." : "Send"}
+              {sending ? "..." : <i className="bi bi-send"></i>}
             </button>
           </div>
         </div>

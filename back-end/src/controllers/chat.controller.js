@@ -7,6 +7,13 @@ import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
 
 //Create Session
 export const createChatSession = async (req, res) => {
+  const settings = await getAdminSettingsRecord();
+  if (!settings.chatbotEnabled) {
+    return res.status(503).json({
+      error: "Chatbot is currently disabled"
+    });
+  }
+
   const sessionId = await createSession();
   res.status(201).json({ success: true, sessionId });
 };
@@ -18,6 +25,13 @@ export const askQuestion = async (req, res) => {
     const { sessionId, question } = req.body;
     const userAgent = req.get("user-agent") || null;
     const ip = req.ip || null;
+    const settings = await getAdminSettingsRecord();
+
+    if (!settings.chatbotEnabled) {
+      return res.status(503).json({
+        error: "Chatbot is currently disabled"
+      });
+    }
 
     if (!sessionId || !question) {
       return res.status(400).json({
