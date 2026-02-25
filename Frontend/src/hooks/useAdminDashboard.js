@@ -32,19 +32,17 @@ export function useAdminDashboard() {
     startedAt: null,
     finishedAt: null
   });
-  const [message, setMessage] = useState("");
-
+const [notification, setNotification] = useState(null);
   function getAdminHeaders() {
     const token = localStorage.getItem("adminToken");
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
   function handleError(error) {
   console.error(error);
-  setMessage(
-    error?.message ||
-    error?.error ||
-    "Something went wrong"
-  );
+  setNotification({
+    type: "error",
+    text: error?.message || error?.error || "Something went wrong"
+  });
 }
 
   async function refreshAnalytics() {
@@ -67,7 +65,6 @@ export function useAdminDashboard() {
 
   async function saveSettings() {
     try {
-      setMessage("");
       const payload = await updateAdminSettingsRequest(
         {
           systemPrompt: settings.systemPrompt,
@@ -76,7 +73,10 @@ export function useAdminDashboard() {
         getAdminHeaders()
       );
       setSettings(payload.settings);
-      setMessage("Settings saved");
+     setNotification({
+      type: "success",
+      text: "Settings saved"
+    });
     } catch (error) {
       handleError(error);
     }
@@ -118,10 +118,14 @@ export function useAdminDashboard() {
 
   async function triggerScrape() {
     try {
-      setMessage("");
       const payload = await triggerScrapeRequest(getAdminHeaders());
       setScrapeStatus(payload.status);
-      setMessage(payload.started ? "Scraping started" : "Scraping already running");
+      setNotification({
+        type: payload.started ? "success" : "warning",
+        text: payload.started
+          ? "Scraping started"
+          : "Scraping already running"
+      });
     } catch (error) {
       handleError(error);
     }
@@ -130,7 +134,6 @@ export function useAdminDashboard() {
 async function exportCsv(filters) {
   try {
     const { startDate, endDate, type } = filters;
-    setMessage("");
     const query = new URLSearchParams({
       startDate,
       endDate,
@@ -142,6 +145,10 @@ async function exportCsv(filters) {
       .slice(0, 10)}.csv`;
 
     downloadBlob(blob, fileName);
+    setNotification({
+      type: "success",
+      text: "Export started, check your downloads folder shortly."
+    });
   } catch (error) {
     handleError(error);
   }
@@ -154,7 +161,7 @@ async function exportCsv(filters) {
     settings,
     setSettings,
     scrapeStatus,
-    message,
+   notification,
     saveSettings,
     triggerScrape,
     exportCsv

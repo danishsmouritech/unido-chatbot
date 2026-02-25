@@ -10,7 +10,7 @@ export default function AnalyticsSection({ analytics }) {
   ];
 
   const maxValue = Math.max(...eventData.map(e => e.value), 1);
-
+  const totalEvents = eventData.reduce((sum, event) => sum + event.value, 0);
   return (
     <div className="analytics-section">
       <div className="admin-card-grid row g-3">
@@ -31,20 +31,25 @@ export default function AnalyticsSection({ analytics }) {
       <div className="event-breakdown">
         <div className="event-title">Event Breakdown</div>
         <div className="event-chart">
-          {eventData.map((event) => (
-            <div className="event-row row g-2 align-items-center" key={event.label}>
-              <div className="event-label col-12 col-md-3">{event.label}</div>
-              <div className="event-bar-track col-10 col-md-8">
-                <div
-                  className="event-bar-fill"
-                  style={{ width: `${(event.value / maxValue) * 100}%` }}
-                />
+          {eventData.map((event) => {
+            const percentage = totalEvents
+              ? (event.value / totalEvents) * 100
+              : 0;
+            return (
+              <div className="event-row row g-2 align-items-center" key={event.label}>
+                <div className="event-label col-12 col-md-3">{event.label}</div>
+                <div className="event-bar-track col-10 col-md-8">
+                  <div
+                    className="event-bar-fill"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+                <div className="event-value col-2 col-md-1">
+                 {percentage.toFixed(0)}%
+                </div>
               </div>
-              <div className="event-value col-2 col-md-1">
-                {event.value}
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

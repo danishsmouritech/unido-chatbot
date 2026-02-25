@@ -53,7 +53,7 @@ export default function AdminPanel() {
     settings,
     setSettings,
     scrapeStatus,
-    message,
+    notification,
     saveSettings,
     triggerScrape,
     exportCsv,
@@ -61,10 +61,16 @@ export default function AdminPanel() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   useEffect(() => {
-    if (message) {
-      toast.success(message);
-    }
-  }, [message]);
+  if (!notification) return;
+
+  const { type, text } = notification;
+
+  if (type === "success") toast.success(text);
+  else if (type === "error") toast.error(text);
+  else if (type === "warning") toast.warning(text);
+  else toast.info(text);
+
+}, [notification]);
 
   useEffect(() => {
     const handleResize = () => {
