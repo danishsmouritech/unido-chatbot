@@ -63,7 +63,24 @@
   align-content: start;
   gap: 8px;
 }
+.hide-scrollbar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 225px);
+  /* Firefox */
+  scrollbar-width: 0px;
+  /* padding: 0 0 16px; */
+  /* IE and Edge */
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
 
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
 .chat-bubble {
   max-width: 96%;
   border-radius: 10px;

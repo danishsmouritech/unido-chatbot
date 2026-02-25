@@ -12,15 +12,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AdminLogin />} />
-        <Route path="/admin" element={ <AdminPanel />}/>
-       {/* <Route
+       <Route
           path="/admin"
           element={
             <PrivateRoute>
               <AdminPanel />
             </PrivateRoute>
           }
-        /> */}
+        />
         <Route path="/chat-preview" element={<ChatWidget />} />
       </Routes>
       <ToastContainer

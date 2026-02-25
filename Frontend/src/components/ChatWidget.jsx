@@ -72,7 +72,7 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          <div className="chat-panel-body" ref={messagesRef}>
+          <div className="chat-panel-body hide-scrollbar  " ref={messagesRef}>
             {messages.map((message, index) => (
               <div key={index} className={`chat-bubble ${message.role}`}>
                 <strong>{message.role === "user" ? "Q:" : "A:"}</strong> {message.text}
