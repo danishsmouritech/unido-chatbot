@@ -10,9 +10,10 @@ export default function AdminLogin() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors ,isValid },
   } = useForm({
-    mode: "onBlur",
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       email: "",
       password: "",
@@ -102,7 +103,7 @@ export default function AdminLogin() {
                 ) : null}
               </div>
 
-              <button className="btn btn-primary w-100" disabled={loading}>
+              <button className="btn btn-primary w-100" disabled={!isValid}>
                 {loading ? "Signing in..." : "Sign In"}
               </button>
             </form>

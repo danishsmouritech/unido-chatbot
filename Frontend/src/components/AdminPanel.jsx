@@ -8,6 +8,7 @@ import SettingsSection from "./admin/SettingsSection";
 import ScrapingSection from "./admin/ScrapingSection";
 import ExportSection from "./admin/ExportSection";
 import { toast } from "react-toastify";
+import ChatWidget from "./ChatWidget";
 function ActiveSection({
   activeTab,
   analytics,
@@ -152,6 +153,7 @@ export default function AdminPanel() {
         </section>
         </div>
       </main>
+      <ChatWidget />
     </div>
   );
 }

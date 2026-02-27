@@ -31,9 +31,9 @@ export async function scrapeCategory(page, category) {
     if (cols.length < 5) return;
 
     const jobLink = $(cols[0]).find("a").attr("href");
-
+   const title = cleanText($(cols[0]).find("a").first().text());
     jobs.push({
-      title: cleanText($(cols[0]).text()),
+      title,
       location: cleanText($(cols[1]).text()),
       category: cleanText($(cols[2]).text()),
       grade: cleanText($(cols[3]).text()),

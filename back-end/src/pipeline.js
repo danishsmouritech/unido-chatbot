@@ -15,6 +15,7 @@ import {
 } from "./services/indexing.service.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { generateEmbedding } from "./services/embedding.service.js";
+import { exportCareerCategories, exportCategoryContent, exportJobDetailLinks } from "./services/exportConstants.service.js";
 
 async function withEmbeddings(chunks = []) {
   const enriched = [];
@@ -33,7 +34,9 @@ async function runScraper() {
   try {
     // Homepage
     const homepage = await scrapeHomepage(page);
-    await saveJSONBackup(homepage, "homepage","data","unido");
+    exportCareerCategories(homepage.categories);
+    await saveJSONBackup(homepage, "homepage", "data", "unido");
+    
     // FAQs
     const faqs = await scrapeFaqs(page);
     await saveJSONBackup(faqs, "faqs","data","unido");
@@ -42,20 +45,16 @@ async function runScraper() {
     await saveJSONBackup(jobSummaries, "jobSummaries","data","unido");
      // Job details
     const jobDetails = [];
-    const jobDetailLinksArr = [];
     for (const job of jobSummaries) {
       const detail = await scrapeJobDetail(page, job.jobDetailLink);
       jobDetails.push(detail);
-      jobDetailLinksArr.push({ jobTitle: job.jobTitle, jobDetailLink: job.jobDetailLink });
-      await new Promise(r => setTimeout(r, 1500));
+      exportJobDetailLinks(jobSummaries);
     }
     await saveJSONBackup(jobDetails, "jobDetails","data","unido");
-    // Write job detail links to constants file
-    const jobLinksExport = 'export const JOB_DETAIL_LINKS = ' + JSON.stringify(jobDetailLinksArr, null, 2) + ';\n';
-    writeFileSync('src/constants/jobDetailslinks.js', jobLinksExport, 'utf-8');
 
     // Categories
     const categories = await scrapeAllCategories();
+    exportCategoryContent(categories);
     await saveJSONBackup(categories, "categories","data","unido");
     // Category content
     const categoryContent = [];

@@ -3,6 +3,31 @@ import { askChatQuestion, createChatSession,getChatVisibility } from "../service
 import "../styles/chatWidget.css";
 
 const INITIAL_MESSAGES = [{ role: "bot", text: "Hello. How can I help you?" }];
+const CHAT_SESSION_STORAGE_KEY = "chatWidgetSessionId";
+let sessionInitPromise = null;
+
+async function getOrCreateSessionId() {
+  const existingSessionId = sessionStorage.getItem(CHAT_SESSION_STORAGE_KEY);
+  if (existingSessionId) {
+    return existingSessionId;
+  }
+
+  if (!sessionInitPromise) {
+    sessionInitPromise = createChatSession()
+      .then((payload) => {
+        const createdSessionId = payload?.sessionId || null;
+        if (createdSessionId) {
+          sessionStorage.setItem(CHAT_SESSION_STORAGE_KEY, createdSessionId);
+        }
+        return createdSessionId;
+      })
+      .finally(() => {
+        sessionInitPromise = null;
+      });
+  }
+
+  return sessionInitPromise;
+}
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,8 +48,11 @@ export default function ChatWidget() {
           return;
         }
 
-        const payload = await createChatSession();
-        setSessionId(payload.sessionId);
+        const resolvedSessionId = await getOrCreateSessionId();
+        if (!resolvedSessionId) {
+          throw new Error("Unable to initialize chat session");
+        }
+        setSessionId(resolvedSessionId);
       } catch {
         setChatbotEnabled(false);
       }
@@ -61,7 +89,7 @@ export default function ChatWidget() {
       {isOpen && (
         <div className="chat-panel">
           <div className="chat-panel-header">
-            <span className="chat-panel-title">MOURI Chatbot</span>
+            <span className="chat-panel-title">UNIDO Chatbot</span>
             <button
               className="chat-close-btn"
               type="button"
@@ -75,7 +103,7 @@ export default function ChatWidget() {
           <div className="chat-panel-body hide-scrollbar  " ref={messagesRef}>
             {messages.map((message, index) => (
               <div key={index} className={`chat-bubble ${message.role}`}>
-                <strong>{message.role === "user" ? "Q:" : "A:"}</strong> {message.text}
+                 {message.text}
               </div>
             ))}
           </div>

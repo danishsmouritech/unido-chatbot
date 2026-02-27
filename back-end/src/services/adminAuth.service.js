@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import AdminUser from "../models/adminUser.model.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES = "8h";
+const JWT_EXPIRES = process.env.JWT_EXPIRES || "25m";
 
 export function assertAdminAuthConfig() {
   if (!JWT_SECRET) {

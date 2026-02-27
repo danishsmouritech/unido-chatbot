@@ -31,10 +31,10 @@ export async function saveJSONBackup(data, type,folder,file) {
   await fs.writeJson(filePath, data, { spaces: 2 });
 
   console.log(`Backup saved at: ${filePath}`);
-   //  Upload to Azure
-  await uploadJSONToAzure(data, fileName);
+  //  //  Upload to Azure
+  // await uploadJSONToAzure(data, fileName);
 
-  // Delete old Azure files
-  await deleteOldBlobs();
+  // // Delete old Azure files
+  // await deleteOldBlobs();
   return filePath;
 }

@@ -1,6 +1,8 @@
-import { embeddingClient } from "../config/openai.js";
+// import { embeddingClient } from "../config/openai.js";
 
 export async function generateEmbedding(text) {
+   const embeddingClient =require("../config/openai.js"); // we need to remove this.
+
   if (!embeddingClient) {
     throw new Error("Embedding client not initialized");
   }

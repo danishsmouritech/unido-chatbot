@@ -3,7 +3,8 @@ export const openApiSpec = {
   info: {
     title: "UNIDO RAG Backend API",
     version: "1.0.0",
-    description: "REST API documentation for chat, admin auth, and admin operations."
+    description:
+      "REST API documentation for the UNIDO RAG backend, including public chat endpoints, admin authentication, analytics, settings, scrape controls, and report exports."
   },
   servers: [
     {
@@ -144,6 +145,8 @@ export const openApiSpec = {
       get: {
         tags: ["Health"],
         summary: "Service health check",
+        description:
+          "Returns the runtime health state of the backend service. Use this endpoint for uptime probes, deployment checks, and basic readiness validation before sending user traffic.",
         responses: {
           "200": {
             description: "Service is healthy",
@@ -180,6 +183,8 @@ export const openApiSpec = {
       get: {
         tags: ["Chat"],
         summary: "Get chatbot visibility status",
+        description:
+          "Indicates whether the chatbot is currently enabled for end users. Frontend clients should call this before rendering or activating the chat widget.",
         responses: {
           "200": {
             description: "Chatbot visibility status",
@@ -201,6 +206,8 @@ export const openApiSpec = {
       post: {
         tags: ["Chat"],
         summary: "Create chat session",
+        description:
+          "Creates and returns a new chat session identifier used to group user messages and assistant answers into one conversation thread. This sessionId must be provided in subsequent /api/chat/ask requests.",
         responses: {
           "201": {
             description: "Session created",
@@ -225,6 +232,8 @@ export const openApiSpec = {
       post: {
         tags: ["Chat"],
         summary: "Ask a question",
+        description:
+          "Accepts a user question for a given session, runs retrieval and generation over indexed knowledge, and returns an answer with source metadata when available. Use the same sessionId across turns to preserve context.",
         requestBody: {
           required: true,
           content: {
@@ -281,6 +290,8 @@ export const openApiSpec = {
       post: {
         tags: ["Admin Auth"],
         summary: "Admin login",
+        description:
+          "Authenticates an admin user with email and password credentials. On success, returns a JWT bearer token and admin profile details; include the token in the Authorization header for protected admin endpoints.",
         requestBody: {
           required: true,
           content: {
@@ -313,6 +324,8 @@ export const openApiSpec = {
       post: {
         tags: ["Admin Auth"],
         summary: "Admin logout",
+        description:
+          "Invalidates the current admin authentication context. Clients should call this when ending an admin session and remove the stored bearer token locally after successful logout.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -343,6 +356,8 @@ export const openApiSpec = {
       get: {
         tags: ["Admin"],
         summary: "Get admin analytics",
+        description:
+          "Returns aggregate operational analytics for admin dashboards, including conversation counts, message volumes, unique-user estimates, response latency, and error totals.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -368,6 +383,8 @@ export const openApiSpec = {
       get: {
         tags: ["Admin"],
         summary: "Get admin settings",
+        description:
+          "Fetches current runtime-configurable settings used by the assistant, including system prompt behavior, chatbot availability toggle, and latest scrape timestamp.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -391,6 +408,8 @@ export const openApiSpec = {
       put: {
         tags: ["Admin"],
         summary: "Update admin settings",
+        description:
+          "Updates mutable assistant settings. Use this endpoint to change the system prompt and enable or disable chatbot access without redeploying the backend.",
         security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
@@ -432,6 +451,8 @@ export const openApiSpec = {
       post: {
         tags: ["Admin"],
         summary: "Trigger scraping pipeline",
+        description:
+          "Starts a manual scrape/indexing run for content ingestion. Use this when admins need to refresh knowledge outside scheduled jobs; response includes whether a new run was started and current status metadata.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -457,6 +478,8 @@ export const openApiSpec = {
       get: {
         tags: ["Admin"],
         summary: "Get scraping status",
+        description:
+          "Returns the latest scraping pipeline execution state, including lifecycle timestamps and last known error details for monitoring and troubleshooting.",
         security: [{ bearerAuth: [] }],
         responses: {
           "200": {
@@ -482,6 +505,8 @@ export const openApiSpec = {
       get: {
         tags: ["Admin"],
         summary: "Download chat logs CSV",
+        description:
+          "Exports chat activity as a CSV file for reporting and audit use cases. Optional filters support date ranges, export type selection, and row limits to control output size.",
         security: [{ bearerAuth: [] }],
         parameters: [
           {

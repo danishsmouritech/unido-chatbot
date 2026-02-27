@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   downloadChatLogsCsv,
   getAdminAnalytics,
@@ -10,6 +11,7 @@ import {
 import { downloadBlob } from "../utils/fileDownload";
 
 export function useAdminDashboard() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("analytics");
   const [analytics, setAnalytics] = useState({
   conversations: 0,
@@ -38,6 +40,16 @@ const [notification, setNotification] = useState(null);
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
   function handleError(error) {
+    if (error?.status === 401) {
+     setNotification({
+    type: "error",
+    text: "Session expired, please log in again"
+  });
+    localStorage.removeItem("adminToken");
+    navigate("/login", { replace: true });
+    return;
+  }
+
   console.error(error);
   setNotification({
     type: "error",

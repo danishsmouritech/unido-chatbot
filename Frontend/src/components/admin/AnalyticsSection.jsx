@@ -36,9 +36,9 @@ export default function AnalyticsSection({ analytics }) {
               ? (event.value / totalEvents) * 100
               : 0;
             return (
-              <div className="event-row row g-2 align-items-center" key={event.label}>
+              <div className="event-row row g-2  align-items-center" key={event.label}>
                 <div className="event-label col-12 col-md-3">{event.label}</div>
-                <div className="event-bar-track col-10 col-md-8">
+                <div className="event-bar-track p-0 col-10 col-md-8">
                   <div
                     className="event-bar-fill"
                     style={{ width: `${percentage}%` }}

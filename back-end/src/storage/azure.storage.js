@@ -1,9 +1,11 @@
-import { blobServiceClient } from "../config/azureBlob.js";
+// import { blobServiceClient } from "../config/azureBlob.js";
 
 const containerName = process.env.AZURE_STORAGE_CONTAINER;
 const RETENTION_DAYS = 7;
 
 export async function uploadJSONToAzure(data, fileName) {
+  const blobServiceClient = require("../config/azureBlob.js"); //we need to remove this.
+
   const containerClient =
     blobServiceClient.getContainerClient(containerName);
 

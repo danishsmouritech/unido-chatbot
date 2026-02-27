@@ -1,4 +1,4 @@
-import { chatClient } from "../config/openai.js";
+// import { chatClient } from "../config/openai.js";
 import { getAdminSettingsRecord } from "./adminSettings.service.js";
 
 function buildContextText(chunks) {
@@ -19,6 +19,8 @@ function normalizeHistory(history = []) {
 }
 
 export async function generateAnswer(question, history, chunks) {
+  const  chatClient =  require("../config/openai.js"); // we need to remove this.
+
   const contextText = buildContextText(chunks);
   const normalizedHistory = normalizeHistory(history);
   const settings = await getAdminSettingsRecord();

@@ -53,7 +53,9 @@ export async function downloadChatLogsCsv(query,headers) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to download CSV report");
+    const error = new Error("Failed to download CSV report");
+    error.status = response.status;
+    throw error;
   }
 
   return response.blob();

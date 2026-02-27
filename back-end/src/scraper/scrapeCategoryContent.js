@@ -1,6 +1,5 @@
 import { cleanHTML } from "../cleaner/cleanerHTML.js";
 import{ getBrowser } from "../utils/browser.js";
-import * as cheerio from "cheerio";
 const cleanText = (text = "") =>
   text.replace(/\s+/g, " ").replace(/\u00a0/g, " ").trim();
 

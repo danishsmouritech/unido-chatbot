@@ -19,8 +19,8 @@ function createAzureDeploymentClient(deploymentName) {
   });
 }
 
-export const chatClient = createAzureDeploymentClient(process.env.AZURE_OPENAI_DEPLOYMENT);
-export const embeddingClient = createAzureDeploymentClient(process.env.AZURE_EMBEDDING_DEPLOYMENT);
+// export const chatClient = createAzureDeploymentClient(process.env.AZURE_OPENAI_DEPLOYMENT);
+// export const embeddingClient = createAzureDeploymentClient(process.env.AZURE_EMBEDDING_DEPLOYMENT);
 
 export function assertOpenAIConfig() {
   if (!endpoint) throw new Error("AZURE_OPENAI_ENDPOINT is missing");

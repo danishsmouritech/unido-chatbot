@@ -61,7 +61,7 @@ async function startServer() {
       await ensureDefaultAdmin();
       await getAdminSettingsRecord();
     }
-    await ensureChunkIndex();
+    // await ensureChunkIndex();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
