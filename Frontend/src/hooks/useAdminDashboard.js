@@ -9,6 +9,7 @@ import {
   updateAdminSettings as updateAdminSettingsRequest
 } from "../services/adminService";
 import { downloadBlob } from "../utils/fileDownload";
+import { getSocket } from "../services/socketService";
 
 export function useAdminDashboard() {
   const navigate = useNavigate();
@@ -125,6 +126,18 @@ const [notification, setNotification] = useState(null);
     }, 5000);
     return () => clearInterval(timer);
   }, [scrapeStatus.lastStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const socket = getSocket();
+    const refreshFromSocket = () => {
+      refreshAnalytics().catch(() => {});
+    };
+
+    socket.on("analytics:updated", refreshFromSocket);
+    return () => {
+      socket.off("analytics:updated", refreshFromSocket);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
  
 

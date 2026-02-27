@@ -28,6 +28,7 @@
     "node-cron": "^4.2.1",
     "openai": "^6.21.0",
     "puppeteer": "^24.37.2",
+    "socket.io": "^4.8.3",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {

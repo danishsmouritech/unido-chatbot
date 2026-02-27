@@ -5,6 +5,7 @@ import {
   updateAdminSettingsRecord
 } from "../services/adminSettings.service.js";
 import { getScrapeStatus, triggerScrape } from "../services/scrape.service.js";
+import { emitRealtime } from "../realtime/socket.js";
 
 function toCsvValue(value) {
   if (value === null || value === undefined) return "";
@@ -121,6 +122,11 @@ export async function updateAdminSettings(req, res) {
         lastScrapeAt: updated.lastScrapeAt
       }
     });
+
+    emitRealtime("chatbot:visibilityChanged", {
+      chatbotEnabled: updated.chatbotEnabled
+    });
+    emitRealtime("analytics:updated", { source: "settings" });
   } catch (error) {
     console.error("Update settings error:", error);
     res.status(500).json({ error: "Failed to update settings" });

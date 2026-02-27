@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { askChatQuestion, createChatSession,getChatVisibility } from "../services/chatService";
+import { getSocket } from "../services/socketService";
 import "../styles/chatWidget.css";
 
 const INITIAL_MESSAGES = [{ role: "bot", text: "Hello. How can I help you?" }];
@@ -38,27 +39,48 @@ export default function ChatWidget() {
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const messagesRef = useRef(null);
 
-  useEffect(() => {
-    async function initChat() {
-      try {
-        const visibility = await getChatVisibility();
+  async function hydrateChatState() {
+    try {
+      const visibility = await getChatVisibility();
 
-        if (!visibility.chatbotEnabled) {
-          setChatbotEnabled(false);
-          return;
-        }
-
-        const resolvedSessionId = await getOrCreateSessionId();
-        if (!resolvedSessionId) {
-          throw new Error("Unable to initialize chat session");
-        }
-        setSessionId(resolvedSessionId);
-      } catch {
+      if (!visibility.chatbotEnabled) {
         setChatbotEnabled(false);
+        setIsOpen(false);
+        return;
       }
-    }
 
-    initChat();
+      setChatbotEnabled(true);
+      const resolvedSessionId = await getOrCreateSessionId();
+      if (!resolvedSessionId) {
+        throw new Error("Unable to initialize chat session");
+      }
+      setSessionId(resolvedSessionId);
+    } catch {
+      setChatbotEnabled(false);
+      setIsOpen(false);
+    }
+  }
+
+  useEffect(() => {
+    hydrateChatState();
+  }, []);
+
+  useEffect(() => {
+    const socket = getSocket();
+    const onVisibilityChanged = (payload) => {
+      const enabled = Boolean(payload?.chatbotEnabled);
+      setChatbotEnabled(enabled);
+      if (!enabled) {
+        setIsOpen(false);
+        return;
+      }
+      hydrateChatState();
+    };
+
+    socket.on("chatbot:visibilityChanged", onVisibilityChanged);
+    return () => {
+      socket.off("chatbot:visibilityChanged", onVisibilityChanged);
+    };
   }, []);
 
   useEffect(() => {

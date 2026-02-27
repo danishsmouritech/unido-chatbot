@@ -3,6 +3,7 @@ import { isBlockedQuery, buildBlockedAnswer } from "../services/guard.service.js
 import { addMessage, getHistory, createSession } from "../services/chat.service.js";
 import { createChatLog } from "../services/chatlog.service.js";
 import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
+import { emitRealtime } from "../realtime/socket.js";
 
 
 //Create Session
@@ -15,6 +16,7 @@ export const createChatSession = async (req, res) => {
   }
 
   const sessionId = await createSession();
+  emitRealtime("analytics:updated", { source: "session" });
   res.status(201).json({ success: true, sessionId });
 };
 

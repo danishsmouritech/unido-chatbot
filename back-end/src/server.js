@@ -1,7 +1,9 @@
 import express from "express";
+import { createServer } from "http";
 import dotenv from "dotenv";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
+import { Server as SocketIOServer } from "socket.io";
 import { connectDB } from "./config/db.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -15,6 +17,7 @@ import {
   ensureDefaultAdmin
 } from "./services/adminAuth.service.js";
 import { openApiSpec } from "./docs/openapi.js";
+import { setSocketServer } from "./realtime/socket.js";
 
 
 dotenv.config();
@@ -49,6 +52,18 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+setSocketServer(io);
+
+io.on("connection", (socket) => {
+  socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
+});
 
 const PORT = process.env.PORT || 5000;
 
@@ -62,7 +77,7 @@ async function startServer() {
       await getAdminSettingsRecord();
     }
     // await ensureChunkIndex();
-    app.listen(PORT, () => {
+    httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
