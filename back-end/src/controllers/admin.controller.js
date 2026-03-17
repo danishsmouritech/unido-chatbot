@@ -7,11 +7,6 @@ import {
 import { getScrapeStatus, triggerScrape } from "../services/scrape.service.js";
 import { emitRealtime } from "../realtime/socket.js";
 
-function toCsvValue(value) {
-  if (value === null || value === undefined) return "";
-  const text = String(value).replace(/"/g, "\"\"");
-  return `"${text}"`;
-}
 
 export async function getAdminAnalytics(_req, res) {
   try {
@@ -78,7 +73,62 @@ export async function getAdminAnalytics(_req, res) {
     });
   }
 }
+function escapeRegExp(str = "") {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
+export const getInformation = async (req, res) => {
+  try {
+    const search = String(req.query.search || "").trim();
+    const parsedPage = Number.parseInt(req.query.page, 10);
+    const parsedLimit = Number.parseInt(req.query.limit, 10);
+    const pageNumber = Number.isNaN(parsedPage) ? 1 : Math.max(parsedPage, 1);
+    const limitNumber = Number.isNaN(parsedLimit)
+      ? 25
+      : Math.min(Math.max(parsedLimit, 1), 100);
+
+    const filter = {};
+
+    // Search filter
+    if (search) {
+      const regex = new RegExp(escapeRegExp(search), "i");
+
+      filter.$or = [
+        { sessionId: search },
+        { question: search },
+        { answer: search },
+        { requestMeta: { ip: search } },
+        {status: search }
+      ];
+    }
+
+    const total = await ChatLog.countDocuments(filter);
+
+    const logs = await ChatLog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .lean();
+
+    const totalPages = Math.max(Math.ceil(total / limitNumber), 1);
+
+    res.json({
+      logs,
+      pagination: {
+        page: pageNumber,
+        limit: limitNumber,
+        total,
+        totalPages,
+        hasNext: pageNumber < totalPages,
+        hasPrev: pageNumber > 1
+      }
+    });
+
+  } catch (error) {
+    console.error("getInformation error:", error);
+    res.status(500).json({ message: "Failed to fetch logs" });
+  }
+};
 
 export async function getAdminSettings(_req, res) {
   try {

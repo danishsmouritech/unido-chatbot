@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   downloadChatLogsCsv,
   getAdminAnalytics,
+  getAllInformation,
   getAdminSettings,
   getScrapeStatus,
   triggerScrape as triggerScrapeRequest,
@@ -22,7 +23,24 @@ export function useAdminDashboard() {
   uniqueUsers: 0,
   avgResponseMs: 0,
   errors: 0
-});
+  });
+  const [information, setInformation] = useState([]);
+  const [informationLoading, setInformationLoading] = useState(false);
+  const [informationQuery, setInformationQuery] = useState({
+    page: 1,
+    limit: 25,
+    search: ""
+  });
+  const informationQueryRef = useRef({
+    page: 1,
+    limit: 25,
+    search: ""
+  });
+
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1
+  });
   const [settings, setSettings] = useState({
     systemPrompt: "",
     chatbotEnabled: true,
@@ -36,11 +54,11 @@ export function useAdminDashboard() {
     finishedAt: null
   });
 const [notification, setNotification] = useState(null);
-  function getAdminHeaders() {
+  const getAdminHeaders = useCallback(() => {
     const token = localStorage.getItem("adminToken");
     return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-  function handleError(error) {
+  }, []);
+  const handleError = useCallback((error) => {
     if (error?.status === 401) {
      setNotification({
     type: "error",
@@ -56,7 +74,7 @@ const [notification, setNotification] = useState(null);
     type: "error",
     text: error?.message || error?.error || "Something went wrong"
   });
-}
+  }, [navigate]);
 
   async function refreshAnalytics() {
     try {
@@ -67,6 +85,30 @@ const [notification, setNotification] = useState(null);
     }
   }
 
+ const refreshInformation = useCallback(async (queryUpdate = {}) => {
+    const updatedQuery = {
+      ...informationQueryRef.current,
+      ...queryUpdate
+    };
+    informationQueryRef.current = updatedQuery;
+    setInformationQuery(updatedQuery);
+    setInformationLoading(true);
+
+    try {
+      const response = await getAllInformation(getAdminHeaders(), updatedQuery);
+      setInformation(response.logs || []);
+      setPagination(response.pagination || {});
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setInformationLoading(false);
+    }
+
+  }, [getAdminHeaders, handleError]);
+
+  const onQueryChange = useCallback((changes) => {
+    refreshInformation(changes);
+  }, [refreshInformation]);
  async function refreshSettings() {
   try {
     const payload = await getAdminSettings(getAdminHeaders());
@@ -104,7 +146,12 @@ const [notification, setNotification] = useState(null);
 
     async function loadInitialData() {
       try {
-        await Promise.all([refreshAnalytics(), refreshSettings(), refreshScrapeStatus()]);
+        await Promise.all([
+          refreshAnalytics(),
+          refreshInformation(),
+          refreshSettings(),
+          refreshScrapeStatus()
+        ]);
       } catch (error) {
         if (mounted) {
           handleError(error);
@@ -183,6 +230,11 @@ async function exportCsv(filters) {
     activeTab,
     setActiveTab,
     analytics,
+     information,
+    informationLoading,
+    informationQuery,
+    pagination,
+    onQueryChange,
     settings,
     setSettings,
     scrapeStatus,

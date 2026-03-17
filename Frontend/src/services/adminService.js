@@ -8,7 +8,17 @@ function withHeaders(headers = {}) {
 export function getAdminAnalytics(headers) {
   return apiRequest("/api/admin/analytics", withHeaders(headers));
 }
+export async function getAllInformation(headers = {}, query = {}) {
 
+  const params = new URLSearchParams();
+
+  Object.keys(query).forEach((key) => {
+    if (query[key] !== undefined && query[key] !== "") {
+      params.append(key, query[key]);
+    }
+  });
+  return apiRequest(`/api/admin/allInformation?${params.toString()}`, withHeaders(headers));
+}
 export function loginAdmin(payload) {
   return apiRequest("/api/admin/auth/login", {
     method: "POST",

@@ -7,11 +7,17 @@ import AnalyticsSection from "./admin/AnalyticsSection";
 import SettingsSection from "./admin/SettingsSection";
 import ScrapingSection from "./admin/ScrapingSection";
 import ExportSection from "./admin/ExportSection";
+import AllInformation from "./admin/AllInformation";
 import { toast } from "react-toastify";
 import ChatWidget from "./ChatWidget";
 function ActiveSection({
   activeTab,
   analytics,
+  information,
+  informationLoading,
+  informationQuery,
+  pagination,
+  onQueryChange,
   settings,
   setSettings,
   scrapeStatus,
@@ -42,7 +48,17 @@ function ActiveSection({
       />
     );
   }
-
+  if(activeTab === "all-info"){
+    return (
+      <AllInformation
+        information={information}
+        loading={informationLoading}
+        query={informationQuery}
+        pagination={pagination}
+        onQueryChange={onQueryChange}
+      />
+    );
+  }
   return <ExportSection onExport={exportCsv} />;
 }
 
@@ -51,6 +67,11 @@ export default function AdminPanel() {
     activeTab,
     setActiveTab,
     analytics,
+   information,
+    informationLoading,
+    informationQuery,
+    pagination,
+    onQueryChange,
     settings,
     setSettings,
     scrapeStatus,
@@ -135,13 +156,18 @@ export default function AdminPanel() {
           </div>
         </div>
         <section className="admin-body-card">
-          <div className="admin-section-title fs-3 fw-bolder over">
+          {/* <div className="admin-section-title fs-3 fw-bolder over">
             <span>{activeLabel}</span>
-          </div>
-          <div className="hide-scrollbar">
+          </div> */}
+          <div className={activeTab !== "all-info" ? "hide-scrollbar" : ""}>
             <ActiveSection
               activeTab={activeTab}
               analytics={analytics}
+              information={information}
+              informationLoading={informationLoading}
+              informationQuery={informationQuery}
+              pagination={pagination}
+              onQueryChange={onQueryChange}
               settings={settings}
               setSettings={setSettings}
               scrapeStatus={scrapeStatus}

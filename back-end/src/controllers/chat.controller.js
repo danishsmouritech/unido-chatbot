@@ -22,6 +22,7 @@ export const createChatSession = async (req, res) => {
 
 //Ask Question
 export const askQuestion = async (req, res) => {
+  console.log("Received question:", req); // Debug log
   const startedAt = Date.now();
   try {
     const { sessionId, question } = req.body;

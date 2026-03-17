@@ -3,6 +3,7 @@ import { requireAdminAuth } from "../middleware/adminAuth.middleware.js";
 import {
   exportChatLogsCsv,
   getAdminAnalytics,
+  getInformation,
   getAdminScrapeStatus,
   getAdminSettings,
   triggerAdminScrape,
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.use(requireAdminAuth);
 router.get("/analytics", getAdminAnalytics);
+router.get("/allInformation", getInformation);
 router.get("/settings", getAdminSettings);
 router.put("/settings", updateAdminSettings);
 router.post("/scrape/trigger", triggerAdminScrape);
