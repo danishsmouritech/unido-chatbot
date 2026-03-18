@@ -1,5 +1,5 @@
 import { esClient } from "../config/elasticsearch.js";
-
+import { logger } from "./utils/logger.js";
 export async function clearChunkIndex() {
   await esClient.deleteByQuery({
     index: "unido_careers_index",
@@ -34,7 +34,7 @@ export async function bulkIndexChunks(chunks) {
   });
 
   if (response.errors) {
-    console.error("Bulk indexing had errors:", response.items);
+    logger.error("Bulk indexing had errors:", response.items);
   }
-  console.log("Bulk indexing completed");
+  logger.log("Bulk indexing completed");
 }

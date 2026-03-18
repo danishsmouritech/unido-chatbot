@@ -18,7 +18,7 @@ import {
 } from "./services/adminAuth.service.js";
 import { openApiSpec } from "./docs/openapi.js";
 import { setSocketServer } from "./realtime/socket.js";
-
+import { logger } from "./utils/logger.js";
 
 dotenv.config();
 //preventing cron from running everywhere automatically on different environments
@@ -78,10 +78,10 @@ async function startServer() {
     }
     // await ensureChunkIndex();
     httpServer.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.log(`Server running on port ${PORT}`);
     });
   } catch (err) {
-    console.error("Failed to start server", err);
+    logger.error("Failed to start server", err);
     process.exit(1);
   }
 }

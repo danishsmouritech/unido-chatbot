@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "../styles/adminPanel.css";
+import { toast } from "react-toastify";
 import { ADMIN_TABS } from "../constants/adminDashboard";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
 import AdminSidebar from "./admin/AdminSidebar";
@@ -8,7 +9,6 @@ import SettingsSection from "./admin/SettingsSection";
 import ScrapingSection from "./admin/ScrapingSection";
 import ExportSection from "./admin/ExportSection";
 import AllInformation from "./admin/AllInformation";
-import { toast } from "react-toastify";
 import ChatWidget from "./ChatWidget";
 function ActiveSection({
   activeTab,
@@ -67,7 +67,7 @@ export default function AdminPanel() {
     activeTab,
     setActiveTab,
     analytics,
-   information,
+    information,
     informationLoading,
     informationQuery,
     pagination,
@@ -100,7 +100,6 @@ export default function AdminPanel() {
         setIsSidebarOpen(false);
       }
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -109,7 +108,6 @@ export default function AdminPanel() {
     if (window.innerWidth < 992) {
       document.body.style.overflow = isSidebarOpen ? "hidden" : "";
     }
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -155,11 +153,7 @@ export default function AdminPanel() {
             <span className="admin-active-pill">{activeLabel}</span>
           </div>
         </div>
-        <section className="admin-body-card">
-          {/* <div className="admin-section-title fs-3 fw-bolder over">
-            <span>{activeLabel}</span>
-          </div> */}
-          <div className={activeTab !== "all-info" ? "hide-scrollbar" : ""}>
+        <section className={`admin-body-card ${activeTab !== "all-info" ? "hide-scrollbar" : ""}`}>
             <ActiveSection
               activeTab={activeTab}
               analytics={analytics}
@@ -175,7 +169,6 @@ export default function AdminPanel() {
               triggerScrape={triggerScrape}
               exportCsv={exportCsv}
             />
-          </div>
         </section>
         </div>
       </main>

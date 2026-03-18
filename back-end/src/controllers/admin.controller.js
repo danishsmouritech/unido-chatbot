@@ -6,7 +6,7 @@ import {
 } from "../services/adminSettings.service.js";
 import { getScrapeStatus, triggerScrape } from "../services/scrape.service.js";
 import { emitRealtime } from "../realtime/socket.js";
-
+import { logger } from "./utils/logger.js";
 
 export async function getAdminAnalytics(_req, res) {
   try {
@@ -67,7 +67,7 @@ export async function getAdminAnalytics(_req, res) {
     });
 
   } catch (error) {
-    console.error("Analytics error:", error);
+    logger.error("Analytics error:", error);
     res.status(500).json({
       error: "Failed to load analytics"
     });
@@ -94,11 +94,11 @@ export const getInformation = async (req, res) => {
       const regex = new RegExp(escapeRegExp(search), "i");
 
       filter.$or = [
-        { sessionId: search },
-        { question: search },
-        { answer: search },
-        { requestMeta: { ip: search } },
-        {status: search }
+        { sessionId: regex },
+        { question: regex },
+        { answer: regex },
+        { "requestMeta.ip" :regex  },
+        {status: regex }
       ];
     }
 
@@ -123,9 +123,8 @@ export const getInformation = async (req, res) => {
         hasPrev: pageNumber > 1
       }
     });
-
   } catch (error) {
-    console.error("getInformation error:", error);
+    logger.error("getInformation error:", error);
     res.status(500).json({ message: "Failed to fetch logs" });
   }
 };
@@ -140,7 +139,7 @@ export async function getAdminSettings(_req, res) {
       lastScrapeAt: settings.lastScrapeAt
     });
   } catch (error) {
-    console.error("Get settings error:", error);
+    logger.error("Get settings error:", error);
     res.status(500).json({ error: "Failed to load settings" });
   }
 }
@@ -178,7 +177,7 @@ export async function updateAdminSettings(req, res) {
     });
     emitRealtime("analytics:updated", { source: "settings" });
   } catch (error) {
-    console.error("Update settings error:", error);
+    logger.error("Update settings error:", error);
     res.status(500).json({ error: "Failed to update settings" });
   }
 }

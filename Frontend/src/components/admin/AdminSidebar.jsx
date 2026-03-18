@@ -26,7 +26,6 @@ export default function AdminSidebar({
         await logoutAdmin({ Authorization: `Bearer ${token}` });
       }
     } catch {
-      // best-effort logout
     } finally {
       localStorage.removeItem("adminToken");
       setLoggingOut(false);

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import AdminUser from "../models/adminUser.model.js";
-
+import { logger } from "./utils/logger.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES = process.env.JWT_EXPIRES || "25m";
 
@@ -31,7 +31,7 @@ export async function ensureDefaultAdmin() {
     password: hashedPassword
   });
 
-  console.log("Default admin created");
+  logger.log("Default admin created");
 }
 
 

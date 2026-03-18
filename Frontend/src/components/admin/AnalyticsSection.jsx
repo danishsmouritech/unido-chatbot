@@ -12,7 +12,7 @@ export default function AnalyticsSection({ analytics }) {
   const maxValue = Math.max(...eventData.map(e => e.value), 1);
   const totalEvents = eventData.reduce((sum, event) => sum + event.value, 0);
   return (
-    <div className="analytics-section">
+    <div className="analytics-section  ">
       <div className="admin-card-grid row g-3">
         {METRIC_CARDS.map((card) => (
           <div className="col-12 col-sm-6" key={card.key}>

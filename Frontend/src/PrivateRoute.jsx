@@ -1,13 +1,13 @@
 import { Navigate } from "react-router-dom";
-
+import { logger } from "./utils/logger";
 function isTokenExpired(token) {   
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if (!payload?.exp) return false;
-    console.log("Token expiration time (min):",(payload.exp * 1000- Date.now()) /(1000*60).toFixed(1), "minutes");
+    logger.log("Token expiration time (min):",(payload.exp * 1000- Date.now()) /(1000*60).toFixed(1), "minutes");
     return payload.exp * 1000 <= Date.now();
   } catch (error) {
-    console.error("Error parsing token:", error);
+    logger.error("Error parsing token:", error);
     return true;
   }
 }

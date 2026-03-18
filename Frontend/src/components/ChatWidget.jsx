@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { askChatQuestion, createChatSession,getChatVisibility } from "../services/chatService";
 import { getSocket } from "../services/socketService";
+import { logger } from "../utils/logger";
 import "../styles/chatWidget.css";
 
 const INITIAL_MESSAGES = [{ role: "bot", text: "Hello. How can I help you?" }];
@@ -19,6 +20,8 @@ async function getOrCreateSessionId() {
         const createdSessionId = payload?.sessionId || null;
         if (createdSessionId) {
           sessionStorage.setItem(CHAT_SESSION_STORAGE_KEY, createdSessionId);
+          // Add a small delay to ensure session is persisted on backend
+          return new Promise(resolve => setTimeout(() => resolve(createdSessionId), 100));
         }
         return createdSessionId;
       })
@@ -88,19 +91,59 @@ export default function ChatWidget() {
     messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, [messages]);
 
-  async function sendMessage() {
-    if (!input.trim() || !sessionId || sending) return;
+  async function sendMessage(manualQuestion = null) {
+    const question = (manualQuestion ?? input).trim();
+    if (!question || sending) return;
 
-    const question = input.trim();
-    setInput("");
-    setMessages((prev) => [...prev, { role: "user", text: question }]);
+    if (!manualQuestion) {
+      setInput("");
+      setMessages((prev) => [...prev, { role: "user", text: question }]);
+    }
+
     setSending(true);
+    let currentSessionId = sessionId;
 
     try {
-      const payload = await askChatQuestion({ sessionId, question });
-      setMessages((prev) => [...prev, { role: "bot", text: payload.answer || "No answer returned." }]);
+      if (!currentSessionId) {
+        currentSessionId = await getOrCreateSessionId();
+        if (!currentSessionId) {
+          throw new Error("Unable to initialize chat session");
+        }
+        setSessionId(currentSessionId);
+      }
+
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          const payload = await askChatQuestion({ sessionId: currentSessionId, question });
+          setMessages((prev) => [...prev, { role: "bot", text: payload.answer || "No answer returned." }]);
+          return;
+        } catch (error) {
+          logger.error("Chat error:", error);
+          const message = error.message || "Failed to get response.";
+
+          if (error.status === 404 || message.toLowerCase().includes("not found")) {
+            logger.log("Session not found, refreshing...");
+            sessionStorage.removeItem(CHAT_SESSION_STORAGE_KEY);
+            sessionInitPromise = null;
+
+            const refreshedSessionId = await getOrCreateSessionId().catch(() => null);
+            if (refreshedSessionId) {
+              currentSessionId = refreshedSessionId;
+              setSessionId(refreshedSessionId);
+              continue; // retry once with a fresh session
+            }
+          }
+
+          setMessages((prev) => [...prev, { role: "bot", text: message }]);
+          return;
+        }
+      }
+
+      setMessages((prev) => [...prev, { role: "bot", text: "Session was reset. Please try again." }]);
     } catch (error) {
-      setMessages((prev) => [...prev, { role: "bot", text: error.message || "Failed to get response." }]);
+      logger.error("Chat error:", error);
+      const message = error.message || "Failed to get response.";
+      setMessages((prev) => [...prev, { role: "bot", text: message }]);
     } finally {
       setSending(false);
     }

@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import { CAREER_CATEGORIES } from "../constants/careerCategories.js";
 import { scrapeCategory } from "./scrapeCategory.js";
+import { logger } from "../utils/logger.js";
 async function scrapeAllCategories() {
   const browser= await puppeteer.launch({
     headless: true,
@@ -18,7 +19,7 @@ async function scrapeAllCategories() {
         const data = await scrapeCategory(page, category);
         results.push(data);
       } catch (err) {
-        console.error(`Category failed: ${category.key}`, err.message);
+        logger.error(`Category failed: ${category.key}`, err.message);
       } finally {
         await page.close();
       }

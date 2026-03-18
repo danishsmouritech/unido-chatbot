@@ -4,28 +4,36 @@ import { addMessage, getHistory, createSession } from "../services/chat.service.
 import { createChatLog } from "../services/chatlog.service.js";
 import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
 import { emitRealtime } from "../realtime/socket.js";
-
+import { logger } from "../utils/logger.js";
 
 //Create Session
 export const createChatSession = async (req, res) => {
-  const settings = await getAdminSettingsRecord();
-  if (!settings.chatbotEnabled) {
-    return res.status(503).json({
-      error: "Chatbot is currently disabled"
-    });
-  }
+  logger.log("Creating new chat session");
+  try {
+    const settings = await getAdminSettingsRecord();
+    if (!settings.chatbotEnabled) {
+      return res.status(503).json({
+        error: "Chatbot is currently disabled"
+      });
+    }
 
-  const sessionId = await createSession();
-  emitRealtime("analytics:updated", { source: "session" });
-  res.status(201).json({ success: true, sessionId });
+    const sessionId = await createSession();
+    logger.log("Session created successfully, returning:", sessionId);
+    emitRealtime("analytics:updated", { source: "session" });
+    res.status(201).json({ success: true, sessionId });
+  } catch (error) {
+    logger.error("Error creating session:", error);
+    res.status(500).json({ error: "Failed to create chat session" });
+  }
 };
 
 //Ask Question
 export const askQuestion = async (req, res) => {
-  console.log("Received question:", req); // Debug log
+  logger.log("Received question request body:", req.body); // Debug log
   const startedAt = Date.now();
   try {
     const { sessionId, question } = req.body;
+    logger.log("Extracted sessionId and question:", { sessionId, question });
     const userAgent = req.get("user-agent") || null;
     const ip = req.ip || null;
     const settings = await getAdminSettingsRecord();
@@ -64,7 +72,7 @@ export const askQuestion = async (req, res) => {
     }
 
     const history = await getHistory(sessionId);
-     if (!history) {
+     if (history === null) {
         return res.status(404).json({
         error: "Session not found"
         });
@@ -100,7 +108,7 @@ export const askQuestion = async (req, res) => {
     res.json({ answer, sources });
 
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     const { sessionId, question } = req.body || {};
     if (sessionId && question) {
       await createChatLog({

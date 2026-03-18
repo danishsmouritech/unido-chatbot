@@ -20,6 +20,7 @@
 }
 .hide-scrollbar::-webkit-scrollbar {
   width: 6px;
+  height: 2px;
 }
 
 .hide-scrollbar::-webkit-scrollbar-thumb {
@@ -204,7 +205,9 @@
   border: 1px solid #d8e3f1;
   background: #ffffff;
   border-radius: 18px;
-  padding: 18px 18px 0px;
+  height: 360px;
+  max-height: 400px;
+  padding: 18px;
   box-shadow: 0 12px 26px rgba(13, 38, 73, 0.05);
 }
 
@@ -383,7 +386,7 @@
 
 .all-info-table tbody {
   display: block;
-  max-height: 240px; /* height of scroll area */
+  max-height: 180px; 
   overflow-y: auto;
 }
 .all-info-table tbody::-webkit-scrollbar {
@@ -544,6 +547,7 @@
 }
 
 .all-info-table thead th {
+  width: 100px;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -666,14 +670,18 @@
 
 @media (max-width: 576px) {
   .admin-content {
-    padding: 14px 12px 22px;
+    padding: 6px;
   }
 
   .admin-body-card {
-    border-radius: 14px;
+    border-radius: 5px;
     padding: 12px;
+     height: 390px;
+     width:290px;
   }
-
+  .hide-scrollbar{
+     max-height: calc(100vh - 140px) !important;
+  }
   .admin-panel-block {
     padding: 12px;
   }

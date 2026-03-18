@@ -6,7 +6,6 @@ import { scrapeJobDetail } from "./scraper/jobDetail.js";
 import scrapeAllCategories from "./scraper/scrapeAllCategories.js";
 import { scrapeCategoryContent } from "./scraper/scrapeCategoryContent.js";
 import { CONTENT_CATEGORIES } from "./constants/categoriesContent.js";
-import { writeFileSync } from "fs";
 import { saveJSONBackup } from "./storage/file.storage.js";
 import { createChunksByType } from "./chunking/chunker.js";
 import {
@@ -16,6 +15,7 @@ import {
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { generateEmbedding } from "./services/embedding.service.js";
 import { exportCareerCategories, exportCategoryContent, exportJobDetailLinks } from "./services/exportConstants.service.js";
+import { logger } from "./utils/logger.js";
 
 async function withEmbeddings(chunks = []) {
   const enriched = [];
@@ -66,7 +66,7 @@ async function runScraper() {
     await saveJSONBackup(categoryContent, "categoryContent","data","unido");
     
     // Create chunks by type (now with embeddings)
-  console.log(" Creating chunks with embeddings...");
+  logger.log(" Creating chunks with embeddings...");
 const chunksByType = await createChunksByType({
   homepage,
   faqs,
@@ -84,23 +84,23 @@ for (const [type, chunks] of Object.entries(chunksByType)) {
     "chunks",
     "unido"
   );
-  console.log(` Saved ${chunks.length} chunks for ${type}`);
+  logger.log(` Saved ${chunks.length} chunks for ${type}`);
     }
     // checks whether the index exists in Elasticsearch, and if not, creates it with the correct vector (dense_vector) mapping so your chunks can be stored and searched semantically.
     await ensureChunkIndex();
     await clearChunkIndex();
-    console.log(" Indexing chunks into Elasticsearch...");
+    logger.log(" Indexing chunks into Elasticsearch...");
 
     for (const chunks of Object.values(chunksByType)) {
   // Sends chunks (content + embedding + metadata) to Elasticsearch.
   const chunksWithEmbeddings = await withEmbeddings(chunks);
   await bulkIndexChunks(chunksWithEmbeddings);
 }
-    console.log("All chunks indexed into Elasticsearch");
+    logger.log("All chunks indexed into Elasticsearch");
     const totalChunks = Object.values(chunksByType).reduce((sum, arr) => sum + arr.length, 0);
-    console.log(` Total chunks created: ${totalChunks}`);
+    logger.log(` Total chunks created: ${totalChunks}`);
   } catch (err) {
-    console.error("Error during scraping:", err);
+    logger.error("Error during scraping:", err);
     throw err;
   } finally {
     await browser.close();

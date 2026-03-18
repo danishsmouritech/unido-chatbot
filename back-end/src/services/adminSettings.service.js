@@ -1,6 +1,11 @@
 import AdminSetting from "../models/adminSettings.model.js";
-
 const GLOBAL_KEY = "global";
+const DEFAULT_SETTINGS = {
+  key: GLOBAL_KEY,
+  chatbotEnabled: true,
+  systemPrompt: "",
+  lastScrapeAt: null
+};
 export async function getAdminSettingsRecord() {
   const existing = await AdminSetting.findOne({ key: GLOBAL_KEY });
   if (existing) return existing;

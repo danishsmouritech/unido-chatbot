@@ -1,12 +1,12 @@
 import { esClient } from "../config/elasticsearch.js";
-
+import { logger } from "./utils/logger.js";
 export async function ensureChunkIndex() {
   const indexExists = await esClient.indices.exists({
     index: "unido_careers_index"
   });
 
   if (indexExists) {
-    console.log("Elasticsearch index already exists");
+    logger.log("Elasticsearch index already exists");
     return;
   }
 
@@ -34,5 +34,5 @@ export async function ensureChunkIndex() {
       }
     }
   });
-  console.log("Elasticsearch index created");
+  logger.log("Elasticsearch index created");
 }

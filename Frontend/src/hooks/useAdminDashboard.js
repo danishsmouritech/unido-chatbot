@@ -11,7 +11,7 @@ import {
 } from "../services/adminService";
 import { downloadBlob } from "../utils/fileDownload";
 import { getSocket } from "../services/socketService";
-
+import { logger } from "../utils/logger";
 export function useAdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("analytics");
@@ -69,7 +69,7 @@ const [notification, setNotification] = useState(null);
     return;
   }
 
-  console.error(error);
+  logger.error(error);
   setNotification({
     type: "error",
     text: error?.message || error?.error || "Something went wrong"
@@ -176,15 +176,19 @@ const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const socket = getSocket();
-    const refreshFromSocket = () => {
+    const handleRealtimeUpdate = () => {
       refreshAnalytics().catch(() => {});
+      // Preserve current query state when refreshing from socket
+      refreshInformation({}).catch(() => {});
     };
 
-    socket.on("analytics:updated", refreshFromSocket);
+    socket.on("analytics:updated", handleRealtimeUpdate);
+    socket.on("information:updated", handleRealtimeUpdate);
     return () => {
-      socket.off("analytics:updated", refreshFromSocket);
+      socket.off("analytics:updated", handleRealtimeUpdate);
+      socket.off("information:updated", handleRealtimeUpdate);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshAnalytics, refreshInformation]);
 
  
 

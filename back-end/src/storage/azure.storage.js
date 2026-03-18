@@ -1,5 +1,5 @@
 // import { blobServiceClient } from "../config/azureBlob.js";
-
+import { logger } from "./utils/logger.js";
 const containerName = process.env.AZURE_STORAGE_CONTAINER;
 const RETENTION_DAYS = 7;
 
@@ -22,7 +22,7 @@ export async function uploadJSONToAzure(data, fileName) {
     }
   });
 
-  console.log(`Uploaded to Azure: ${fileName}`);
+  logger.log(`Uploaded to Azure: ${fileName}`);
 }
 export async function deleteOldBlobs() {
   const containerClient =
@@ -36,7 +36,7 @@ export async function deleteOldBlobs() {
   for await (const blob of containerClient.listBlobsFlat()) {
     if (blob.properties.lastModified < threshold) {
       await containerClient.deleteBlob(blob.name);
-      console.log(`Deleted old blob: ${blob.name}`);
+      logger.log(`Deleted old blob: ${blob.name}`);
     }
   }
 }
