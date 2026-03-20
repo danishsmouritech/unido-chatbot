@@ -1,6 +1,6 @@
 import ChatSession from "../models/chatSession.model.js";
 import crypto from "crypto";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 export async function createSession() {
   const sessionId = crypto.randomUUID();
   try {

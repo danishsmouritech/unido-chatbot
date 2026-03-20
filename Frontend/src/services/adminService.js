@@ -5,8 +5,12 @@ function withHeaders(headers = {}) {
   return Object.keys(headers).length ? { headers } : {};
 }
 
-export function getAdminAnalytics(headers) {
-  return apiRequest("/api/admin/analytics", withHeaders(headers));
+export function getAdminAnalytics(year, month, headers) {
+   const params = new URLSearchParams();
+
+  if (year) params.append("year", year);
+  if (month) params.append("month", month);
+  return apiRequest(`/api/admin/analytics?${params.toString()}`, withHeaders(headers));
 }
 export async function getAllInformation(headers = {}, query = {}) {
 

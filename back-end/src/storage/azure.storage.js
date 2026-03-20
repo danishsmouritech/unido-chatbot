@@ -1,5 +1,5 @@
 // import { blobServiceClient } from "../config/azureBlob.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 const containerName = process.env.AZURE_STORAGE_CONTAINER;
 const RETENTION_DAYS = 7;
 

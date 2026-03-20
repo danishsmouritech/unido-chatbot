@@ -8,7 +8,7 @@
   overflow: hidden;
 }
 
-.hide-scrollbar {
+.admin-scroll {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 275px);
@@ -18,12 +18,12 @@
   /* IE and Edge */
   -ms-overflow-style: none;
 }
-.hide-scrollbar::-webkit-scrollbar {
+.admin-scroll::-webkit-scrollbar {
   width: 6px;
   height: 2px;
 }
 
-.hide-scrollbar::-webkit-scrollbar-thumb {
+.admin-scroll::-webkit-scrollbar-thumb {
   background-color: #bbb;
   border-radius: 10px;
 }
@@ -140,7 +140,7 @@
   background: rgba(255, 255, 255, 0.84);
   border: 1px solid #d8e4f4;
   border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(14, 39, 74, 0.08);
+  /* box-shadow: 0 12px 28px rgba(14, 39, 74, 0.08); */
   padding: 16px 18px;
   display: flex;
   align-items: flex-start;
@@ -205,10 +205,8 @@
   border: 1px solid #d8e3f1;
   background: #ffffff;
   border-radius: 18px;
-  height: 360px;
-  max-height: 400px;
+  min-height: 320px;
   padding: 18px;
-  box-shadow: 0 12px 26px rgba(13, 38, 73, 0.05);
 }
 
 .admin-section-title {
@@ -244,7 +242,6 @@
   border: 1px solid #d9e2ef;
   border-radius: 14px;
   padding: 16px 18px;
- box-shadow: 0 6px 18px rgba(15, 36, 74, 0.06);
 }
 
 .card-label {
@@ -273,7 +270,6 @@
   border: 1px solid #d9e2ef;
   border-radius: 14px;
   padding: 16px 18px;
-  box-shadow: 0 4px 16px rgba(10, 36, 64, 0.04);
 }
 
 .event-title {
@@ -324,12 +320,10 @@
 .admin-panel-block {
   margin-top: 14px;
   background: #ffffff;
-  border: 1px solid #d9e2ef;
   border-radius: 14px;
   padding: 16px 18px;
   display: grid;
   gap: 12px;
-  box-shadow: 0 4px 16px rgba(10, 36, 64, 0.04);
 }
 
 .admin-panel-block label {
@@ -396,11 +390,6 @@
 .all-info-table tbody::-webkit-scrollbar-thumb {
   background-color: #bbb;
   border-radius: 10px;
-}
-.all-info-table thead {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
 }
 .toggle-row,
 .status-row {
@@ -557,7 +546,7 @@
 }
 
 .all-info-table tbody tr td {
-  vertical-align:center;
+  vertical-align: middle;
 }
 
 .all-info-json {
@@ -608,7 +597,6 @@
     transition: transform 0.25s ease;
     border-right: 1px solid #173357;
     border-bottom: none;
-    box-shadow: 10px 0 28px rgba(5, 18, 35, 0.32);
   }
 
   .admin-sidebar.open {
@@ -623,7 +611,7 @@
     padding: 20px 16px 30px;
   }
 
-  .hide-scrollbar {
+  .admin-scroll {
     max-height: none;
   }
 
@@ -676,11 +664,11 @@
   .admin-body-card {
     border-radius: 5px;
     padding: 12px;
-     height: 390px;
-     width:290px;
+    min-height: 0;
+    width: 100%;
   }
-  .hide-scrollbar{
-     max-height: calc(100vh - 140px) !important;
+  .admin-scroll {
+    max-height: calc(100vh - 140px);
   }
   .admin-panel-block {
     padding: 12px;

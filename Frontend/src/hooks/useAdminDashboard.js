@@ -24,6 +24,8 @@ export function useAdminDashboard() {
   avgResponseMs: 0,
   errors: 0
   });
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
   const [information, setInformation] = useState([]);
   const [informationLoading, setInformationLoading] = useState(false);
   const [informationQuery, setInformationQuery] = useState({
@@ -78,7 +80,11 @@ const [notification, setNotification] = useState(null);
 
   async function refreshAnalytics() {
     try {
-      const payload = await getAdminAnalytics(getAdminHeaders());
+      const payload = await getAdminAnalytics(
+        year,
+        month,
+        getAdminHeaders()
+      );
       setAnalytics(payload);
     } catch (error) {
       handleError(error);
@@ -140,7 +146,9 @@ const [notification, setNotification] = useState(null);
     const payload = await getScrapeStatus(getAdminHeaders());
     setScrapeStatus(payload);
   }
-
+ useEffect(() => {
+  refreshAnalytics();
+ }, [year, month]);
   useEffect(() => {
     let mounted = true;
 
@@ -234,6 +242,10 @@ async function exportCsv(filters) {
     activeTab,
     setActiveTab,
     analytics,
+    year,
+    month,
+    setYear,
+    setMonth,
      information,
     informationLoading,
     informationQuery,
@@ -242,7 +254,7 @@ async function exportCsv(filters) {
     settings,
     setSettings,
     scrapeStatus,
-   notification,
+    notification,
     saveSettings,
     triggerScrape,
     exportCsv

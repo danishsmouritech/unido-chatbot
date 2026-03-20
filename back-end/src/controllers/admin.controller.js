@@ -6,36 +6,74 @@ import {
 } from "../services/adminSettings.service.js";
 import { getScrapeStatus, triggerScrape } from "../services/scrape.service.js";
 import { emitRealtime } from "../realtime/socket.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
+export async function getAdminAnalytics(req, res) {
 
-export async function getAdminAnalytics(_req, res) {
   try {
-    const conversationsPromise = ChatSession.countDocuments({});
 
-    const roleCountsPromise = ChatSession.aggregate([
-      { $unwind: "$messages" },
-      {
-        $group: {
-          _id: "$messages.role",
-          count: { $sum: 1 }
+    const { year, month } = req.query;
+
+    let dateFilter = {};
+
+    if (year && month) {
+
+      const start = new Date(year, month - 1, 1);
+      const end = new Date(year, month, 0, 23, 59, 59);
+
+      dateFilter.createdAt = { $gte: start, $lte: end };
+
+    }
+
+    else if (year) {
+
+      const start = new Date(`${year}-01-01`);
+      const end = new Date(`${year}-12-31T23:59:59`);
+
+      dateFilter.createdAt = { $gte: start, $lte: end };
+
+    }
+
+    const conversationsPromise =
+      ChatSession.countDocuments(dateFilter);
+
+    const roleCountsPromise =
+      ChatSession.aggregate([
+        { $match: dateFilter },
+        { $unwind: "$messages" },
+        {
+          $group: {
+            _id: "$messages.role",
+            count: { $sum: 1 }
+          }
         }
-      }
-    ]);
+      ]);
 
-    const avgResponsePromise = ChatLog.aggregate([
-      {
-        $group: {
-          _id: null,
-          avgMs: { $avg: "$timingMs.total" }
+    const avgResponsePromise =
+      ChatLog.aggregate([
+        { $match: dateFilter },
+        {
+          $group: {
+            _id: null,
+            avgMs: { $avg: "$timingMs.total" }
+          }
         }
-      }
-    ]);
+      ]);
 
-    const uniqueIpsPromise = ChatLog.distinct(
-      "requestMeta.ip",
-      { "requestMeta.ip": { $ne: null } }
-    );
-   const errorCountPromise = ChatLog.countDocuments({ status: "error" });
+    const uniqueIpsPromise =
+      ChatLog.distinct(
+        "requestMeta.ip",
+        {
+          "requestMeta.ip": { $ne: null },
+          ...dateFilter
+        }
+      );
+
+    const errorCountPromise =
+      ChatLog.countDocuments({
+        status: "error",
+        ...dateFilter
+      });
+
     const [
       conversations,
       roleCounts,
@@ -66,12 +104,18 @@ export async function getAdminAnalytics(_req, res) {
       errors
     });
 
-  } catch (error) {
+  }
+
+  catch (error) {
+
     logger.error("Analytics error:", error);
+
     res.status(500).json({
       error: "Failed to load analytics"
     });
+
   }
+
 }
 function escapeRegExp(str = "") {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

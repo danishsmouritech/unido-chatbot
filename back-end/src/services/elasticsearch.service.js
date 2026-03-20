@@ -1,5 +1,5 @@
 import { esClient } from "../config/elasticsearch.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 export async function ensureChunkIndex() {
   const indexExists = await esClient.indices.exists({
     index: "unido_careers_index"

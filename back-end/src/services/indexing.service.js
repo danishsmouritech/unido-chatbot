@@ -1,5 +1,5 @@
 import { esClient } from "../config/elasticsearch.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 export async function clearChunkIndex() {
   await esClient.deleteByQuery({
     index: "unido_careers_index",

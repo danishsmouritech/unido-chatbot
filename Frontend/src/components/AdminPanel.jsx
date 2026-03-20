@@ -13,6 +13,10 @@ import ChatWidget from "./ChatWidget";
 function ActiveSection({
   activeTab,
   analytics,
+  year,
+  month,
+  setYear,
+  setMonth,
   information,
   informationLoading,
   informationQuery,
@@ -26,7 +30,7 @@ function ActiveSection({
   exportCsv
 }) {
   if (activeTab === "analytics") {
-    return <AnalyticsSection analytics={analytics} />;
+    return <AnalyticsSection analytics={analytics} year={year} month={month} setYear={setYear} setMonth={setMonth} />;
   }
 
   if (activeTab === "settings") {
@@ -67,6 +71,10 @@ export default function AdminPanel() {
     activeTab,
     setActiveTab,
     analytics,
+    year,
+    month,
+    setYear,
+    setMonth,
     information,
     informationLoading,
     informationQuery,
@@ -153,10 +161,14 @@ export default function AdminPanel() {
             <span className="admin-active-pill">{activeLabel}</span>
           </div>
         </div>
-        <section className={`admin-body-card ${activeTab !== "all-info" ? "hide-scrollbar" : ""}`}>
+        <section className={`admin-body-card ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
             <ActiveSection
               activeTab={activeTab}
               analytics={analytics}
+              year={year}
+              month={month}
+              setYear={setYear}
+              setMonth={setMonth}
               information={information}
               informationLoading={informationLoading}
               informationQuery={informationQuery}

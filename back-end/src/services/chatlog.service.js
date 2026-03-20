@@ -1,6 +1,6 @@
 import ChatLog from "../models/chatLog.model.js";
 import { emitRealtime } from "../realtime/socket.js";
-import { logger } from "./utils/logger.js";
+import { logger } from "../utils/logger.js";
 export async function createChatLog(payload) {
   try {
     await ChatLog.create(payload);
