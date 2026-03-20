@@ -100,6 +100,39 @@ export const openApiSpec = {
           errors: { type: "number" }
         }
       },
+      ChatLog: {
+        type: "object",
+        properties: {
+          _id: { type: "string" },
+          sessionId: { type: "string" },
+          question: { type: "string" },
+          answer: { type: "string" },
+          status: { type: "string", enum: ["success", "fallback", "error"] },
+          sources: {
+            type: "array",
+            items: { $ref: "#/components/schemas/ChatSource" }
+          },
+          requestMeta: {
+            type: "object",
+            properties: {
+              ip: { type: "string", nullable: true },
+              userAgent: { type: "string", nullable: true }
+            }
+          },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      PaginationMetadata: {
+        type: "object",
+        properties: {
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 25 },
+          total: { type: "integer", example: 120 },
+          totalPages: { type: "integer", example: 5 },
+          hasNext: { type: "boolean" },
+          hasPrev: { type: "boolean" }
+        }
+      },
       AdminSettingsResponse: {
         type: "object",
         properties: {
@@ -365,6 +398,65 @@ export const openApiSpec = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/AdminAnalyticsResponse" }
+              }
+            }
+          },
+          "401": {
+            description: "Unauthorized",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/allInformation": {
+      get: {
+        tags: ["Admin"],
+        summary: "List chat logs",
+        description:
+          "Returns paginated conversation logs for admin review. Supports filtering by search term across sessionId, question, answer, status, and request IP.",
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: "query",
+            name: "page",
+            schema: { type: "integer", minimum: 1, default: 1 },
+            required: false,
+            description: "Page number (defaults to 1)."
+          },
+          {
+            in: "query",
+            name: "limit",
+            schema: { type: "integer", minimum: 1, maximum: 100, default: 25 },
+            required: false,
+            description: "Page size between 1 and 100 (defaults to 25)."
+          },
+          {
+            in: "query",
+            name: "search",
+            schema: { type: "string" },
+            required: false,
+            description: "Case-insensitive search over sessionId, question, answer, status, or IP."
+          }
+        ],
+        responses: {
+          "200": {
+            description: "Paginated chat logs",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    logs: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/ChatLog" }
+                    },
+                    pagination: { $ref: "#/components/schemas/PaginationMetadata" }
+                  }
+                }
               }
             }
           },

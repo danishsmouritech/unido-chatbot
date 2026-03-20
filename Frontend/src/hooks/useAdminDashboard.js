@@ -16,13 +16,13 @@ export function useAdminDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("analytics");
   const [analytics, setAnalytics] = useState({
-  conversations: 0,
-  messages: 0,
-  userMessages: 0,
-  assistantMessages: 0,
-  uniqueUsers: 0,
-  avgResponseMs: 0,
-  errors: 0
+    conversations: 0,
+    messages: 0,
+    userMessages: 0,
+    assistantMessages: 0,
+    uniqueUsers: 0,
+    avgResponseMs: 0,
+    errors: 0
   });
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
@@ -55,43 +55,48 @@ export function useAdminDashboard() {
     startedAt: null,
     finishedAt: null
   });
-const [notification, setNotification] = useState(null);
+  const [notification, setNotification] = useState(null);
   const getAdminHeaders = useCallback(() => {
     const token = localStorage.getItem("adminToken");
     return token ? { Authorization: `Bearer ${token}` } : {};
   }, []);
   const handleError = useCallback((error) => {
     if (error?.status === 401) {
-     setNotification({
-    type: "error",
-    text: "Session expired, please log in again"
-  });
-    localStorage.removeItem("adminToken");
-    navigate("/login", { replace: true });
-    return;
-  }
+      setNotification({
+        type: "error",
+        text: "Session expired, please log in again"
+      });
+      localStorage.removeItem("adminToken");
+      navigate("/login", { replace: true });
+      return;
+    }
 
-  logger.error(error);
-  setNotification({
-    type: "error",
-    text: error?.message || error?.error || "Something went wrong"
-  });
+    logger.error(error);
+    setNotification({
+      type: "error",
+      text: error?.message || error?.error || "Something went wrong"
+    });
   }, [navigate]);
 
-  async function refreshAnalytics() {
-    try {
-      const payload = await getAdminAnalytics(
-        year,
-        month,
-        getAdminHeaders()
-      );
-      setAnalytics(payload);
-    } catch (error) {
-      handleError(error);
-    }
-  }
+  const refreshAnalytics = useCallback(
+    async (filters = {}) => {
+      const selectedYear = filters.year ?? year;
+      const selectedMonth = filters.month ?? month;
+      try {
+        const payload = await getAdminAnalytics(
+          selectedYear,
+          selectedMonth,
+          getAdminHeaders()
+        );
+        setAnalytics(payload);
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [getAdminHeaders, handleError, month, year]
+  );
 
- const refreshInformation = useCallback(async (queryUpdate = {}) => {
+  const refreshInformation = useCallback(async (queryUpdate = {}) => {
     const updatedQuery = {
       ...informationQueryRef.current,
       ...queryUpdate
@@ -115,14 +120,14 @@ const [notification, setNotification] = useState(null);
   const onQueryChange = useCallback((changes) => {
     refreshInformation(changes);
   }, [refreshInformation]);
- async function refreshSettings() {
-  try {
-    const payload = await getAdminSettings(getAdminHeaders());
-    setSettings(payload);
-  } catch (error) {
-    handleError(error);
-  }
-}
+  const refreshSettings = useCallback(async () => {
+    try {
+      const payload = await getAdminSettings(getAdminHeaders());
+      setSettings(payload);
+    } catch (error) {
+      handleError(error);
+    }
+  }, [getAdminHeaders, handleError]);
 
   async function saveSettings() {
     try {
@@ -134,28 +139,30 @@ const [notification, setNotification] = useState(null);
         getAdminHeaders()
       );
       setSettings(payload.settings);
-     setNotification({
-      type: "success",
-      text: "Settings saved"
-    });
+      setNotification({
+        type: "success",
+        text: "Settings saved"
+      });
     } catch (error) {
       handleError(error);
     }
   }
-  async function refreshScrapeStatus() {
-    const payload = await getScrapeStatus(getAdminHeaders());
-    setScrapeStatus(payload);
-  }
- useEffect(() => {
-  refreshAnalytics();
- }, [year, month]);
+
+  const refreshScrapeStatus = useCallback(async () => {
+    try {
+      const payload = await getScrapeStatus(getAdminHeaders());
+      setScrapeStatus(payload);
+    } catch (error) {
+      handleError(error);
+    }
+  }, [getAdminHeaders, handleError]);
+
   useEffect(() => {
     let mounted = true;
 
     async function loadInitialData() {
       try {
         await Promise.all([
-          refreshAnalytics(),
           refreshInformation(),
           refreshSettings(),
           refreshScrapeStatus()
@@ -172,7 +179,11 @@ const [notification, setNotification] = useState(null);
     return () => {
       mounted = false;
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleError, refreshInformation, refreshScrapeStatus, refreshSettings]);
+
+  useEffect(() => {
+    refreshAnalytics();
+  }, [refreshAnalytics]);
 
   useEffect(() => {
     if (scrapeStatus.lastStatus !== "running") return;
@@ -180,7 +191,7 @@ const [notification, setNotification] = useState(null);
       refreshScrapeStatus().catch(() => {});
     }, 5000);
     return () => clearInterval(timer);
-  }, [scrapeStatus.lastStatus]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refreshScrapeStatus, scrapeStatus.lastStatus]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -215,28 +226,30 @@ const [notification, setNotification] = useState(null);
     }
   }
 
-async function exportCsv(filters) {
-  try {
-    const { startDate, endDate, type } = filters;
-    const query = new URLSearchParams({
-      startDate,
-      endDate,
-      type,
-    }).toString();
-        const blob = await downloadChatLogsCsv(query,getAdminHeaders());
-    const fileName = `chat-logs-${new Date()
-      .toISOString()
-      .slice(0, 10)}.csv`;
+  async function exportCsv(filters = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (filters.startDate) params.append("startDate", filters.startDate);
+      if (filters.endDate) params.append("endDate", filters.endDate);
+      if (filters.type) params.append("type", filters.type);
 
-    downloadBlob(blob, fileName);
-    setNotification({
-      type: "success",
-      text: "Export started, check your downloads folder shortly."
-    });
-  } catch (error) {
-    handleError(error);
+      const blob = await downloadChatLogsCsv(
+        params.toString(),
+        getAdminHeaders()
+      );
+      const fileName = `chat-logs-${new Date()
+        .toISOString()
+        .slice(0, 10)}.csv`;
+
+      downloadBlob(blob, fileName);
+      setNotification({
+        type: "success",
+        text: "Export started, check your downloads folder shortly."
+      });
+    } catch (error) {
+      handleError(error);
+    }
   }
-}
 
   return {
     activeTab,

@@ -6,11 +6,13 @@ function withHeaders(headers = {}) {
 }
 
 export function getAdminAnalytics(year, month, headers) {
-   const params = new URLSearchParams();
+  const params = new URLSearchParams();
 
   if (year) params.append("year", year);
   if (month) params.append("month", month);
-  return apiRequest(`/api/admin/analytics?${params.toString()}`, withHeaders(headers));
+  const query = params.toString();
+  const suffix = query ? `?${query}` : "";
+  return apiRequest(`/api/admin/analytics${suffix}`, withHeaders(headers));
 }
 export async function getAllInformation(headers = {}, query = {}) {
 
@@ -21,7 +23,9 @@ export async function getAllInformation(headers = {}, query = {}) {
       params.append(key, query[key]);
     }
   });
-  return apiRequest(`/api/admin/allInformation?${params.toString()}`, withHeaders(headers));
+  const queryString = params.toString();
+  const suffix = queryString ? `?${queryString}` : "";
+  return apiRequest(`/api/admin/allInformation${suffix}`, withHeaders(headers));
 }
 export function loginAdmin(payload) {
   return apiRequest("/api/admin/auth/login", {

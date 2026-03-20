@@ -10,30 +10,23 @@ export default function AnalyticsSection({
   setYear,
   setMonth
 }) {
+  const successCount = Math.max(
+    (analytics.messages ?? 0) - (analytics.errors ?? 0),
+    0
+  );
   const pieTotalData = [
-  { name: "User Messages", value: analytics.userMessages ?? 0 },
-  { name: "Assistant Messages", value: analytics.assistantMessages ?? 0 },
-  { name: "Errors", value: analytics.errors ?? 0 },
-  {
-      name: "Success",
-      value:
-        (analytics.messages ?? 0) -
-        (analytics.errors ?? 0)
-    }
-
-  ]
+    { name: "User Messages", value: analytics.userMessages ?? 0 },
+    { name: "Assistant Messages", value: analytics.assistantMessages ?? 0 },
+    { name: "Errors", value: analytics.errors ?? 0 },
+    { name: "Success", value: successCount }
+  ];
   const pieMessageData = [
     { name: "User Messages", value: analytics.userMessages ?? 0 },
     { name: "Assistant Messages", value: analytics.assistantMessages ?? 0 }
-  ]
+  ];
   const pieErrorData = [
     { name: "Errors", value: analytics.errors ?? 0 },
-    {
-      name: "Success",
-      value:
-        (analytics.messages ?? 0) -
-        (analytics.errors ?? 0)
-    }
+    { name: "Success", value: successCount }
   ];
 
   const COLORS = ["#0d6efd", "#198754", "#dc3545", "#ffc107"];

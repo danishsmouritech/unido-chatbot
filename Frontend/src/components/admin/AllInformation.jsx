@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const UNKNOWN_IP = "Unknown IP";
+
 export default function AllInformation({
   information,
   pagination,
@@ -10,14 +12,18 @@ export default function AllInformation({
   const [searchText, setSearchText] = useState(query?.search || "");
   const [selectedLog, setSelectedLog] = useState(null);
 
+  const currentPage = pagination?.page || 1;
+  const totalPages = pagination?.totalPages || 1;
+  const totalCount = pagination?.total ?? 0;
+  const pageSize = pagination?.limit ?? query?.limit ?? 25;
+  const rowOffset = (currentPage - 1) * pageSize;
+
   useEffect(() => {
     setSearchText(query?.search || "");
   }, [query?.search]);
 
   useEffect(() => {
-
     const timer = setTimeout(() => {
-
       const normalizedSearch = searchText.trim();
 
       if (normalizedSearch === (query?.search || "")) return;
@@ -27,99 +33,90 @@ export default function AllInformation({
         page: 1,
         search: normalizedSearch
       });
-
     }, 400);
 
     return () => clearTimeout(timer);
+  }, [onQueryChange, query, searchText]);
 
-  }, [searchText]);
+  function renderSlidingPagesWithDots(current, total, visibleCount = 3) {
+    const buttons = [];
 
-function renderSlidingPagesWithDots(currentPage, totalPages, visibleCount = 3) {
-  const buttons = [];
+    let startPage = Math.max(current - 1, 1);
+    let endPage = Math.min(startPage + visibleCount - 1, total);
 
-  let startPage = Math.max(currentPage - 1, 1);
-  let endPage = Math.min(startPage + visibleCount - 1, totalPages);
+    if (endPage - startPage + 1 < visibleCount) {
+      startPage = Math.max(endPage - visibleCount + 1, 1);
+    }
 
-  if (endPage - startPage + 1 < visibleCount) {
-    startPage = Math.max(endPage - visibleCount + 1, 1);
-  }
-  // if (startPage > 1) {
-  //   buttons.push(
-  //     <span key="start-ellipsis" className="mx-2">
-  //       . . .
-  //     </span>
-  //   );
-  // }
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          className={`btn btn-sm mx-1 ${
+            i === current ? "btn-outline-warning" : "btn-outline-primary"
+          }`}
+          onClick={() => handlePageChange(i)}
+        >
+          {i}
+        </button>
+      );
+    }
 
-  for (let i = startPage; i <= endPage; i++) {
-    buttons.push(
-      <button
-        key={i}
-        className={`btn btn-sm mx-1 ${
-          i === currentPage ? "btn-outline-warning" : "btn-outline-primary"
-        }`}
-        onClick={() => handlePageChange(i)}
-      >
-        {i}
-      </button>
-    );
-  }
+    if (endPage < total) {
+      buttons.push(
+        <span key="end-ellipsis" className="mx-2">
+          . . .
+        </span>
+      );
+    }
 
-  if (endPage < totalPages) {
-    buttons.push(
-      <span key="end-ellipsis" className="mx-2">
-        . . .
-      </span>
-    );
+    return buttons;
   }
 
-  return buttons;
-}
   function handlePageChange(page) {
-
-    if (page < 1 || page > pagination.totalPages) return;
+    if (page < 1 || page > totalPages) return;
 
     onQueryChange({
       ...query,
       page
     });
   }
-const truncateWords = (text = "", limit = 20) => {
-  const words = text.split(" ");
-  if (words.length <= limit) return text;
-  return words.slice(0, limit).join(" ") + "...";
-};
+
+  const truncateWords = (text = "", limit = 20) => {
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
+  };
+
   return (
 
     <div className="p-2">
 
-     <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+        <p className="mb-2 mb-md-0 fs-5 fw-bolder">
+          Total Conversations:
+          <span className="badge bg-primary px-2 text-white rounded ms-1">
+            {totalCount}
+          </span>
+        </p>
 
-  <p className="mb-2 mb-md-0 fs-5 fw-bolder">
-    Total Conversations:
-    <span className="badge bg-primary px-2 text-white rounded ms-1">
-      {pagination.total}
-    </span>
-  </p>
+        <div className="d-flex w-md-auto">
+          <input
+            type="text"
+            className="form-control me-2"
+            placeholder="Search question or answer..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
 
-  <div className="d-flex  w-md-auto">
-    <input
-      type="text"
-      className="form-control me-2"
-      placeholder="Search question or answer..."
-      value={searchText}
-      onChange={(e) => setSearchText(e.target.value)}
-    />
-
-    <button
-      className="btn btn-primary"
-      onClick={() => setSearchText("")}
-    >
-      Clear
-    </button>
-  </div>
-
-</div>
+          <button
+            className="btn btn-primary"
+            onClick={() => setSearchText("")}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
 
       {loading ? (
 
@@ -145,13 +142,13 @@ const truncateWords = (text = "", limit = 20) => {
       {information.length > 0 ? (
         information.map((log, i) => (
           <tr key={log._id}>
-            <td>{i + 1}</td>
-            <td>{log.requestMeta?.ip}</td>
+            <td>{rowOffset + i + 1}</td>
+            <td>{log.requestMeta?.ip || UNKNOWN_IP}</td>
 
             <td>
-              {new Date(log.createdAt)
+              {log.createdAt ? new Date(log.createdAt)
                 .toLocaleString()
-                .split(",")[0]}
+                .split(",")[0] : "-"}
             </td>
 
             <td>
@@ -202,22 +199,22 @@ const truncateWords = (text = "", limit = 20) => {
         <div className="pagination d-flex justify-content-center align-items-center my-3">
 
          <button
-    className="btn btn-sm btn-outline-primary"
-    disabled={pagination.page === 1}
-    onClick={() => handlePageChange(pagination.page - 1)}
-  >
-    Previous
-  </button>
+            className="btn btn-sm btn-outline-primary"
+            disabled={currentPage === 1}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Previous
+          </button>
 
-  <div className="mx-2 d-flex align-items-center">
-    {renderSlidingPagesWithDots(pagination.page, pagination.totalPages, 3)}
-  </div>
+          <div className="mx-2 d-flex align-items-center">
+            {renderSlidingPagesWithDots(currentPage, totalPages, 3)}
+          </div>
 
   {/* Next Button */}
   <button
     className="btn btn-sm btn-outline-primary"
-    disabled={pagination.page === pagination.totalPages}
-    onClick={() => handlePageChange(pagination.page + 1)}
+    disabled={currentPage === totalPages}
+    onClick={() => handlePageChange(currentPage + 1)}
   >
     Next
   </button>
@@ -233,11 +230,11 @@ const truncateWords = (text = "", limit = 20) => {
               </div>
                 <div className="modal-body">
                   <div className="mb-3">
-                    <div><strong>Time:</strong> {new Date(selectedLog.createdAt).toLocaleString()}</div>
-                    <div><strong>Session:</strong> {selectedLog.sessionId || "-"}</div>
-                    <div><strong>Status:</strong> {selectedLog.status || "-"}</div>
-                    <div><strong>IP:</strong> {selectedLog?.requestMeta?.ip || UNKNOWN_IP}</div>
-                  </div>
+                  <div><strong>Time:</strong> {selectedLog.createdAt ? new Date(selectedLog.createdAt).toLocaleString() : "-"}</div>
+                  <div><strong>Session:</strong> {selectedLog.sessionId || "-"}</div>
+                  <div><strong>Status:</strong> {selectedLog.status || "-"}</div>
+                  <div><strong>IP:</strong> {selectedLog?.requestMeta?.ip || UNKNOWN_IP}</div>
+                </div>
                   <h6>Question</h6>
                   <p className="mb-3">{selectedLog.question || "-"}</p>
                   <h6>Answer</h6>
