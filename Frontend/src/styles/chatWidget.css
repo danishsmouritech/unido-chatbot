@@ -144,8 +144,12 @@
     width: min(94vw, 280px);
     height: min(76vh, 520px);
   }
+  .chat-launcher-btn{
+    bottom: 7px;
+  }
   .chat-bubble {
     font-size: 16px;
+  
   }
   .chat-input {
     font-size: 16px;

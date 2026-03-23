@@ -124,12 +124,13 @@
 }
 
 .admin-content {
-  padding: 26px 24px 0px;
+  padding: 26px 10px 0px;
   width: 100%;
 }
 
 .admin-shell {
   width: 100%;
+  padding: 0px !important; 
 }
 
 .admin-header {
@@ -205,7 +206,7 @@
   border: 1px solid #d8e3f1;
   background: #ffffff;
   border-radius: 18px;
-  min-height: 320px;
+  min-height: 458px;
   padding: 18px;
 }
 
@@ -269,7 +270,7 @@
   margin-top: 14px;
   background: #ffffff;
   border-radius: 14px;
-  padding: 16px 18px;
+  /* padding: 16px 18px; */
   display: grid;
   gap: 12px;
 }
@@ -328,7 +329,7 @@
 
 .all-info-table tbody {
   display: block;
-  max-height: 180px; 
+  max-height: 246px; 
   overflow-y: auto;
 }
 .all-info-table tbody::-webkit-scrollbar {
@@ -482,7 +483,7 @@
 
 @media (max-width: 1400px) {
   .admin-content {
-    padding: 24px 20px 0px;
+    padding: 24px 10px 0px;
   }
 }
 
@@ -529,11 +530,16 @@
   }
 
   .admin-content {
-    padding: 20px 16px 30px;
+    padding: 6px
   }
-
+  .admin-body-card{
+    min-height: 410px;
+  }
+  .all-info-table tbody{
+    max-height: 200px;
+  }
   .admin-scroll {
-    max-height: none;
+    max-height: 250px;
   }
 
   .admin-topbar {
@@ -564,7 +570,7 @@
   }
 
   .scraping-status-card {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
   }
 
@@ -578,16 +584,23 @@
   .admin-body-card {
     border-radius: 5px;
     padding: 12px;
-    min-height: 0;
+    min-height: 410px;
     width: 100%;
   }
   .admin-scroll {
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 120px);
   }
   .admin-panel-block {
     padding: 12px;
   }
-
+  .all-info-table tbody{
+    max-height: 170px;
+  }
+  .table-responsive {
+    overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 268px;
+  }
   .event-breakdown {
     padding: 12px;
   }

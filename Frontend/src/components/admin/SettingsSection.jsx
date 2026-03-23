@@ -1,8 +1,25 @@
+import { useState,useEffect } from "react";
+
 export default function SettingsSection({
   settings,
   onSettingsChange,
   onSaveSettings
 }) {
+  const [rows, setRows] =useState(10);
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth <= 991) {
+      setRows(8);
+    } else {
+      setRows(10);
+    }
+  };
+
+  handleResize();
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
   const systemPrompt = settings?.systemPrompt || "";
   const maxPromptLength = 500;
   const isSystemPromptTooLong = systemPrompt.length > maxPromptLength;
@@ -13,7 +30,7 @@ export default function SettingsSection({
         <label className="form-label fs-4">System Prompt</label>
         <textarea
           className={`form-control ${isSystemPromptTooLong ? "is-invalid" : ""}`}
-          rows="10"
+          rows={rows}
           value={systemPrompt}
           onChange={(event) => {
             onSettingsChange((prev) => ({ ...prev, systemPrompt: event.target.value }));
