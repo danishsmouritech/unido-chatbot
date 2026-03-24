@@ -14,6 +14,7 @@ export default function AnalyticsSection({
     (analytics.messages ?? 0) - (analytics.errors ?? 0),
     0
   );
+  const getYear=new Date().getFullYear();
   const pieTotalData = [
     { name: "User Messages", value: analytics.userMessages ?? 0 },
     { name: "Assistant Messages", value: analytics.assistantMessages ?? 0 },
@@ -43,7 +44,7 @@ export default function AnalyticsSection({
           onChange={(e) => setYear(e.target.value)}
         >
           <option value="">All Years</option>
-          <option value="2026">2026</option>
+          <option value={getYear}>{getYear}</option>
         </select>
 
         <select
@@ -71,12 +72,11 @@ export default function AnalyticsSection({
       {/* Metric Cards */}
       <div className="admin-card-grid row g-3 mb-4">
 
-        {METRIC_CARDS.map((card) => (
+        {METRIC_CARDS.map((card,i) => (
           <div className="col-12 col-sm-6 col-lg-3" key={card.key}>
             <div className="admin-card h-100">
-              <div className="card-label">{card.title}</div>
-
-              <div className="card-value">
+              <div className="card-label">{card.title}</div> <hr />
+              <div className={`card-value ${(i == METRIC_CARDS.length - 1 || i == 0 ? "text-primary" : "")}`}>
                 {analytics[card.key] ?? 0}
                 {card.suffix || ""}
               </div>

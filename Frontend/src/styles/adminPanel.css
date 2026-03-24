@@ -340,6 +340,36 @@
   background-color: #bbb;
   border-radius: 10px;
 }
+.allinfo-footer{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+
+.result-count{
+  font-size:13px;
+  color:#5a6b85;
+}
+
+.pagination-controls{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.pagination-controls button{
+  border:1px solid #d0dceb;
+  background:#fff;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:13px;
+}
+
+.pagination-controls button:hover{
+  background:#f2f6fc;
+}
 .toggle-row,
 .status-row {
   display: flex;

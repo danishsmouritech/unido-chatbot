@@ -93,7 +93,7 @@ export default function AllInformation({
     <div className="p-2">
 
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
-        <p className="mb-2 mb-md-0 fs-5 fw-bolder">
+        <p className="mb-2 mb-md-0  fw-bolder">
           Total Conversations:
           <span className="badge bg-primary px-2 text-white rounded ms-1">
             {totalCount}
@@ -195,30 +195,35 @@ export default function AllInformation({
   </table>
 </div>
       )}
-      {information.length > 0 && (
-        <div className="pagination d-flex justify-content-center align-items-center my-3">
+      {
+        information.length > 0 && (
+          <div className="allinfo-footer">
 
-         <button
-            className="btn btn-sm btn-outline-primary"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Previous
-          </button>
+         <div className="result-count">
+       Showing {rowOffset + 1}–{Math.min(rowOffset + pageSize, totalCount)} of {totalCount} results
+      </div>
 
-          <div className="mx-2 d-flex align-items-center">
-            {renderSlidingPagesWithDots(currentPage, totalPages, 3)}
-          </div>
+  <div className="pagination-controls">
 
-  {/* Next Button */}
-  <button
-    className="btn btn-sm btn-outline-primary"
-    disabled={currentPage === totalPages}
-    onClick={() => handlePageChange(currentPage + 1)}
-  >
-    Next
-  </button>
-      </div>)}
+    <button
+      disabled={currentPage === 1}
+      onClick={() => handlePageChange(currentPage - 1)}
+    >
+      Previous
+    </button>
+
+    {renderSlidingPagesWithDots(currentPage, totalPages)}
+
+    <button
+      disabled={currentPage === totalPages}
+      onClick={() => handlePageChange(currentPage + 1)}
+    >
+      Next
+    </button>
+
+  </div>
+</div>)
+      }
       {selectedLog && (
         <>
           <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-modal="true">

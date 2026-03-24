@@ -1,12 +1,14 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import RenderPercentLabel from "./RenderPercentLabel";
 function MessageDistribution({ pieMessageData, COLORS }) {
+  const hasData = pieMessageData && pieMessageData.some(entry => entry.value > 0);
   return (
       <div className="admin-card p-3">
-                  <h6 className="mb-3">Message Distribution</h6>
+                  <h6 className="mb-3 text-center">Message Distribution</h6>
       
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
+                  {hasData ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
       
                       <Pie
                         data={pieMessageData}
@@ -25,7 +27,12 @@ function MessageDistribution({ pieMessageData, COLORS }) {
                       <Legend />
       
                     </PieChart>
-                  </ResponsiveContainer>
+        </ResponsiveContainer>
+                  ) : (
+                    <div className="text-center text-muted py-5">
+                      No data available for the selected period.
+                    </div>
+                  )}
       
                 </div>
   )
