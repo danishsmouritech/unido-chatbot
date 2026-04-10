@@ -2,16 +2,19 @@ import express from "express";
 import { createServer } from "http";
 import dotenv from "dotenv";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import jwt from "jsonwebtoken";
 import swaggerUi from "swagger-ui-express";
 import { Server as SocketIOServer } from "socket.io";
 import { connectDB } from "./config/db.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import { assertOpenAIConfig } from "./config/openai.js";
 import { assertElasticConnection } from "./config/elasticsearch.js";
 import { ensureChunkIndex } from "./services/elasticsearch.service.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
-import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import {
   assertAdminAuthConfig,
   ensureDefaultAdmin
@@ -27,13 +30,47 @@ if (process.env.ENABLE_CRON === "true") {
 }
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? ['https://careers.unido.org']
+    : ['http://localhost:5000', 'http://localhost:5173'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(null,false);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        objectSrc: ["'none'"]
+      }
+    },
+    crossOriginEmbedderPolicy: true
+  }));
+app.disable("x-powered-by");
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.get("/api/docs.json", (_req, res) => {
   res.json(openApiSpec);
 });
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
-
+if (process.env.NODE_ENV !== "production") {
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
+}
 app.get("/health", async(_req, res) => {
   try {
           assertOpenAIConfig();
@@ -47,7 +84,25 @@ app.get("/health", async(_req, res) => {
   }
   
 });
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 1000,
+  message: "Too many requests, please try again later"
+});
 
+const adminLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 50
+});
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  message: "Too many login attempts. Try again later."
+});
+
+app.use("/api/admin/auth", authLimiter);
+app.use("/api/chat", chatLimiter);
+app.use("/api/admin", adminLimiter);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
@@ -55,16 +110,38 @@ app.use("/api/admin", adminRoutes);
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: function (origin, callback) {
+      if (!origin && process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(null,false);
+      }
+    },
+    methods: ["GET", "POST", 'PUT', 'DELETE'],
+    credentials: true
   }
 });
 setSocketServer(io);
 
-io.on("connection", (socket) => {
-  socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
-});
 
+
+io.use((socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token;
+    if (!token) return next(new Error("Unauthorized"));
+
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+
+    socket.user = user;
+    next();
+  } catch {
+    next(new Error("Unauthorized"));
+  }
+});
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
@@ -85,4 +162,5 @@ async function startServer() {
     process.exit(1);
   }
 }
+
 startServer();

@@ -53,7 +53,7 @@ export default function AllInformation({
         <button
           key={i}
           className={`btn btn-sm mx-1 ${
-            i === current ? "btn-outline-warning" : "btn-outline-primary"
+            i === current ? "btn-outline-warning border-warning text-warning" : "btn-outline-primary border-primary"
           }`}
           onClick={() => handlePageChange(i)}
         >
