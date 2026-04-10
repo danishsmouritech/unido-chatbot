@@ -127,7 +127,9 @@ const io = new SocketIOServer(httpServer, {
 });
 setSocketServer(io);
 
-
+io.on("connection", (socket) => {
+  socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
+});
 
 io.use((socket, next) => {
   try {
@@ -135,7 +137,6 @@ io.use((socket, next) => {
     if (!token) return next(new Error("Unauthorized"));
 
     const user = jwt.verify(token, process.env.JWT_SECRET);
-
     socket.user = user;
     next();
   } catch {

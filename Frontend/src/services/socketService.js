@@ -7,7 +7,10 @@ export function getSocket() {
   if (!socket) {
     socket = io(APP_CONFIG.API_BASE_URL, {
       autoConnect: true,
-      transports: ["websocket", "polling"]
+      transports: ["websocket", "polling"],
+      auth: {
+        token: localStorage.getItem("adminToken")
+      }
     });
   }
 
