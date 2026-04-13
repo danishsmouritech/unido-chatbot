@@ -63,8 +63,8 @@ app.use(helmet({
     crossOriginEmbedderPolicy: true
   }));
 app.disable("x-powered-by");
-app.use(express.json({ limit: "1mb" }));
-app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.get("/api/docs.json", (_req, res) => {
   res.json(openApiSpec);
 });
@@ -131,16 +131,26 @@ io.on("connection", (socket) => {
   socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
 });
 
+// Socket authentication - optional for admin features
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth?.token;
-    if (!token) return next(new Error("Unauthorized"));
-
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    socket.user = user;
+    
+    // If token is provided, verify it
+    if (token) {
+      const user = jwt.verify(token, process.env.JWT_SECRET);
+      socket.user = user;
+      socket.isAdmin = user?.role === 'admin';
+    } else {
+      // Allow public socket connections (for public chatbot notifications)
+      socket.isAdmin = false;
+    }
+    
     next();
-  } catch {
-    next(new Error("Unauthorized"));
+  } catch (error) {
+    // Invalid token - still allow connection but mark as public
+    socket.isAdmin = false;
+    next();
   }
 });
 const PORT = process.env.PORT || 5000;
