@@ -39,6 +39,7 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState(null);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
   const messagesRef = useRef(null);
 
@@ -92,8 +93,16 @@ export default function ChatWidget() {
   }, [messages]);
 
   async function sendMessage(manualQuestion = null) {
-    const question = (manualQuestion ?? input).trim();
-    if (!question || sending) return;
+      const raw = manualQuestion ?? input;
+    const question = typeof raw === "string" ? raw.trim() : "";
+
+  if (!question) {
+    setError("Please enter a message");
+    return;
+  }
+
+  setError("");
+    if ( sending) return;
 
     if (!manualQuestion) {
       setInput("");
@@ -173,23 +182,29 @@ export default function ChatWidget() {
             ))}
           </div>
 
+              {error && <div className="chat-error">{error}</div>}
           <div className="chat-panel-footer">
             <input
               className="chat-input"
               placeholder="Type your message..."
               value={input}
-              onChange={(event) => setInput(event.target.value)}
+              onChange={(event) => {
+                setInput(event.target.value)
+                if (error) setError("");
+              }
+              }
               onKeyDown={(event) => event.key === "Enter" && sendMessage()}
             />
             <button
               className="chat-send-btn"
               type="button"
-              onClick={sendMessage}
+              onClick={() => sendMessage()}
               disabled={sending}
             >
               {sending ? "..." : <i className="bi bi-send"></i>}
             </button>
           </div>
+        
         </div>
       )}
 

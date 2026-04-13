@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
+import slowDown from "express-slow-down";
 import jwt from "jsonwebtoken";
 import swaggerUi from "swagger-ui-express";
 import { Server as SocketIOServer } from "socket.io";
@@ -31,10 +32,21 @@ if (process.env.ENABLE_CRON === "true") {
 
 const app = express();
 
+// HTTPS enforcement in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
 const allowedOrigins =
   process.env.NODE_ENV === 'production'
     ? ['https://careers.unido.org']
-    : ['http://localhost:5000', 'http://localhost:5173'];
+    : ['http://localhost:5000', 'http://localhost:5173','http://localhost:5174'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -77,16 +89,17 @@ app.get("/health", async(_req, res) => {
     await assertElasticConnection();
     res.status(200).json({ status: "ok", service: "unido-rag-backend" });
   }catch (error) {
+    logger.error("Health check failed:", error);
     res.status(500).json({
       status: "error",
-      message: error.message
+      message: "Internal server error"
     });
   }
   
 });
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 1000,
+  max: 100,
   message: "Too many requests, please try again later"
 });
 
@@ -99,7 +112,13 @@ const authLimiter = rateLimit({
   max: 10,
   message: "Too many login attempts. Try again later."
 });
+const speedLimiter = slowDown({
+  windowMs: 60 * 1000,
+  delayAfter: 50,
+  delayMs:()=> 500
+});
 
+app.use("/api", speedLimiter);
 app.use("/api/admin/auth", authLimiter);
 app.use("/api/chat", chatLimiter);
 app.use("/api/admin", adminLimiter);
@@ -131,16 +150,16 @@ io.on("connection", (socket) => {
   socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
 });
 
-// Socket authentication - optional for admin features
+// Socket authentication - required for all connections
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth?.token;
     
     // If token is provided, verify it
     if (token) {
-      const user = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = user;
-      socket.isAdmin = user?.role === 'admin';
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    socket.user = user;
+    socket.isAdmin = user?.role === 'admin';
     } else {
       // Allow public socket connections (for public chatbot notifications)
       socket.isAdmin = false;

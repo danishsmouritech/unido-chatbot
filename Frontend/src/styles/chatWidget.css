@@ -125,7 +125,13 @@
   font-size: 18px;
   font-weight: 600;
 }
-
+.chat-error {
+  color: red;
+  font-size: 14px;
+  text-align: left;
+  margin-top: 2px;
+  padding-right: 12px;
+}
 .chat-send-btn:disabled {
   opacity: 0.2;
 }
@@ -160,6 +166,7 @@
     height: 40px;
     font-size: 18px;
   }
+  
 }
 
 @media (max-width: 480px) {
