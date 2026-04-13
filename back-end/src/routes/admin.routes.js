@@ -1,4 +1,5 @@
 import express from "express";
+import { body, query, validationResult } from "express-validator";
 import { requireAdminAuth } from "../middleware/adminAuth.middleware.js";
 import {
   exportChatLogsCsv,
@@ -12,11 +13,37 @@ import {
 
 const router = express.Router();
 
+// Middleware to handle validation errors
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      error: "Validation failed",
+      details: errors.array()
+    });
+  }
+  next();
+};
+
 router.use(requireAdminAuth);
-router.get("/analytics", getAdminAnalytics);
+router.get("/analytics",
+  [
+    query('year').optional().isInt({ min: 2020, max: 2030 }).withMessage('Year must be between 2020 and 2030'),
+    query('month').optional().isInt({ min: 1, max: 12 }).withMessage('Month must be between 1 and 12')
+  ],
+  handleValidationErrors,
+  getAdminAnalytics
+);
 router.get("/allInformation", getInformation);
 router.get("/settings", getAdminSettings);
-router.put("/settings", updateAdminSettings);
+router.put("/settings",
+  [
+    body('systemPrompt').optional().isString().isLength({ max: 500 }).withMessage('System prompt must be 500 characters or less'),
+    body('chatbotEnabled').optional().isBoolean().withMessage('chatbotEnabled must be a boolean')
+  ],
+  handleValidationErrors,
+  updateAdminSettings
+);
 router.post("/scrape/trigger", triggerAdminScrape);
 router.get("/scrape/status", getAdminScrapeStatus);
 router.get("/reports/chat-logs", exportChatLogsCsv);

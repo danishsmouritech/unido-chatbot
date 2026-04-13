@@ -25,7 +25,8 @@ export default function AdminSidebar({
       if (token) {
         await logoutAdmin({ Authorization: `Bearer ${token}` });
       }
-    } catch {
+    } catch (error) {
+      console.error("Logout error:", error);
     } finally {
       localStorage.removeItem("adminToken");
       setLoggingOut(false);

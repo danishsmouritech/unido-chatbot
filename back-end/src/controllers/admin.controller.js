@@ -191,16 +191,6 @@ export async function getAdminSettings(_req, res) {
 export async function updateAdminSettings(req, res) {
   try {
     const { systemPrompt, chatbotEnabled } = req.body || {};
-    const maxPromptLength = 500;
-
-    if (
-      typeof systemPrompt === "string" &&
-      systemPrompt.trim().length > maxPromptLength
-    ) {
-      return res.status(400).json({
-        error: `System Prompt must be ${maxPromptLength} characters or less`
-      });
-    }
 
     const updated = await updateAdminSettingsRecord({
       systemPrompt,

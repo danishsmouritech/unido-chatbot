@@ -29,7 +29,6 @@ export const createChatSession = async (req, res) => {
 
 //Ask Question
 export const askQuestion = async (req, res) => {
-  logger.log("Received question request body:", req.body); // Debug log
   const startedAt = Date.now();
   try {
     const { sessionId, question } = req.body;
@@ -41,12 +40,6 @@ export const askQuestion = async (req, res) => {
     if (!settings.chatbotEnabled) {
       return res.status(503).json({
         error: "Chatbot is currently disabled"
-      });
-    }
-
-    if (!sessionId || !question) {
-      return res.status(400).json({
-        error: "sessionId and question are required"
       });
     }
 
