@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 const isDevelopment = process.env.NODE_ENV === "development";
 export const logger = {
   log: (...args) => {

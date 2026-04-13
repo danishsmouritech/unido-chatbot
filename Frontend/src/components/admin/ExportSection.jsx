@@ -30,6 +30,9 @@ export default function ExportSection({ onExport }) {
       endDate,
       type,
     });
+    setStartDate("");
+    setEndDate("");
+    setType("all");
   };
 
   return (
