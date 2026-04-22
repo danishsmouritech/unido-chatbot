@@ -7,31 +7,33 @@ import {
 import { getScrapeStatus, triggerScrape } from "../services/scrape.service.js";
 import { emitRealtime } from "../realtime/socket.js";
 import { logger } from "../utils/logger.js";
+
+function buildCreatedAtDateRange({ fromDate, toDate }) {
+  const createdAt = {};
+
+  if (fromDate) {
+    createdAt.$gte = new Date(`${fromDate}T00:00:00.000`);
+  }
+
+  if (toDate) {
+    createdAt.$lte = new Date(`${toDate}T23:59:59.999`);
+  }
+
+  if (createdAt.$gte && createdAt.$lte && createdAt.$gte > createdAt.$lte) {
+    const start = createdAt.$gte;
+    createdAt.$gte = createdAt.$lte;
+    createdAt.$lte = start;
+  }
+
+  return Object.keys(createdAt).length ? { createdAt } : {};
+}
+
 export async function getAdminAnalytics(req, res) {
 
   try {
 
-    const { year, month } = req.query;
-
-    let dateFilter = {};
-
-    if (year && month) {
-
-      const start = new Date(year, month - 1, 1);
-      const end = new Date(year, month, 0, 23, 59, 59);
-
-      dateFilter.createdAt = { $gte: start, $lte: end };
-
-    }
-
-    else if (year) {
-
-      const start = new Date(`${year}-01-01`);
-      const end = new Date(`${year}-12-31T23:59:59`);
-
-      dateFilter.createdAt = { $gte: start, $lte: end };
-
-    }
+    const { fromDate, toDate } = req.query;
+    const dateFilter = buildCreatedAtDateRange({ fromDate, toDate });
 
     const conversationsPromise =
       ChatSession.countDocuments(dateFilter);
@@ -142,7 +144,21 @@ export const getInformation = async (req, res) => {
         { question: regex },
         { answer: regex },
         { "requestMeta.ip" :regex  },
-        {status: regex }
+        { status: regex },
+        {
+          $expr: {
+            $regexMatch: {
+              input: {
+                $dateToString: {
+                  format: "%d/%m/%Y",
+                  date: "$createdAt"
+                }
+              },
+              regex: search,
+              options: "i"
+            }
+          }
+        }
       ];
     }
 

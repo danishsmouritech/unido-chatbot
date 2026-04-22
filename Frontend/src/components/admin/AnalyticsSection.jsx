@@ -3,18 +3,26 @@ import MessageDistribution from "../analyticsCharts/MessageDistribution";
 import ErrorSuccess from "../analyticsCharts/ErrorSuccess";
 import TotalDataChart from "../analyticsCharts/TotalDataChart";
 
+function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
 export default function AnalyticsSection({
   analytics,
-  year,
-  month,
-  setYear,
-  setMonth
+  fromDate,
+  toDate,
+  setFromDate,
+  setToDate
 }) {
   const successCount = Math.max(
     (analytics.messages ?? 0) - (analytics.errors ?? 0),
     0
   );
-  const getYear=new Date().getFullYear();
+  const todayValue = getLocalDateString();
   const pieTotalData = [
     { name: "User Messages", value: analytics.userMessages ?? 0 },
     { name: "Assistant Messages", value: analytics.assistantMessages ?? 0 },
@@ -36,37 +44,30 @@ export default function AnalyticsSection({
     <div className="analytics-section">
 
       {/* Filters */}
-      <div className="d-flex  justify-content-end gap-2 mb-4 flex-wrap">
+      <div className="row g-3 justify-content-end mb-4">
+        <div className="col-12 col-md-4 col-lg-3">
+          <label className="form-label mb-1">From date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={fromDate}
+            min="2026-02-12"
+            max={todayValue}
+            onChange={(e) => setFromDate(e.target.value)}
+          />
+        </div>
 
-        <select
-          className="form-select w-auto"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-        >
-          <option value="">All Years</option>
-          <option value={getYear}>{getYear}</option>
-        </select>
-
-        <select
-          className="form-select w-auto"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-        >
-          <option value="">All Months</option>
-          <option value="1">Jan</option>
-          <option value="2">Feb</option>
-          <option value="3">Mar</option>
-          <option value="4">Apr</option>
-          <option value="5">May</option>
-          <option value="6">Jun</option>
-          <option value="7">Jul</option>
-          <option value="8">Aug</option>
-          <option value="9">Sep</option>
-          <option value="10">Oct</option>
-          <option value="11">Nov</option>
-          <option value="12">Dec</option>
-        </select>
-
+        <div className="col-12 col-md-4 col-lg-3">
+          <label className="form-label mb-1">To date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={toDate}
+            min={fromDate || undefined}
+            max={todayValue}
+            onChange={(e) => setToDate(e.target.value)}
+          />
+        </div>
       </div>
 
       {/* Metric Cards */}

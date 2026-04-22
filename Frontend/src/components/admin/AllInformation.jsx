@@ -147,8 +147,12 @@ export default function AllInformation({
 
             <td>
               {log.createdAt ? new Date(log.createdAt)
-                .toLocaleString()
-                .split(",")[0] : "-"}
+                .toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      })
+    : "-"}
             </td>
 
             <td>

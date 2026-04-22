@@ -390,8 +390,24 @@ export const openApiSpec = {
         tags: ["Admin"],
         summary: "Get admin analytics",
         description:
-          "Returns aggregate operational analytics for admin dashboards, including conversation counts, message volumes, unique-user estimates, response latency, and error totals.",
+          "Returns aggregate operational analytics for admin dashboards, including conversation counts, message volumes, unique-user estimates, response latency, and error totals. Supports optional fromDate and toDate filters in YYYY-MM-DD format.",
         security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: "query",
+            name: "fromDate",
+            schema: { type: "string", format: "date" },
+            required: false,
+            description: "Inclusive start date in YYYY-MM-DD format."
+          },
+          {
+            in: "query",
+            name: "toDate",
+            schema: { type: "string", format: "date" },
+            required: false,
+            description: "Inclusive end date in YYYY-MM-DD format."
+          }
+        ],
         responses: {
           "200": {
             description: "Analytics payload",

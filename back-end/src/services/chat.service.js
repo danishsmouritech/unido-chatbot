@@ -1,19 +1,34 @@
 import ChatSession from "../models/chatSession.model.js";
 import crypto from "crypto";
 import { logger } from "../utils/logger.js";
+
+export async function ensureSession(sessionId) {
+  if (!sessionId) {
+    throw new Error("sessionId is required");
+  }
+
+  const session = await ChatSession.findOneAndUpdate(
+    { sessionId },
+    {
+      $setOnInsert: {
+        sessionId,
+        messages: []
+      }
+    },
+    {
+      upsert: true,
+      returnDocument: "after",
+      setDefaultsOnInsert: true
+    }
+  ).lean();
+
+  return session;
+}
+
 export async function createSession() {
   const sessionId = crypto.randomUUID();
   try {
-    const session = await ChatSession.create({
-      sessionId,
-      messages: []
-    });
-    // Verify the session was saved before returning
-    const verifySession = await ChatSession.findOne({ sessionId });
-    if (!verifySession) {
-      throw new Error("Session creation failed - verification check failed");
-    }
-    
+    await ensureSession(sessionId);
     return sessionId;
   } catch (error) {
     logger.error("Error creating session:", error.message);
@@ -23,13 +38,12 @@ export async function createSession() {
 
 export async function addMessage(sessionId, message) {
   try {
+    await ensureSession(sessionId);
+
     const result = await ChatSession.updateOne(
       { sessionId },
       { $push: { messages: message } }
     );
-    if (result.matchedCount === 0) {
-      throw new Error(`Session ${sessionId} not found`);
-    }
     return result;
   } catch (error) {
     logger.error("Error adding message:", error.message);

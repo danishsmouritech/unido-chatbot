@@ -13,10 +13,10 @@ import ChatWidget from "./ChatWidget";
 function ActiveSection({
   activeTab,
   analytics,
-  year,
-  month,
-  setYear,
-  setMonth,
+  fromDate,
+  toDate,
+  setFromDate,
+  setToDate,
   information,
   informationLoading,
   informationQuery,
@@ -30,7 +30,15 @@ function ActiveSection({
   exportCsv
 }) {
   if (activeTab === "analytics") {
-    return <AnalyticsSection analytics={analytics} year={year} month={month} setYear={setYear} setMonth={setMonth} />;
+    return (
+      <AnalyticsSection
+        analytics={analytics}
+        fromDate={fromDate}
+        toDate={toDate}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+      />
+    );
   }
 
   if (activeTab === "settings") {
@@ -52,7 +60,7 @@ function ActiveSection({
       />
     );
   }
-  if(activeTab === "all-info"){
+  if (activeTab === "all-info") {
     return (
       <AllInformation
         information={information}
@@ -71,10 +79,10 @@ export default function AdminPanel() {
     activeTab,
     setActiveTab,
     analytics,
-    year,
-    month,
-    setYear,
-    setMonth,
+    fromDate,
+    toDate,
+    setFromDate,
+    setToDate,
     information,
     informationLoading,
     informationQuery,
@@ -89,18 +97,17 @@ export default function AdminPanel() {
     exportCsv,
   } = useAdminDashboard();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   useEffect(() => {
-  if (!notification) return;
+    if (!notification) return;
 
-  const { type, text } = notification;
+    const { type, text } = notification;
 
-  if (type === "success") toast.success(text);
-  else if (type === "error") toast.error(text);
-  else if (type === "warning") toast.warning(text);
-  else toast.info(text);
-
-}, [notification]);
+    if (type === "success") toast.success(text);
+    else if (type === "error") toast.error(text);
+    else if (type === "warning") toast.warning(text);
+    else toast.info(text);
+  }, [notification]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -139,36 +146,36 @@ export default function AdminPanel() {
 
       <main className="admin-content">
         <div className="admin-shell container-xxl">
-        <div className="admin-header">
-          <div className="admin-topbar">
-            <button
-              type="button"
-              className="sidebar-toggle-btn d-lg-none"
-              onClick={() => setIsSidebarOpen(true)}
-              aria-label="Open sidebar menu"
-            >
-              <i className="bi bi-list" />
-            </button>
-            <div className="admin-title-wrap">
-              <h1 className="d-none d-sm-block">Admin Dashboard</h1>
-              <p className="d-none d-sm-block">
-                Manage chatbot behavior, review analytics, and run operational tasks.
-              </p>
-              <div className="admin-mobile-hero d-sm-none">
-                <span className="admin-mobile-brand">UNIDO Careers</span>
+          <div className="admin-header">
+            <div className="admin-topbar">
+              <button
+                type="button"
+                className="sidebar-toggle-btn d-lg-none"
+                onClick={() => setIsSidebarOpen(true)}
+                aria-label="Open sidebar menu"
+              >
+                <i className="bi bi-list" />
+              </button>
+              <div className="admin-title-wrap">
+                <h1 className="d-none d-sm-block">Admin Dashboard</h1>
+                <p className="d-none d-sm-block">
+                  Manage chatbot behavior, review analytics, and run operational tasks.
+                </p>
+                <div className="admin-mobile-hero d-sm-none">
+                  <span className="admin-mobile-brand">UNIDO Careers</span>
+                </div>
               </div>
+              <span className="admin-active-pill">{activeLabel}</span>
             </div>
-            <span className="admin-active-pill">{activeLabel}</span>
           </div>
-        </div>
-        <section className={`admin-body-card ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
+          <section className={`admin-body-card ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
             <ActiveSection
               activeTab={activeTab}
               analytics={analytics}
-              year={year}
-              month={month}
-              setYear={setYear}
-              setMonth={setMonth}
+              fromDate={fromDate}
+              toDate={toDate}
+              setFromDate={setFromDate}
+              setToDate={setToDate}
               information={information}
               informationLoading={informationLoading}
               informationQuery={informationQuery}
@@ -181,7 +188,7 @@ export default function AdminPanel() {
               triggerScrape={triggerScrape}
               exportCsv={exportCsv}
             />
-        </section>
+          </section>
         </div>
       </main>
       <ChatWidget />

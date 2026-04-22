@@ -24,8 +24,8 @@ export function useAdminDashboard() {
     avgResponseMs: 0,
     errors: 0
   });
-  const [year, setYear] = useState("");
-  const [month, setMonth] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [information, setInformation] = useState([]);
   const [informationLoading, setInformationLoading] = useState(false);
   const [informationQuery, setInformationQuery] = useState({
@@ -80,12 +80,20 @@ export function useAdminDashboard() {
 
   const refreshAnalytics = useCallback(
     async (filters = {}) => {
-      const selectedYear = filters.year ?? year;
-      const selectedMonth = filters.month ?? month;
+      const selectedFromDate = filters.fromDate ?? fromDate;
+      const selectedToDate = filters.toDate ?? toDate;
+      const normalizedToDate =
+        selectedFromDate &&
+        selectedToDate &&
+        selectedFromDate > selectedToDate
+          ? selectedFromDate
+          : selectedToDate;
       try {
         const payload = await getAdminAnalytics(
-          selectedYear,
-          selectedMonth,
+          {
+            fromDate: selectedFromDate,
+            toDate: normalizedToDate
+          },
           getAdminHeaders()
         );
         setAnalytics(payload);
@@ -93,7 +101,7 @@ export function useAdminDashboard() {
         handleError(error);
       }
     },
-    [getAdminHeaders, handleError, month, year]
+    [fromDate, getAdminHeaders, handleError, toDate]
   );
 
   const refreshInformation = useCallback(async (queryUpdate = {}) => {
@@ -255,11 +263,11 @@ export function useAdminDashboard() {
     activeTab,
     setActiveTab,
     analytics,
-    year,
-    month,
-    setYear,
-    setMonth,
-     information,
+    fromDate,
+    toDate,
+    setFromDate,
+    setToDate,
+    information,
     informationLoading,
     informationQuery,
     pagination,

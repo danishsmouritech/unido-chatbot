@@ -8,7 +8,7 @@ export function isBlockedQuery(question = "") {
 
   const confidentialPatterns = [
     /\b(confidential|internal|private document|leak|classified|secret)\b/i,
-    /\b(staff salary list|employee data|personal data|passport|ssn)\b/i
+    /\b(staff salary list|salary|policy|employee data|personal data|passport|ssn)\b/i
   ];
 
   return [...offensivePatterns, ...confidentialPatterns]

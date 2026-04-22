@@ -28,8 +28,8 @@ const handleValidationErrors = (req, res, next) => {
 router.use(requireAdminAuth);
 router.get("/analytics",
   [
-    query('year').optional().isInt({ min: 2020, max: 2030 }).withMessage('Year must be between 2020 and 2030'),
-    query('month').optional().isInt({ min: 1, max: 12 }).withMessage('Month must be between 1 and 12')
+    query('fromDate').optional({ checkFalsy: true }).isISO8601({ strict: true }).withMessage('From date must be a valid YYYY-MM-DD date'),
+    query('toDate').optional({ checkFalsy: true }).isISO8601({ strict: true }).withMessage('To date must be a valid YYYY-MM-DD date')
   ],
   handleValidationErrors,
   getAdminAnalytics

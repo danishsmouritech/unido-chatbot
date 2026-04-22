@@ -5,15 +5,68 @@ function withHeaders(headers = {}) {
   return Object.keys(headers).length ? { headers } : {};
 }
 
-export function getAdminAnalytics(year, month, headers) {
+// Keep this tolerant of older year/month callers while the UI uses date ranges.
+function buildAnalyticsDateRange(year, month) {
+  const parsedYear = Number.parseInt(year, 10);
+  const parsedMonth = Number.parseInt(month, 10);
+
+  if (Number.isNaN(parsedYear)) {
+    return {};
+  }
+
+  if (Number.isInteger(parsedMonth) && parsedMonth >= 1 && parsedMonth <= 12) {
+    const monthLabel = String(parsedMonth).padStart(2, "0");
+    const lastDay = new Date(parsedYear, parsedMonth, 0).getDate();
+
+    return {
+      fromDate: `${parsedYear}-${monthLabel}-01`,
+      toDate: `${parsedYear}-${monthLabel}-${String(lastDay).padStart(2, "0")}`
+    };
+  }
+
+  return {
+    fromDate: `${parsedYear}-01-01`,
+    toDate: `${parsedYear}-12-31`
+  };
+}
+
+export function getAdminAnalytics(filtersOrYear = {}, monthOrHeaders, maybeHeaders) {
+  let filters = {};
+  let headers = {};
+
+  if (
+    filtersOrYear &&
+    typeof filtersOrYear === "object" &&
+    !Array.isArray(filtersOrYear)
+  ) {
+    filters = filtersOrYear;
+    headers = monthOrHeaders || {};
+  } else {
+    filters = buildAnalyticsDateRange(filtersOrYear, monthOrHeaders);
+    if (
+      maybeHeaders &&
+      typeof maybeHeaders === "object" &&
+      !Array.isArray(maybeHeaders)
+    ) {
+      headers = maybeHeaders;
+    } else if (
+      monthOrHeaders &&
+      typeof monthOrHeaders === "object" &&
+      !Array.isArray(monthOrHeaders)
+    ) {
+      headers = monthOrHeaders;
+    }
+  }
+
   const params = new URLSearchParams();
 
-  if (year) params.append("year", year);
-  if (month) params.append("month", month);
+  if (filters.fromDate) params.append("fromDate", filters.fromDate);
+  if (filters.toDate) params.append("toDate", filters.toDate);
   const query = params.toString();
   const suffix = query ? `?${query}` : "";
   return apiRequest(`/api/admin/analytics${suffix}`, withHeaders(headers));
 }
+
 export async function getAllInformation(headers = {}, query = {}) {
 
   const params = new URLSearchParams();

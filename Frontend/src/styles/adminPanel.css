@@ -329,7 +329,8 @@
 
 .all-info-table tbody {
   display: block;
-  max-height: 246px; 
+  height:260px;
+  max-height: 260px; 
   overflow-y: auto;
 }
 .all-info-table tbody::-webkit-scrollbar {

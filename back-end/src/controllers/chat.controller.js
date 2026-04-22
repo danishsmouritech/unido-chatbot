@@ -1,11 +1,32 @@
 import { runRAG } from "../services/rag.service.js";
 import { isBlockedQuery, buildBlockedAnswer } from "../services/guard.service.js";
-import { addMessage, getHistory, createSession } from "../services/chat.service.js";
+import {
+  addMessage,
+  ensureSession,
+  getHistory,
+  createSession
+} from "../services/chat.service.js";
 import { createChatLog } from "../services/chatlog.service.js";
 import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
 import { emitRealtime } from "../realtime/socket.js";
 import { logger } from "../utils/logger.js";
+function getClientIp(req) {
+  let ip =
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.socket?.remoteAddress ||
+    req.connection?.remoteAddress ||
+    "";
 
+  // Convert IPv6 localhost
+  if (ip === "::1") return "127.0.0.1";
+
+  // Convert IPv6 mapped IPv4
+  if (ip.startsWith("::ffff:")) {
+    ip = ip.replace("::ffff:", "");
+  }
+
+  return ip;
+}
 //Create Session
 export const createChatSession = async (req, res) => {
   logger.log("Creating new chat session");
@@ -34,7 +55,7 @@ export const askQuestion = async (req, res) => {
     const { sessionId, question } = req.body;
     logger.log("Extracted sessionId and question:", { sessionId, question });
     const userAgent = req.get("user-agent") || null;
-    const ip = req.ip || null;
+    const ip = getClientIp(req)|| null;
     const settings = await getAdminSettingsRecord();
 
     if (!settings.chatbotEnabled) {
@@ -42,6 +63,8 @@ export const askQuestion = async (req, res) => {
         error: "Chatbot is currently disabled"
       });
     }
+
+    await ensureSession(sessionId);
 
     if (isBlockedQuery(question)) {
       const blockedAnswer = buildBlockedAnswer();
@@ -64,12 +87,7 @@ export const askQuestion = async (req, res) => {
       });
     }
 
-    const history = await getHistory(sessionId);
-     if (history === null) {
-        return res.status(404).json({
-        error: "Session not found"
-        });
-     }
+    const history = (await getHistory(sessionId)) || [];
     await addMessage(sessionId, { role: "user", content: question });
 
     const { answer, sources } = await runRAG(question, history);
@@ -107,12 +125,12 @@ export const askQuestion = async (req, res) => {
       await createChatLog({
         sessionId,
         question,
-        answer: "",
+        answer: "Error processing question",
         status: "error",
         sources: [],
         requestMeta: {
           userAgent: req.get("user-agent") || null,
-          ip: req.ip || null
+          ip: getClientIp(req) || null
         },
         error: {
           message: error?.message || "Unknown error",
