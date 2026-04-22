@@ -19,8 +19,30 @@ function createAzureDeploymentClient(deploymentName) {
   });
 }
 
-// export const chatClient = createAzureDeploymentClient(process.env.AZURE_OPENAI_DEPLOYMENT);
-// export const embeddingClient = createAzureDeploymentClient(process.env.AZURE_EMBEDDING_DEPLOYMENT);
+// Lazy-initialized clients to avoid startup errors when env vars are not yet loaded
+let _chatClient = null;
+let _embeddingClient = null;
+
+export function getChatClient() {
+  if (!_chatClient) {
+    _chatClient = createAzureDeploymentClient(process.env.AZURE_OPENAI_DEPLOYMENT);
+  }
+  return _chatClient;
+}
+
+export function getEmbeddingClient() {
+  if (!_embeddingClient) {
+    _embeddingClient = createAzureDeploymentClient(process.env.AZURE_EMBEDDING_DEPLOYMENT);
+  }
+  return _embeddingClient;
+}
+
+// Keep backward-compat named export (lazy getter)
+export const chatClient = new Proxy({}, {
+  get(_, prop) {
+    return getChatClient()[prop];
+  }
+});
 
 export function assertOpenAIConfig() {
   if (!endpoint) throw new Error("AZURE_OPENAI_ENDPOINT is missing");

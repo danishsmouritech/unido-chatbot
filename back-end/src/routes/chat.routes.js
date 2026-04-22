@@ -23,8 +23,10 @@ router.get("/visibility", getChatVisibility);
 router.post("/session", createChatSession);
 router.post("/ask",
   [
-    body('sessionId').trim().isString().notEmpty().withMessage('sessionId is required and must be a string'),
-    body('question').trim().escape().isString().notEmpty().withMessage('question is required and must be a string')
+    body('sessionId').trim().isString().notEmpty().withMessage('sessionId is required and must be a string')
+      .isLength({ max: 100 }).withMessage('sessionId is too long'),
+    body('question').trim().isString().notEmpty().withMessage('question is required and must be a string')
+      .isLength({ min: 1, max: 2000 }).withMessage('question must be between 1 and 2000 characters')
   ],
   handleValidationErrors,
   askQuestion

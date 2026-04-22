@@ -10,7 +10,7 @@ export default function AdminLogin() {
   const {
     register,
     handleSubmit,
-    formState: { errors ,isValid },
+    formState: { errors, isValid },
   } = useForm({
     mode: "onChange",
     reValidateMode: "onChange",
@@ -41,30 +41,58 @@ export default function AdminLogin() {
         <section className="admin-login-left">
           <div className="admin-login-overlay" />
           <div className="admin-login-left-content">
-            <span className="admin-login-badge">UNIDO Secure Access</span>
+            <span className="admin-login-badge">
+              <i className="bi bi-shield-lock-fill me-1" />
+              UNIDO Secure Access
+            </span>
             <h1>Admin Control Center</h1>
             <p>
               Monitor chatbot operations, manage system prompts, and export reports from one secure workspace.
             </p>
+            <div className="login-features">
+              <div className="login-feature-item">
+                <i className="bi bi-bar-chart-line" />
+                <span>Real-time analytics</span>
+              </div>
+              <div className="login-feature-item">
+                <i className="bi bi-robot" />
+                <span>AI-powered chatbot management</span>
+              </div>
+              <div className="login-feature-item">
+                <i className="bi bi-shield-check" />
+                <span>Enterprise security</span>
+              </div>
+            </div>
           </div>
         </section>
 
         <section className="admin-login-right">
           <div className="admin-login-card">
-            <h2>Sign in</h2>
-            <p>Use your admin credentials to continue.</p>
+            <div className="login-card-header">
+              <div className="login-logo-mark">
+                <i className="bi bi-building" />
+              </div>
+              <h2>Welcome back</h2>
+              <p>Sign in to your admin dashboard</p>
+            </div>
 
-            {error ? <div className="alert alert-danger mt-3 mb-3">{error}</div> : null}
+            {error ? (
+              <div className="login-error-banner">
+                <i className="bi bi-exclamation-triangle-fill" />
+                {error}
+              </div>
+            ) : null}
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <div className="mb-3">
-                <label htmlFor="admin-email" className="form-label">
+              <div className="login-field">
+                <label htmlFor="admin-email" className="login-label">
+                  <i className="bi bi-envelope" />
                   Email address
                 </label>
                 <input
                   id="admin-email"
                   type="email"
-                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                  className={`login-input ${errors.email ? "has-error" : ""}`}
                   placeholder="you@unido.org"
                   autoComplete="email"
                   {...register("email", {
@@ -76,18 +104,19 @@ export default function AdminLogin() {
                   })}
                 />
                 {errors.email ? (
-                  <div className="invalid-feedback d-block">{errors.email.message}</div>
+                  <span className="login-field-error">{errors.email.message}</span>
                 ) : null}
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="admin-password" className="form-label">
+              <div className="login-field">
+                <label htmlFor="admin-password" className="login-label">
+                  <i className="bi bi-lock" />
                   Password
                 </label>
                 <input
                   id="admin-password"
                   type="password"
-                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
+                  className={`login-input ${errors.password ? "has-error" : ""}`}
                   placeholder="Enter your password"
                   autoComplete="current-password"
                   {...register("password", {
@@ -99,14 +128,28 @@ export default function AdminLogin() {
                   })}
                 />
                 {errors.password ? (
-                  <div className="invalid-feedback d-block">{errors.password.message}</div>
+                  <span className="login-field-error">{errors.password.message}</span>
                 ) : null}
               </div>
 
-              <button className="btn btn-primary w-100" disabled={!isValid}>
-                {loading ? "Signing in..." : "Sign In"}
+              <button className="login-submit-btn" type="submit" disabled={!isValid || loading}>
+                {loading ? (
+                  <>
+                    <span className="login-spinner" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    Sign In
+                    <i className="bi bi-arrow-right" />
+                  </>
+                )}
               </button>
             </form>
+
+            <div className="login-footer-text">
+              Protected by enterprise-grade encryption
+            </div>
           </div>
         </section>
       </div>

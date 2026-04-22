@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { logger } from "../utils/logger.js";
 
 export function requireAdminAuth(req, res, next) {
   try {
@@ -10,15 +11,30 @@ export function requireAdminAuth(req, res, next) {
 
     const token = auth.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!token || token.split(".").length !== 3) {
+      return res.status(401).json({ error: "Invalid token format" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      algorithms: ["HS256"],
+      maxAge: "30m"
+    });
 
     if (!decoded?.role || decoded.role !== "admin") {
+      logger.error(`Forbidden access attempt: role=${decoded?.role}, ip=${req.ip}`);
       return res.status(403).json({ error: "Forbidden" });
     }
 
     req.admin = decoded;
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid token" });
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired" });
+    }
+    if (err.name === "JsonWebTokenError") {
+      logger.error(`Invalid JWT attempt from ${req.ip}: ${err.message}`);
+      return res.status(401).json({ error: "Invalid token" });
+    }
+    return res.status(401).json({ error: "Authentication failed" });
   }
 }

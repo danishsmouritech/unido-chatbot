@@ -2,6 +2,24 @@ import { useEffect, useState } from "react";
 
 const UNKNOWN_IP = "Unknown IP";
 
+function LoadingSkeleton() {
+  return (
+    <div className="loading-skeleton">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="skeleton-row">
+          <div className="skeleton-cell short" />
+          <div className="skeleton-cell medium" />
+          <div className="skeleton-cell medium" />
+          <div className="skeleton-cell short" />
+          <div className="skeleton-cell long" />
+          <div className="skeleton-cell long" />
+          <div className="skeleton-cell short" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AllInformation({
   information,
   pagination,
@@ -25,241 +43,220 @@ export default function AllInformation({
   useEffect(() => {
     const timer = setTimeout(() => {
       const normalizedSearch = searchText.trim();
-
       if (normalizedSearch === (query?.search || "")) return;
-
-      onQueryChange({
-        ...query,
-        page: 1,
-        search: normalizedSearch
-      });
+      onQueryChange({ ...query, page: 1, search: normalizedSearch });
     }, 400);
-
     return () => clearTimeout(timer);
   }, [onQueryChange, query, searchText]);
 
-  function renderSlidingPagesWithDots(current, total, visibleCount = 3) {
+  function renderPagination(current, total) {
     const buttons = [];
-
     let startPage = Math.max(current - 1, 1);
-    let endPage = Math.min(startPage + visibleCount - 1, total);
-
-    if (endPage - startPage + 1 < visibleCount) {
-      startPage = Math.max(endPage - visibleCount + 1, 1);
-    }
+    let endPage = Math.min(startPage + 2, total);
+    if (endPage - startPage + 1 < 3) startPage = Math.max(endPage - 2, 1);
 
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button
           key={i}
-          className={`btn btn-sm mx-1 ${
-            i === current ? "btn-outline-warning border-warning text-warning" : "btn-outline-primary border-primary"
-          }`}
+          className={`page-btn ${i === current ? "active" : ""}`}
           onClick={() => handlePageChange(i)}
         >
           {i}
         </button>
       );
     }
-
     if (endPage < total) {
+      buttons.push(<span key="dots" className="page-dots">...</span>);
       buttons.push(
-        <span key="end-ellipsis" className="mx-2">
-          . . .
-        </span>
+        <button key={total} className="page-btn" onClick={() => handlePageChange(total)}>
+          {total}
+        </button>
       );
     }
-
     return buttons;
   }
 
   function handlePageChange(page) {
     if (page < 1 || page > totalPages) return;
-
-    onQueryChange({
-      ...query,
-      page
-    });
+    onQueryChange({ ...query, page });
   }
 
-  const truncateWords = (text = "", limit = 20) => {
+  const truncate = (text = "", limit = 20) => {
     const words = text.split(" ");
-    if (words.length <= limit) return text;
-    return words.slice(0, limit).join(" ") + "...";
+    return words.length <= limit ? text : words.slice(0, limit).join(" ") + "...";
+  };
+
+  const getStatusConfig = (status) => {
+    if (status === "success") return { class: "status-success", icon: "bi-check-circle-fill" };
+    if (status === "fallback") return { class: "status-warning", icon: "bi-exclamation-circle-fill" };
+    return { class: "status-error", icon: "bi-x-circle-fill" };
   };
 
   return (
-
-    <div className="p-2">
-
-      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
-        <p className="mb-2 mb-md-0  fw-bolder">
-          Total Conversations:
-          <span className="badge bg-primary px-2 text-white rounded ms-1">
-            {totalCount}
+    <div className="allinfo-section">
+      {/* Header bar */}
+      <div className="allinfo-toolbar">
+        <div className="allinfo-count">
+          <i className="bi bi-chat-square-text" />
+          <span>
+            <strong>{totalCount}</strong> conversations
           </span>
-        </p>
-
-        <div className="d-flex w-md-auto">
+        </div>
+        <div className="allinfo-search">
+          <i className="bi bi-search" />
           <input
             type="text"
-            className="form-control me-2"
-            placeholder="Search question or answer..."
+            placeholder="Search questions, answers, IPs..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-
-          <button
-            className="btn btn-primary"
-            onClick={() => setSearchText("")}
-          >
-            Clear
-          </button>
+          {searchText && (
+            <button className="search-clear" onClick={() => setSearchText("")}>
+              <i className="bi bi-x" />
+            </button>
+          )}
         </div>
       </div>
 
+      {/* Table */}
       {loading ? (
-
-        <p>Loading...</p>
-
+        <LoadingSkeleton />
       ) : (
         <div className="table-responsive">
-  <table className="table table-hover align-middle mb-0 all-info-table">
-
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>IP</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Question</th>
-        <th>Answer</th>
-        <th className="text-end">Action</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {information.length > 0 ? (
-        information.map((log, i) => (
-          <tr key={log._id}>
-            <td>{rowOffset + i + 1}</td>
-            <td>{log.requestMeta?.ip || UNKNOWN_IP}</td>
-
-            <td>
-              {log.createdAt ? new Date(log.createdAt)
-                .toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-      })
-    : "-"}
-            </td>
-
-            <td>
-              <span
-                className={`badge ${
-                  log.status === "success"
-                    ? "bg-success"
-                    : log.status === "fallback"
-                    ? "bg-warning text-dark"
-                    : "bg-danger"
-                }`}
-              >
-                {log.status}
-              </span>
-            </td>
-
-            <td title={log.question}>
-              {truncateWords(log.question, 3)}
-            </td>
-
-            <td title={log.answer}>
-              {truncateWords(log.answer, 3)}
-            </td>
-
-            <td className="text-end">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => setSelectedLog(log)}
-              >
-                View
-              </button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td colSpan="7" className="text-center py-4">
-            No information available
-          </td>
-        </tr>
+          <table className="info-table">
+            <thead>
+              <tr>
+                <th style={{ width: "54px" }}>#</th>
+                <th style={{ width: "120px" }}>IP Address</th>
+                <th style={{ width: "100px" }}>Date</th>
+                <th style={{ width: "90px" }}>Status</th>
+                <th>Question</th>
+                <th>Answer</th>
+                <th style={{ width: "70px" }} className="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {information.length > 0 ? (
+                information.map((log, i) => {
+                  const statusCfg = getStatusConfig(log.status);
+                  return (
+                    <tr key={log._id}>
+                      <td className="row-num">{rowOffset + i + 1}</td>
+                      <td className="ip-cell">{log.requestMeta?.ip || UNKNOWN_IP}</td>
+                      <td className="date-cell">
+                        {log.createdAt
+                          ? new Date(log.createdAt).toLocaleDateString("en-GB", {
+                              day: "2-digit", month: "2-digit", year: "numeric"
+                            })
+                          : "-"}
+                      </td>
+                      <td>
+                        <span className={`status-pill ${statusCfg.class}`}>
+                          <i className={`bi ${statusCfg.icon}`} />
+                          {log.status}
+                        </span>
+                      </td>
+                      <td className="text-cell" title={log.question}>{truncate(log.question, 4)}</td>
+                      <td className="text-cell" title={log.answer}>{truncate(log.answer, 4)}</td>
+                      <td className="text-end">
+                        <button className="view-btn" onClick={() => setSelectedLog(log)}>
+                          <i className="bi bi-eye" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="7" className="empty-state">
+                    <i className="bi bi-inbox" />
+                    <span>No conversations found</span>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
-    </tbody>
 
-  </table>
-</div>
+      {/* Pagination */}
+      {information.length > 0 && (
+        <div className="allinfo-pagination">
+          <span className="page-info">
+            {rowOffset + 1}–{Math.min(rowOffset + pageSize, totalCount)} of {totalCount}
+          </span>
+          <div className="page-controls">
+            <button className="page-nav" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
+              <i className="bi bi-chevron-left" />
+            </button>
+            {renderPagination(currentPage, totalPages)}
+            <button className="page-nav" disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
+              <i className="bi bi-chevron-right" />
+            </button>
+          </div>
+        </div>
       )}
-      {
-        information.length > 0 && (
-          <div className="allinfo-footer">
 
-         <div className="result-count">
-       Showing {rowOffset + 1}–{Math.min(rowOffset + pageSize, totalCount)} of {totalCount} results
-      </div>
-
-  <div className="pagination-controls">
-
-    <button
-      disabled={currentPage === 1}
-      onClick={() => handlePageChange(currentPage - 1)}
-    >
-      Previous
-    </button>
-
-    {renderSlidingPagesWithDots(currentPage, totalPages)}
-
-    <button
-      disabled={currentPage === totalPages}
-      onClick={() => handlePageChange(currentPage + 1)}
-    >
-      Next
-    </button>
-
-  </div>
-</div>)
-      }
+      {/* Detail Modal */}
       {selectedLog && (
         <>
-          <div className="modal fade show d-block" tabIndex="-1" role="dialog" aria-modal="true">
-            <div className="modal-dialog modal-lg modal-dialog-scrollable">
-              <div className="modal-content">
-                <div className="modal-header">
-                <h5 className="modal-title">Log Details</h5>
-                <button type="button" className="btn-close" aria-label="Close" onClick={() => setSelectedLog(null)} />
+          <div className="detail-modal-overlay" onClick={() => setSelectedLog(null)} />
+          <div className="detail-modal">
+            <div className="detail-modal-header">
+              <h4><i className="bi bi-journal-text" /> Conversation Detail</h4>
+              <button className="modal-close" onClick={() => setSelectedLog(null)}>
+                <i className="bi bi-x-lg" />
+              </button>
+            </div>
+            <div className="detail-modal-body">
+              <div className="detail-meta-grid">
+                <div className="detail-meta-item">
+                  <span className="detail-meta-label">Timestamp</span>
+                  <span className="detail-meta-value">{selectedLog.createdAt ? new Date(selectedLog.createdAt).toLocaleString() : "-"}</span>
+                </div>
+                <div className="detail-meta-item">
+                  <span className="detail-meta-label">Session ID</span>
+                  <span className="detail-meta-value mono">{selectedLog.sessionId || "-"}</span>
+                </div>
+                <div className="detail-meta-item">
+                  <span className="detail-meta-label">Status</span>
+                  <span className={`status-pill ${getStatusConfig(selectedLog.status).class}`}>
+                    <i className={`bi ${getStatusConfig(selectedLog.status).icon}`} />
+                    {selectedLog.status}
+                  </span>
+                </div>
+                <div className="detail-meta-item">
+                  <span className="detail-meta-label">IP Address</span>
+                  <span className="detail-meta-value mono">{selectedLog?.requestMeta?.ip || UNKNOWN_IP}</span>
+                </div>
               </div>
-                <div className="modal-body">
-                  <div className="mb-3">
-                  <div><strong>Time:</strong> {selectedLog.createdAt ? new Date(selectedLog.createdAt).toLocaleString() : "-"}</div>
-                  <div><strong>Session:</strong> {selectedLog.sessionId || "-"}</div>
-                  <div><strong>Status:</strong> {selectedLog.status || "-"}</div>
-                  <div><strong>IP:</strong> {selectedLog?.requestMeta?.ip || UNKNOWN_IP}</div>
+
+              <div className="detail-conversation">
+                <div className="detail-msg user-msg">
+                  <div className="detail-msg-label"><i className="bi bi-person" /> User</div>
+                  <p>{selectedLog.question || "-"}</p>
                 </div>
-                  <h6>Question</h6>
-                  <p className="mb-3">{selectedLog.question || "-"}</p>
-                  <h6>Answer</h6>
-                  <p className="mb-3">{selectedLog.answer || "-"}</p>
-                  <h6>Raw JSON</h6>
-                  <pre className="all-info-json mb-0"> {JSON.stringify(selectedLog, null, 2)} </pre>
-                </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-outline-secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(selectedLog, null, 2))} > Copy JSON </button>
-                  <button type="button" className="btn btn-primary" onClick={() => setSelectedLog(null)}> Close </button>
+                <div className="detail-msg bot-msg">
+                  <div className="detail-msg-label"><i className="bi bi-robot" /> Assistant</div>
+                  <p>{selectedLog.answer || "-"}</p>
                 </div>
               </div>
+
+              <details className="detail-json-section">
+                <summary>Raw JSON</summary>
+                <pre className="detail-json">{JSON.stringify(selectedLog, null, 2)}</pre>
+              </details>
+            </div>
+            <div className="detail-modal-footer">
+              <button className="modal-btn secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(selectedLog, null, 2))}>
+                <i className="bi bi-clipboard" /> Copy JSON
+              </button>
+              <button className="modal-btn primary" onClick={() => setSelectedLog(null)}>Close</button>
             </div>
           </div>
-          <div className="modal-backdrop fade show" onClick={() => setSelectedLog(null)} />
-        </>)}
+        </>
+      )}
     </div>
   );
 }

@@ -5,23 +5,14 @@ export default function ScrapingSection({
 }) {
   const isRunning = scrapeStatus.lastStatus === "running";
 
-  const statusText =
-    scrapeStatus.lastStatus === "running"
-      ? "In Progress"
-      : scrapeStatus.lastStatus === "success"
-      ? "Completed"
-      : scrapeStatus.lastStatus === "error"
-      ? "Failed"
-      : "Idle";
+  const statusConfig = {
+    running: { text: "In Progress", badge: "in-progress", icon: "bi-arrow-clockwise", iconClass: "spin" },
+    success: { text: "Completed", badge: "success", icon: "bi-check-circle-fill", iconClass: "" },
+    error: { text: "Failed", badge: "error", icon: "bi-x-circle-fill", iconClass: "" },
+    idle: { text: "Idle", badge: "idle", icon: "bi-pause-circle", iconClass: "" }
+  };
 
-  const badgeClass =
-    scrapeStatus.lastStatus === "running"
-      ? "in-progress"
-      : scrapeStatus.lastStatus === "success"
-      ? "success"
-      : scrapeStatus.lastStatus === "error"
-      ? "error"
-      : "idle";
+  const status = statusConfig[scrapeStatus.lastStatus] || statusConfig.idle;
 
   const lastScrapeDate = settings.lastScrapeAt
     ? new Date(settings.lastScrapeAt)
@@ -29,37 +20,51 @@ export default function ScrapingSection({
 
   const lastScrapeText = lastScrapeDate
     ? lastScrapeDate.toLocaleString()
-    : "Not available";
+    : "Never run";
+
+  const timeSinceLastScrape = lastScrapeDate
+    ? Math.round((Date.now() - lastScrapeDate.getTime()) / (1000 * 60 * 60))
+    : null;
 
   return (
-    <div className="admin-panel-block scraping-panel">
-      <div className="scraping-header">
-        <div className="scraping-icon-wrap">
+    <div className="scraping-section">
+      <div className="section-header">
+        <div className="section-icon" style={{ background: "#f5f0ff", color: "#7c3aed" }}>
           <i className="bi bi-arrow-repeat" />
         </div>
-        <h3>Scraping Control</h3>
+        <div>
+          <h3 className="section-title">Data Pipeline</h3>
+          <p className="section-subtitle">Manage content scraping and reindexing</p>
+        </div>
       </div>
 
-      <div className="scraping-status-card">
-        <div className="scraping-status-col">
-          <div className="scraping-label">Current Status</div>
-          <div className={`scraping-badge ${badgeClass}`}>
-            <span className="scraping-badge-dot" />
-            {statusText}
+      <div className="scraping-status-grid">
+        <div className="scraping-stat-card">
+          <span className="scraping-stat-label">Current Status</span>
+          <div className={`scraping-badge ${status.badge}`}>
+            <i className={`bi ${status.icon} ${status.iconClass}`} />
+            {status.text}
           </div>
         </div>
 
-        <div className="scraping-status-col">
-          <div className="scraping-label">Last Scrape</div>
-          <div className="scraping-last-text">
-            {lastScrapeText}
-          </div>
+        <div className="scraping-stat-card">
+          <span className="scraping-stat-label">Last Execution</span>
+          <span className="scraping-stat-value">{lastScrapeText}</span>
+          {timeSinceLastScrape !== null && (
+            <span className="scraping-stat-meta">
+              {timeSinceLastScrape < 1 ? "Less than an hour ago" : `${timeSinceLastScrape}h ago`}
+            </span>
+          )}
         </div>
       </div>
 
       {scrapeStatus.lastError && (
-        <div className="status-error">
-          Last error: {scrapeStatus.lastError}
+        <div className="scraping-error-banner">
+          <i className="bi bi-exclamation-triangle-fill" />
+          <div>
+            <strong>Last error</strong>
+            <p>{scrapeStatus.lastError}</p>
+          </div>
         </div>
       )}
 
@@ -68,8 +73,8 @@ export default function ScrapingSection({
         disabled={isRunning}
         onClick={onTriggerScrape}
       >
-        <i className="bi bi-arrow-repeat" />
-        {isRunning ? "Scraping..." : "Trigger Re-Scraping"}
+        <i className={`bi bi-arrow-repeat ${isRunning ? "spin" : ""}`} />
+        {isRunning ? "Scraping in progress..." : "Run Full Scrape & Reindex"}
       </button>
     </div>
   );

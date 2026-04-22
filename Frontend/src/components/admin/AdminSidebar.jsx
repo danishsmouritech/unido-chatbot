@@ -38,8 +38,10 @@ export default function AdminSidebar({
   return (
     <aside className={`admin-sidebar ${isOpen ? "open" : ""}`}>
       <div className="sidebar-brand">
-        <div className="brand-mark">UN</div>
-        <div>
+        <div className="brand-mark">
+          <i className="bi bi-building" />
+        </div>
+        <div className="brand-text">
           <h2>UNIDO</h2>
           <p>Careers Admin</p>
         </div>
@@ -52,25 +54,40 @@ export default function AdminSidebar({
           <i className="bi bi-x-lg" />
         </button>
       </div>
+
+      <div className="sidebar-section-label">Navigation</div>
+
       <nav className="sidebar-nav">
         {navItems.map((item) => (
           <button
             key={item.key}
             onClick={() => handleTabClick(item.key)}
-            className={`btn btn-sm w-100 ${activeTab === item.key ? "active" : ""}`}
+            className={activeTab === item.key ? "active" : ""}
           >
             <i className={`bi ${item.icon}`} />
             <span>{item.label}</span>
+            {activeTab === item.key && <span className="nav-active-dot" />}
           </button>
         ))}
-        <button
-          className="btn btn-outline-secondary btn-sm"
-          onClick={handleLogout}
-          disabled={loggingOut}
-        >
-          <i className="bi bi-box-arrow-left" /> {loggingOut ? "Logging out..." : "Logout"}
-        </button>
       </nav>
+
+      <div className="sidebar-divider" />
+
+      <button
+        className="sidebar-logout-btn"
+        onClick={handleLogout}
+        disabled={loggingOut}
+      >
+        <i className="bi bi-box-arrow-left" />
+        <span>{loggingOut ? "Logging out..." : "Logout"}</span>
+      </button>
+
+      <div className="sidebar-footer">
+        <span className="sidebar-footer-version">v1.0</span>
+        <span className="sidebar-footer-env">
+          {process.env.NODE_ENV === "production" ? "Production" : "Development"}
+        </span>
+      </div>
     </aside>
   );
 }

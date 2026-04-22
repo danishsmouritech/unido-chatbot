@@ -1,5 +1,5 @@
 import { runRAG } from "../services/rag.service.js";
-import { isBlockedQuery, buildBlockedAnswer } from "../services/guard.service.js";
+import { isBlockedQuery, isOutOfScope, getBlockReason, buildBlockedAnswer } from "../services/guard.service.js";
 import {
   addMessage,
   ensureSession,
@@ -67,7 +67,8 @@ export const askQuestion = async (req, res) => {
     await ensureSession(sessionId);
 
     if (isBlockedQuery(question)) {
-      const blockedAnswer = buildBlockedAnswer();
+      const reason = getBlockReason(question);
+      const blockedAnswer = buildBlockedAnswer(reason);
 
       await addMessage(sessionId, { role: "user", content: question });
       await addMessage(sessionId, { role: "assistant", content: blockedAnswer });
@@ -78,11 +79,34 @@ export const askQuestion = async (req, res) => {
         status: "fallback",
         sources: [],
         requestMeta: { userAgent, ip },
-        timingMs: { total: Date.now() - startedAt }
+        timingMs: { total: Date.now() - startedAt },
+        guardReason: reason
       });
 
       return res.json({
         answer: blockedAnswer,
+        sources: []
+      });
+    }
+
+    if (isOutOfScope(question)) {
+      const outOfScopeAnswer = buildBlockedAnswer("out_of_scope");
+
+      await addMessage(sessionId, { role: "user", content: question });
+      await addMessage(sessionId, { role: "assistant", content: outOfScopeAnswer });
+      await createChatLog({
+        sessionId,
+        question,
+        answer: outOfScopeAnswer,
+        status: "fallback",
+        sources: [],
+        requestMeta: { userAgent, ip },
+        timingMs: { total: Date.now() - startedAt },
+        guardReason: "out_of_scope"
+      });
+
+      return res.json({
+        answer: outOfScopeAnswer,
         sources: []
       });
     }

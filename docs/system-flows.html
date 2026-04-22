@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNIDO AI Chatbot — Complete System Flows</title>
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: #f4f6fa;
+      color: #1e293b;
+      line-height: 1.7;
+    }
+
+    /* ── Palette ───────────────────────────────────────────────── */
+    :root {
+      --blue:    #0066b3;
+      --blue-d:  #004080;
+      --green:   #059669;
+      --purple:  #7c3aed;
+      --amber:   #d97706;
+      --red:     #dc2626;
+      --slate-50:  #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --slate-900: #0f172a;
+      --radius:    14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    /* ── Hero ──────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0a1f3d 0%, #0d2b52 50%, #0066b3 100%);
+      color: #fff;
+      padding: 72px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 30%, rgba(255,255,255,.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero h1 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -.03em; position: relative; }
+    .hero .subtitle { margin-top: 12px; font-size: 1.1rem; color: rgba(255,255,255,.8); max-width: 640px; margin-inline: auto; position: relative; }
+    .hero .version-badge {
+      display: inline-block; margin-top: 20px; font-size: .72rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase; padding: 6px 16px;
+      border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      position: relative;
+    }
+
+    /* ── Sticky Nav ────────────────────────────────────────────── */
+    .toc-bar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--slate-200);
+      padding: 0 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .toc-bar::-webkit-scrollbar { display: none; }
+    .toc-bar nav { display: flex; gap: 4px; max-width: 1200px; margin: auto; }
+    .toc-bar a {
+      white-space: nowrap; padding: 12px 14px; font-size: 13px; font-weight: 600;
+      color: var(--slate-500); text-decoration: none; border-bottom: 2px solid transparent;
+      transition: all .2s;
+    }
+    .toc-bar a:hover { color: var(--blue); border-color: var(--blue); }
+
+    /* ── Container ─────────────────────────────────────────────── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Section ───────────────────────────────────────────────── */
+    .section { margin-bottom: 56px; scroll-margin-top: 64px; }
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 24px; padding-bottom: 14px; border-bottom: 2px solid var(--slate-200);
+    }
+    .section-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 1.6rem; font-weight: 700; color: var(--slate-900); }
+    .section-header p { margin-top: 2px; font-size: .85rem; color: var(--slate-500); }
+
+    /* colour variants */
+    .icon-blue   { background: #e8f2fc; color: var(--blue); }
+    .icon-green  { background: #ecfdf5; color: var(--green); }
+    .icon-purple { background: #f5f0ff; color: var(--purple); }
+    .icon-amber  { background: #fffbeb; color: var(--amber); }
+    .icon-red    { background: #fef2f2; color: var(--red); }
+
+    /* ── Card ──────────────────────────────────────────────────── */
+    .card {
+      background: #fff; border: 1px solid var(--slate-200); border-radius: var(--radius);
+      padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+    }
+    .card h3 { font-size: 1.1rem; font-weight: 700; color: var(--slate-900); margin-bottom: 10px; }
+    .card h4 { font-size: .95rem; font-weight: 700; color: var(--slate-700); margin: 16px 0 6px; }
+    .card p, .card li { font-size: .92rem; color: var(--slate-700); }
+    .card ul, .card ol { padding-left: 20px; }
+    .card li { margin-bottom: 4px; }
+
+    /* ── Flow Diagram ─────────────────────────────────────────── */
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 0; margin: 20px 0; justify-content: center;
+    }
+    .flow-step {
+      background: var(--slate-50); border: 1px solid var(--slate-200);
+      border-radius: 10px; padding: 12px 18px; text-align: center;
+      font-size: .82rem; font-weight: 600; color: var(--slate-700);
+      min-width: 120px; position: relative;
+    }
+    .flow-step small { display: block; font-weight: 400; font-size: .72rem; color: var(--slate-500); margin-top: 2px; }
+    .flow-step.highlight { background: #e8f2fc; border-color: var(--blue); color: var(--blue); }
+    .flow-step.highlight-green { background: #ecfdf5; border-color: var(--green); color: var(--green); }
+    .flow-step.highlight-purple { background: #f5f0ff; border-color: var(--purple); color: var(--purple); }
+    .flow-step.highlight-amber { background: #fffbeb; border-color: var(--amber); color: var(--amber); }
+    .flow-step.highlight-red { background: #fef2f2; border-color: var(--red); color: var(--red); }
+    .flow-arrow {
+      font-size: 20px; color: var(--slate-500); padding: 0 6px; flex-shrink: 0;
+      user-select: none;
+    }
+    .flow-arrow.down {
+      width: 100%; text-align: center; padding: 6px 0; font-size: 22px;
+    }
+
+    /* ── Code Block ────────────────────────────────────────────── */
+    pre {
+      background: #0f172a; color: #e2e8f0; border-radius: 10px;
+      padding: 16px 20px; font-size: .82rem; overflow-x: auto;
+      line-height: 1.6; margin: 12px 0; font-family: "SF Mono", "Consolas", "Menlo", monospace;
+    }
+    code { font-family: inherit; }
+    .inline-code {
+      background: var(--slate-100); color: var(--blue-d); padding: 2px 7px;
+      border-radius: 5px; font-size: .84rem; font-family: "SF Mono","Consolas", monospace;
+    }
+
+    /* ── Table ─────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 14px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    thead th {
+      background: var(--slate-50); color: var(--slate-700); font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em; font-size: .72rem;
+      padding: 10px 14px; border-bottom: 2px solid var(--slate-200); text-align: left;
+    }
+    tbody td { padding: 10px 14px; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+    tbody tr:hover { background: var(--slate-50); }
+
+    /* ── Pill / Badge ──────────────────────────────────────────── */
+    .pill {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+    }
+    .pill-blue   { background: #e8f2fc; color: var(--blue); }
+    .pill-green  { background: #ecfdf5; color: var(--green); }
+    .pill-amber  { background: #fffbeb; color: var(--amber); }
+    .pill-red    { background: #fef2f2; color: var(--red); }
+    .pill-purple { background: #f5f0ff; color: var(--purple); }
+    .pill-slate  { background: var(--slate-100); color: var(--slate-700); }
+
+    /* ── Callout ───────────────────────────────────────────────── */
+    .callout {
+      border-left: 4px solid var(--blue); background: #f0f7ff;
+      border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 16px 0;
+      font-size: .88rem;
+    }
+    .callout strong { color: var(--blue); }
+    .callout.warn { border-color: var(--amber); background: #fffdf5; }
+    .callout.warn strong { color: var(--amber); }
+    .callout.danger { border-color: var(--red); background: #fff5f5; }
+    .callout.danger strong { color: var(--red); }
+
+    /* ── Sequence Diagram (vertical) ──────────────────────────── */
+    .seq { margin: 20px 0; }
+    .seq-row { display: flex; align-items: stretch; min-height: 48px; }
+    .seq-actor {
+      width: 120px; flex-shrink: 0; padding: 8px 0;
+      font-size: .76rem; font-weight: 700; color: var(--slate-500);
+      text-align: right; padding-right: 14px; display: flex; align-items: center; justify-content: flex-end;
+    }
+    .seq-line { width: 2px; background: var(--slate-200); flex-shrink: 0; position: relative; }
+    .seq-line .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--blue); position: absolute; left: -4px; top: 50%; transform: translateY(-50%);
+    }
+    .seq-msg {
+      flex: 1; padding: 8px 14px; font-size: .84rem; color: var(--slate-700);
+      display: flex; align-items: center;
+    }
+    .seq-msg .label {
+      background: var(--slate-50); border: 1px solid var(--slate-200);
+      border-radius: 8px; padding: 6px 12px; font-size: .8rem;
+    }
+
+    /* ── Architecture Boxes ────────────────────────────────────── */
+    .arch-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px; margin: 16px 0;
+    }
+    .arch-box {
+      background: var(--slate-50); border: 1px solid var(--slate-200);
+      border-radius: 10px; padding: 16px; text-align: center;
+    }
+    .arch-box .arch-icon { font-size: 28px; margin-bottom: 8px; }
+    .arch-box h4 { font-size: .9rem; font-weight: 700; color: var(--slate-900); margin-bottom: 4px; }
+    .arch-box p { font-size: .78rem; color: var(--slate-500); }
+
+    /* ── Numbered Steps ────────────────────────────────────────── */
+    .steps { counter-reset: step-counter; margin: 16px 0; }
+    .step {
+      display: flex; gap: 14px; margin-bottom: 14px;
+      counter-increment: step-counter;
+    }
+    .step::before {
+      content: counter(step-counter);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--blue); color: #fff; font-size: .82rem; font-weight: 700;
+      display: grid; place-items: center; flex-shrink: 0; margin-top: 2px;
+    }
+    .step-content { flex: 1; }
+    .step-content strong { color: var(--slate-900); }
+    .step-content p { font-size: .88rem; margin-top: 2px; }
+
+    /* ── Footer ────────────────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 32px 24px; color: var(--slate-500);
+      font-size: .8rem; border-top: 1px solid var(--slate-200);
+    }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero { padding: 48px 16px 40px; }
+      .container { padding: 24px 14px 48px; }
+      .flow { gap: 4px; }
+      .flow-step { min-width: 90px; padding: 10px 12px; font-size: .76rem; }
+      .seq-actor { width: 80px; font-size: .68rem; }
+      .arch-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Print ─────────────────────────────────────────────────── */
+    @media print {
+      .toc-bar { display: none; }
+      .hero { padding: 24px; }
+      body { font-size: 11pt; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <h1>UNIDO AI Chatbot — System Flows</h1>
+  <p class="subtitle">
+    Complete technical documentation of every flow in the UNIDO Careers RAG Chatbot,
+    from user query to AI response, data pipeline to admin operations.
+  </p>
+  <span class="version-badge">v1.0 &middot; April 2026 &middot; MouriTech</span>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TABLE OF CONTENTS — STICKY BAR
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="toc-bar">
+  <nav>
+    <a href="#architecture">Architecture</a>
+    <a href="#chat-flow">Chat Flow</a>
+    <a href="#rag-pipeline">RAG Pipeline</a>
+    <a href="#guard-service">Guard Service</a>
+    <a href="#data-pipeline">Data Pipeline</a>
+    <a href="#auth-flow">Auth Flow</a>
+    <a href="#admin-ops">Admin Ops</a>
+    <a href="#realtime">Real-time</a>
+    <a href="#security">Security</a>
+    <a href="#api-reference">API Reference</a>
+    <a href="#env-vars">Env Vars</a>
+    <a href="#org-security">Org Security</a>
+    <a href="#go-live">Go-Live Requirements</a>
+  </nav>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     1. HIGH-LEVEL ARCHITECTURE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="architecture">
+  <div class="section-header">
+    <div class="section-icon icon-blue">&#9670;</div>
+    <div>
+      <h2>High-Level Architecture</h2>
+      <p>Component overview and technology stack</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>System Components</h3>
+    <div class="arch-grid">
+      <div class="arch-box">
+        <div class="arch-icon">&#128187;</div>
+        <h4>Frontend (React 19)</h4>
+        <p>Vite 7 &middot; Bootstrap 5 &middot; Recharts &middot; Socket.IO Client &middot; React Hook Form</p>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon">&#9881;</div>
+        <h4>Backend (Express 5)</h4>
+        <p>Node.js &middot; Mongoose 9 &middot; Puppeteer &middot; Socket.IO &middot; node-cron</p>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon">&#129302;</div>
+        <h4>Azure OpenAI</h4>
+        <p>GPT-4o-mini (chat) &middot; text-embedding-3-small (embeddings, 1536D)</p>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon">&#128270;</div>
+        <h4>Elasticsearch</h4>
+        <p>Vector store &middot; kNN cosine search &middot; dense_vector index</p>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon">&#128451;</div>
+        <h4>MongoDB</h4>
+        <p>Sessions &middot; Chat Logs &middot; Admin Users &middot; Settings</p>
+      </div>
+      <div class="arch-box">
+        <div class="arch-icon">&#128274;</div>
+        <h4>Security Layer</h4>
+        <p>Helmet &middot; CORS &middot; Rate Limits &middot; JWT &middot; bcrypt 12 &middot; NoSQL Guard</p>
+      </div>
+    </div>
+
+    <h4>Data Flow Overview</h4>
+    <div class="flow">
+      <div class="flow-step">User<small>Browser</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">React Frontend<small>ChatWidget.jsx</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Express API<small>chat.controller</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Guard Service<small>Input validation</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">RAG Pipeline<small>Embed → Search → Generate</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Response<small>JSON to client</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>MongoDB Collections</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Collection</th><th>Model</th><th>Key Fields</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="inline-code">chatSessions</span></td>
+            <td>ChatSession</td>
+            <td><span class="inline-code">sessionId</span> (unique), <span class="inline-code">messages[]</span></td>
+            <td>Stores per-tab conversation threads with role/content/timestamp</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">chatLogs</span></td>
+            <td>ChatLog</td>
+            <td><span class="inline-code">question</span>, <span class="inline-code">answer</span>, <span class="inline-code">status</span>, <span class="inline-code">timingMs</span>, <span class="inline-code">requestMeta</span></td>
+            <td>Audit trail — every Q&amp;A pair with full metadata for analytics</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">adminUsers</span></td>
+            <td>AdminUser</td>
+            <td><span class="inline-code">email</span> (unique), <span class="inline-code">password</span> (bcrypt 12), <span class="inline-code">role</span></td>
+            <td>Admin accounts for the dashboard</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">adminSettings</span></td>
+            <td>AdminSetting</td>
+            <td><span class="inline-code">key</span> ("global"), <span class="inline-code">systemPrompt</span>, <span class="inline-code">chatbotEnabled</span>, <span class="inline-code">lastScrapeAt</span></td>
+            <td>Singleton config controlling chatbot behavior</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     2. CHAT FLOW
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="chat-flow">
+  <div class="section-header">
+    <div class="section-icon icon-blue">&#128172;</div>
+    <div>
+      <h2>Chat Flow</h2>
+      <p>End-to-end journey from user input to AI response</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Session Initialization</h3>
+    <p>When the ChatWidget mounts, it must establish a session before any messages can be sent.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Check Visibility</strong>
+          <p>
+            <span class="inline-code">GET /api/chat/visibility</span> &mdash; returns
+            <span class="inline-code">{ chatbotEnabled: boolean }</span>.
+            If disabled, the widget stays hidden and no session is created.
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Look for Existing Session</strong>
+          <p>
+            Checks <span class="inline-code">sessionStorage["chatWidgetSessionId"]</span>.
+            If found, the stored UUID is reused (sessions survive page refreshes within the same tab).
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Create New Session (if needed)</strong>
+          <p>
+            <span class="inline-code">POST /api/chat/session</span> &mdash; server generates
+            <span class="inline-code">crypto.randomUUID()</span>, upserts a <span class="inline-code">ChatSession</span>
+            document in MongoDB, and returns the <span class="inline-code">sessionId</span>.
+            A singleton promise prevents duplicate creation on concurrent renders.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Why sessionStorage?</strong> Each browser tab gets its own independent chat session.
+      Closing the tab naturally clears the session. This avoids stale conversations leaking across tabs.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Message Lifecycle</h3>
+    <p>Every message follows this exact sequence through the backend:</p>
+
+    <div class="flow">
+      <div class="flow-step">User types question<small>max 500 chars (frontend)</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">POST /api/chat/ask<small>{ sessionId, question }</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Validation<small>express-validator</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Chatbot Enabled?<small>AdminSettings check</small></div>
+    </div>
+    <div class="flow">
+      <span class="flow-arrow down">&#8595;</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step highlight-red">Guard Check<small>Blocked / Out-of-scope?</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">RAG Pipeline<small>Embed → Retrieve → Generate</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Save to DB<small>ChatLog + session history</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Return JSON<small>{ answer, sources }</small></div>
+    </div>
+
+    <h4>Backend Controller Steps (chat.controller.js → askQuestion)</h4>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Input Validation</strong>
+          <p>
+            <span class="inline-code">sessionId</span>: string, max 100 chars.
+            <span class="inline-code">question</span>: string, 1–2000 chars.
+            The frontend-side <span class="inline-code">.escape()</span> was intentionally removed
+            to avoid mangling legitimate user input — the backend sanitizer handles XSS.
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Chatbot Enabled Check</strong>
+          <p>Reads <span class="inline-code">chatbotEnabled</span> from <span class="inline-code">AdminSettings</span>. Returns HTTP 503 if disabled.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Ensure Session</strong>
+          <p>Upserts the session document — if the sessionId doesn't exist, it creates one. This handles edge cases where sessionStorage has a stale ID.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Guard Check #1 — isBlockedQuery()</strong>
+          <p>Tests against offensive, confidential, and prompt-injection patterns. If blocked, returns a safe fallback message and logs with <span class="inline-code">status: "fallback"</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Guard Check #2 — isOutOfScope()</strong>
+          <p>Tests against out-of-scope patterns (code generation, recipes, sports, etc.). Returns a polite redirection message.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Retrieve History</strong>
+          <p>Loads conversation history from the ChatSession's <span class="inline-code">messages[]</span> array. This gives the AI context about the ongoing conversation.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Run RAG</strong>
+          <p>Calls <span class="inline-code">runRAG(question, history)</span> which embeds, retrieves, and generates the answer. See the <a href="#rag-pipeline">RAG Pipeline</a> section for details.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Persist &amp; Respond</strong>
+          <p>
+            Adds both user &amp; assistant messages to the session. Creates a <span class="inline-code">ChatLog</span> with full metadata
+            (timing, sources count, model info, IP, user-agent). Emits
+            <span class="inline-code">analytics:updated</span> and <span class="inline-code">information:updated</span> via Socket.IO.
+            Returns <span class="inline-code">{ answer, sources }</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <strong>Session Recovery:</strong> If the backend returns 404 ("session not found"), the frontend
+      auto-retries once by clearing <span class="inline-code">sessionStorage</span> and creating a fresh session.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Quick Action Buttons</h3>
+    <p>Three preset buttons appear when the conversation is empty. Clicking one sends it as if the user typed it:</p>
+    <div class="flow">
+      <div class="flow-step highlight">"What jobs are available?"</div>
+      <div class="flow-step highlight-green">"How do I apply?"</div>
+      <div class="flow-step highlight-purple">"What are the benefits?"</div>
+    </div>
+    <p style="margin-top: 10px; font-size: .88rem;">
+      These are passed directly to <span class="inline-code">sendMessage(action)</span> — the same function used for typed messages.
+      No special handling needed on the backend.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     3. RAG PIPELINE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="rag-pipeline">
+  <div class="section-header">
+    <div class="section-icon icon-green">&#129302;</div>
+    <div>
+      <h2>RAG Pipeline</h2>
+      <p>Retrieval-Augmented Generation: Embed → Retrieve → Generate</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>End-to-End RAG Flow</h3>
+    <div class="flow">
+      <div class="flow-step highlight">User Question<small>"What internships are available?"</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Embed<small>text-embedding-3-small</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Retrieve<small>Elasticsearch kNN</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Generate<small>GPT-4o-mini</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Answer<small>JSON response</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Step 1 — Embed the Question</h3>
+    <p>
+      The user's question is converted into a 1536-dimensional vector using Azure OpenAI's
+      <span class="inline-code">text-embedding-3-small</span> model via <span class="inline-code">getEmbeddingClient().embeddings.create()</span>.
+    </p>
+    <pre><code>// embedding.service.js
+const response = await getEmbeddingClient().embeddings.create({
+  model: AZURE_EMBEDDING_DEPLOYMENT,
+  input: text
+});
+return response.data[0].embedding; // Float[1536]</code></pre>
+    <p>This vector captures the semantic meaning of the question and will be compared against all stored content vectors.</p>
+  </div>
+
+  <div class="card">
+    <h3>Step 2 — Retrieve Relevant Chunks</h3>
+    <p>
+      The embedding vector is sent to Elasticsearch's kNN (k-Nearest Neighbors) search,
+      which finds the most semantically similar content chunks.
+    </p>
+    <pre><code>// retrieval.service.js → searchRelevantChunks()
+const result = await esClient.search({
+  index: "unido_careers_index",
+  knn: {
+    field: "embedding",
+    query_vector: embedding,
+    k: TOP_K,              // default 5
+    num_candidates: 50     // broader initial scan
+  }
+});
+// Filter by MIN_RELEVANCE_SCORE (default 0.75)</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Default</th><th>Env Variable</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="inline-code">TOP_K</span></td><td>5</td><td><span class="inline-code">RAG_TOP_K</span></td><td>Maximum chunks returned</td></tr>
+          <tr><td><span class="inline-code">MIN_RELEVANCE_SCORE</span></td><td>0.75</td><td><span class="inline-code">RAG_MIN_SCORE</span></td><td>Cosine similarity threshold — rejects low-confidence matches</td></tr>
+          <tr><td><span class="inline-code">num_candidates</span></td><td>50</td><td>—</td><td>Elasticsearch evaluates this many candidates before picking top K</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <strong>No relevant results?</strong> If no chunks pass the minimum score threshold, the system
+      returns <em>"I do not have enough information to answer that question"</em> without calling GPT — saving cost and preventing hallucination.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Step 3 — Generate the Answer</h3>
+    <p>The retrieved chunks are formatted as context and sent alongside the question to GPT-4o-mini.</p>
+    <pre><code>// generation.service.js
+const messages = [
+  { role: "system", content: systemPrompt },
+  ...normalizedHistory,
+  {
+    role: "user",
+    content: `QUESTION: ${question}\n\nCONTEXT:\n${contextText}`
+  }
+];
+
+const response = await getChatClient().chat.completions.create({
+  model: AZURE_OPENAI_DEPLOYMENT,  // gpt-4o-mini
+  messages,
+  temperature: 0.1  // near-deterministic
+});</code></pre>
+
+    <h4>System Prompt (configurable via Admin UI)</h4>
+    <p>
+      The system prompt is loaded from <span class="inline-code">AdminSettings.systemPrompt</span>. Default:
+    </p>
+    <pre><code>"You are a UNIDO Careers Assistant. Answer ONLY from the provided CONTEXT.
+If the context does not contain enough information, say you don't have
+enough information. Do not make up answers."</code></pre>
+
+    <h4>Why temperature 0.1?</h4>
+    <p>
+      Near-zero temperature ensures the AI stays faithful to the retrieved context.
+      For a careers information chatbot, factual accuracy is critical — creative or
+      speculative answers could mislead job applicants.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     4. GUARD SERVICE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="guard-service">
+  <div class="section-header">
+    <div class="section-icon icon-red">&#128737;</div>
+    <div>
+      <h2>Guard Service</h2>
+      <p>Content filtering and prompt injection defense</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Four-Layer Content Filter</h3>
+    <p>Every user question passes through four pattern categories before reaching the RAG pipeline:</p>
+
+    <div class="flow">
+      <div class="flow-step">User Input</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-red">Offensive<small>Profanity, threats</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Confidential<small>PII, sensitive data</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Injection<small>Prompt manipulation</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">Out-of-Scope<small>Unrelated topics</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">&#10003; RAG Pipeline</div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Action</th><th>Sample Patterns</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-red">OFFENSIVE</span></td>
+            <td>Blocked — returns safe fallback</td>
+            <td>Profanity, hate speech, threats, violence keywords, self-harm</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-amber">CONFIDENTIAL</span></td>
+            <td>Blocked — returns safe fallback</td>
+            <td>"staff salary", "passport", "ssn", "credit card", "medical record", "employee data"</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-purple">PROMPT INJECTION</span></td>
+            <td>Blocked — returns safe fallback</td>
+            <td>"ignore previous instructions", "you are now", "system:", "DAN jailbreak", "[INST]", "&lt;&lt;SYS&gt;&gt;", "forget everything"</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">OUT OF SCOPE</span></td>
+            <td>Polite redirection message</td>
+            <td>"write me code", "recipe", "weather", "sports", "stock market", "crypto", "homework"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Additional Checks</h4>
+    <ul>
+      <li>Empty strings → blocked</li>
+      <li>Strings over 2000 characters → blocked</li>
+      <li>Each blocked query is logged with <span class="inline-code">status: "fallback"</span> and a <span class="inline-code">guardReason</span> for audit purposes</li>
+    </ul>
+
+    <h4>Contextual Responses</h4>
+    <p><span class="inline-code">buildBlockedAnswer(reason)</span> returns different user-friendly messages per reason type — an offensive query gets a different response than a prompt injection attempt.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     5. DATA PIPELINE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="data-pipeline">
+  <div class="section-header">
+    <div class="section-icon icon-purple">&#128640;</div>
+    <div>
+      <h2>Data Pipeline</h2>
+      <p>Scraping, cleaning, chunking, embedding, and indexing</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Pipeline Overview (pipeline.js)</h3>
+    <p>The <span class="inline-code">runScraper()</span> function executes the full pipeline sequentially. This runs daily via cron or on-demand from the admin panel.</p>
+
+    <div class="flow">
+      <div class="flow-step highlight">Scrape<small>Puppeteer + Cheerio</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Clean HTML<small>cleanerHTML.js</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Chunk<small>chunker.js</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Embed<small>OpenAI 1536D vectors</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">Index<small>Elasticsearch bulk</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Backup<small>JSON files</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Phase 1 — Scraping</h3>
+    <p>Six scrapers extract all content from the UNIDO Careers website using Puppeteer (headless Chrome):</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Scraper</th><th>Source</th><th>What It Extracts</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-blue">Homepage</span></td>
+            <td><span class="inline-code">careers.unido.org/</span></td>
+            <td>Hero title &amp; description, CTA link, career category links</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">FAQs</span></td>
+            <td><span class="inline-code">unido.org/employment/faqs</span></td>
+            <td>Numbered Q&amp;A pairs from FAQ page</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-purple">Job Search</span></td>
+            <td><span class="inline-code">careers.unido.org/search/</span></td>
+            <td>Job title, location, department, grade, deadline, detail link. Paginates 25/page</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-amber">Job Details</span></td>
+            <td>Individual job URLs</td>
+            <td>Full job listing: requisition ID, grade, duty station, all sections (responsibilities, qualifications, etc.)</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-red">Categories</span></td>
+            <td>Category page URLs</td>
+            <td>Category title, description, total jobs, job listings within each category</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-slate">Category Content</span></td>
+            <td>Learn-more page URLs</td>
+            <td>Detailed paragraphs, lists, tables (grade/experience requirements) with 1.5s delay between pages</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Phase 2 — HTML Cleaning</h3>
+    <p>
+      <span class="inline-code">cleanerHTML.js</span> uses <strong>Cheerio</strong> to load raw HTML and strip noise:
+    </p>
+    <ul>
+      <li>Removes <span class="inline-code">&lt;script&gt;</span>, <span class="inline-code">&lt;style&gt;</span>, <span class="inline-code">&lt;header&gt;</span>, <span class="inline-code">&lt;footer&gt;</span>, <span class="inline-code">&lt;nav&gt;</span> elements</li>
+      <li>Returns a Cheerio <span class="inline-code">$</span> instance for further DOM querying by the scrapers</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Phase 3 — Chunking</h3>
+    <p>
+      The <span class="inline-code">chunker.js</span> module splits cleaned content into semantically meaningful chunks
+      using sentence-based splitting with configurable overlap.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="inline-code">maxLength</span></td><td>1000 chars</td><td>Maximum characters per chunk</td></tr>
+          <tr><td><span class="inline-code">overlapSentences</span></td><td>1</td><td>Sentences carried from previous chunk for context continuity</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Chunk Types Produced</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>ID Pattern</th><th>Document Type</th></tr></thead>
+        <tbody>
+          <tr><td>Homepage</td><td><span class="inline-code">homepage_hero_N</span>, <span class="inline-code">homepage_cta_1</span></td><td>hero / cta / category</td></tr>
+          <tr><td>FAQs</td><td><span class="inline-code">faq_{hash}_N</span></td><td>faq</td></tr>
+          <tr><td>Job Summaries</td><td><span class="inline-code">job_summary_{hash}_N</span></td><td>job_summary</td></tr>
+          <tr><td>Job Details</td><td><span class="inline-code">job_detail_{hash}_{section}_N</span></td><td>job_detail (max 1200 chars)</td></tr>
+          <tr><td>Job Categories</td><td><span class="inline-code">category_{hash}_N</span></td><td>category_overview / category_job</td></tr>
+          <tr><td>Category Content</td><td><span class="inline-code">category_content_{hash}_{section}_N</span></td><td>category_content</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Each chunk includes metadata: <span class="inline-code">chunk_index</span>,
+      <span class="inline-code">total_chunks</span>, <span class="inline-code">content_length</span>,
+      <span class="inline-code">embedding_version: "v1"</span>, <span class="inline-code">source: "unido_careers"</span>.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Phase 4 — Embedding &amp; Indexing</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Ensure Index</strong>
+          <p>Creates the <span class="inline-code">unido_careers_index</span> in Elasticsearch with <span class="inline-code">dense_vector</span> mapping (1536 dimensions, cosine similarity) if it doesn't exist.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Clear Existing Data</strong>
+          <p><span class="inline-code">deleteByQuery({ match_all: {} })</span> removes all documents from the index to ensure a clean re-index.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Generate Embeddings</strong>
+          <p>For each chunk, <span class="inline-code">withEmbeddings()</span> calls Azure OpenAI to generate a 1536-dimensional vector. Processed one-by-one to respect rate limits.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Bulk Index</strong>
+          <p>All chunks (with embeddings) are indexed using Elasticsearch's bulk API for efficient writes.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Save Backup</strong>
+          <p>JSON files saved to local <span class="inline-code">data/</span> and <span class="inline-code">chunks/</span> folders with date-prefixed filenames (e.g., <span class="inline-code">180226_unido_faqs.json</span>).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Cron Schedule:</strong> When <span class="inline-code">ENABLE_CRON=true</span>, the pipeline
+      runs daily at midnight UTC via <span class="inline-code">node-cron</span> schedule
+      <span class="inline-code">"0 0 * * *"</span>. Timezone is configurable via
+      <span class="inline-code">CRON_TIMEZONE</span>.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     6. AUTH FLOW
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="auth-flow">
+  <div class="section-header">
+    <div class="section-icon icon-amber">&#128274;</div>
+    <div>
+      <h2>Authentication Flow</h2>
+      <p>Admin login, JWT verification, and route protection</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Login Sequence</h3>
+    <div class="flow">
+      <div class="flow-step">Admin Login Form<small>email + password</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">POST /api/admin/auth/login<small>Rate limited: 5/min</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">bcrypt.compare<small>12 rounds</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">JWT Sign<small>HS256 · 25min expiry</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">localStorage<small>"adminToken"</small></div>
+    </div>
+
+    <h4>Backend Details (adminAuth.service.js)</h4>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Find Active User</strong>
+          <p>Queries <span class="inline-code">AdminUser.findOne({ email, isActive: true })</span></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Constant-Time Defense</strong>
+          <p>If user not found, hashes a dummy password anyway to prevent timing-based user enumeration attacks.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Password Verification</strong>
+          <p><span class="inline-code">bcrypt.compare()</span> with 12 salt rounds (OWASP recommended).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Token Generation</strong>
+          <p>Signs JWT with <span class="inline-code">{ id, role: "admin", iat }</span>, algorithm HS256, expiry from <span class="inline-code">JWT_EXPIRES</span> (default 25m). Secret must be 32+ characters in production.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Token Verification Middleware</h3>
+    <p>Every admin API request passes through <span class="inline-code">requireAdminAuth</span>:</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Extract Token</strong>
+          <p>Reads <span class="inline-code">Authorization: Bearer &lt;token&gt;</span> header.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Format Validation</strong>
+          <p>Checks 3-part JWT format (header.payload.signature). Rejects malformed tokens before decoding.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>JWT Verify</strong>
+          <p><span class="inline-code">jwt.verify()</span> with <span class="inline-code">algorithms: ["HS256"]</span> and <span class="inline-code">maxAge: "30m"</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Role Check</strong>
+          <p>Verifies <span class="inline-code">decoded.role === "admin"</span>. Returns 403 Forbidden with IP logged if role mismatch.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <strong>Security:</strong> Expired tokens get a specific <span class="inline-code">TokenExpiredError</span>
+      response (401). Other verification failures get a generic 401. This prevents information leakage
+      about why a token was rejected.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Client-Side Route Protection (PrivateRoute.jsx)</h3>
+    <p>A React wrapper component that guards admin routes:</p>
+    <ol>
+      <li>Reads token from <span class="inline-code">localStorage.getItem("adminToken")</span></li>
+      <li>Parses the JWT payload via base64 decode (no verification — server handles that)</li>
+      <li>Checks <span class="inline-code">exp</span> timestamp with a 30-second buffer for clock drift</li>
+      <li>Validates <span class="inline-code">role === "admin"</span></li>
+      <li>If invalid → removes token → redirects to <span class="inline-code">/login</span></li>
+      <li>If valid → renders the protected children</li>
+    </ol>
+
+    <div class="callout warn">
+      <strong>Defense in depth:</strong> Client-side checks are for UX only. Every API call is independently
+      verified by the server middleware. A tampered client-side token can't access real data.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     7. ADMIN OPERATIONS
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="admin-ops">
+  <div class="section-header">
+    <div class="section-icon icon-blue">&#128200;</div>
+    <div>
+      <h2>Admin Panel Operations</h2>
+      <p>Analytics, settings, scraping, exports, and conversation management</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Analytics Dashboard</h3>
+    <p>
+      <span class="inline-code">GET /api/admin/analytics</span> computes metrics via MongoDB aggregation,
+      optionally filtered by <span class="inline-code">fromDate</span> / <span class="inline-code">toDate</span>.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Metric</th><th>Source</th><th>Computation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Conversations</strong></td>
+            <td>ChatSession</td>
+            <td><span class="inline-code">countDocuments()</span> with date filter</td>
+          </tr>
+          <tr>
+            <td><strong>Messages</strong></td>
+            <td>ChatSession</td>
+            <td>Aggregate: unwind <span class="inline-code">messages[]</span>, group by role, sum</td>
+          </tr>
+          <tr>
+            <td><strong>Unique Users</strong></td>
+            <td>ChatLog</td>
+            <td><span class="inline-code">distinct("requestMeta.ip")</span></td>
+          </tr>
+          <tr>
+            <td><strong>Avg Response (ms)</strong></td>
+            <td>ChatLog</td>
+            <td><span class="inline-code">$avg</span> of <span class="inline-code">timingMs.total</span></td>
+          </tr>
+          <tr>
+            <td><strong>Errors</strong></td>
+            <td>ChatLog</td>
+            <td><span class="inline-code">countDocuments({ status: "error" })</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Visualized with three Recharts pie charts: Total Data, Message Distribution, Errors vs Success.</p>
+  </div>
+
+  <div class="card">
+    <h3>Settings Management</h3>
+    <div class="flow">
+      <div class="flow-step">Admin edits prompt<small>max 500 chars</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">PUT /api/admin/settings<small>{ systemPrompt, chatbotEnabled }</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">MongoDB Update<small>AdminSettings.key="global"</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Socket.IO Emit<small>chatbot:visibilityChanged</small></div>
+    </div>
+    <p style="margin-top:12px;">
+      The <span class="inline-code">chatbotEnabled</span> toggle controls whether the ChatWidget is visible
+      to end users. Changes propagate in <strong>real-time</strong> via Socket.IO — no page refresh required.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Scraping Control</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Admin clicks "Run Full Scrape &amp; Reindex"</strong>
+          <p><span class="inline-code">POST /api/admin/scrape/trigger</span> → calls <span class="inline-code">triggerScrape()</span></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>State Machine: idle → running</strong>
+          <p>If already running, returns <span class="inline-code">{ started: false }</span>. Otherwise, fires the pipeline asynchronously.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Frontend Polls Status</strong>
+          <p><span class="inline-code">GET /api/admin/scrape/status</span> polled every 5 seconds while status is "running". Returns <span class="inline-code">{ lastStatus, lastError }</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Pipeline Completes</strong>
+          <p>State transitions to <span class="inline-code">success</span> or <span class="inline-code">error</span>. Updates <span class="inline-code">lastScrapeAt</span> in AdminSettings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>CSV Export</h3>
+    <div class="flow">
+      <div class="flow-step">Select date range &amp; type<small>From / To / All or Conversations</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">GET /api/admin/reports/chat-logs<small>Query params</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Server generates CSV<small>Content-Type: text/csv</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Browser download<small>Blob → &lt;a&gt; click</small></div>
+    </div>
+    <h4>CSV Columns</h4>
+    <p>
+      <span class="inline-code">createdAt</span>, <span class="inline-code">sessionId</span>,
+      <span class="inline-code">status</span>, <span class="inline-code">question</span>,
+      <span class="inline-code">answer</span>, <span class="inline-code">sourceCount</span>,
+      <span class="inline-code">responseMs</span>, <span class="inline-code">ip</span>
+    </p>
+    <p>
+      The "conversations" type filters for <span class="inline-code">status: { $in: ["success", "fallback"] }</span>,
+      excluding error-only logs. Limit: up to 10,000 rows.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>All Information Table</h3>
+    <p>
+      <span class="inline-code">GET /api/admin/allInformation</span> returns paginated, searchable chat logs:
+    </p>
+    <ul>
+      <li><strong>Pagination:</strong> <span class="inline-code">page</span> (1–10000), <span class="inline-code">limit</span> (1–100, default 25)</li>
+      <li><strong>Search:</strong> Regex-based across <span class="inline-code">sessionId</span>, <span class="inline-code">question</span>, <span class="inline-code">answer</span>, <span class="inline-code">requestMeta.ip</span>, <span class="inline-code">status</span>, <span class="inline-code">createdAt</span> (formatted as dd/mm/yyyy)</li>
+      <li><strong>ReDoS Protection:</strong> Search input is escaped via <span class="inline-code">escapeRegExp()</span></li>
+      <li><strong>Sort:</strong> <span class="inline-code">createdAt: -1</span> (newest first)</li>
+      <li><strong>Real-time:</strong> Socket.IO <span class="inline-code">information:updated</span> event triggers auto-refresh</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     8. REAL-TIME COMMUNICATION
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="realtime">
+  <div class="section-header">
+    <div class="section-icon icon-green">&#9889;</div>
+    <div>
+      <h2>Real-time Communication</h2>
+      <p>Socket.IO events for live updates</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Socket.IO Architecture</h3>
+    <p>
+      Socket.IO runs on the same Express server. Clients connect via WebSocket with polling fallback.
+      Admin clients include their JWT in the <span class="inline-code">auth</span> handshake for elevated access.
+    </p>
+
+    <h4>Connection Lifecycle</h4>
+    <div class="steps">
+      <div class="step">
+        <div class="step-content">
+          <strong>Client Connects</strong>
+          <p>Singleton pattern via <span class="inline-code">getSocket()</span>. Transports: <span class="inline-code">["websocket", "polling"]</span>. Admin clients send <span class="inline-code">auth.token</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Server Auth Middleware</strong>
+          <p>If <span class="inline-code">auth.token</span> is present, verifies JWT → sets <span class="inline-code">socket.isAdmin = true</span>. Invalid/missing token allows connection but marks <span class="inline-code">isAdmin = false</span>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Ready Event</strong>
+          <p>Server emits <span class="inline-code">socket:ready</span> with timestamp on successful connection.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-content">
+          <strong>Idle Disconnect</strong>
+          <p>30-minute timeout — idle connections are automatically closed to free resources.</p>
+        </div>
+      </div>
+    </div>
+
+    <h4>Event Reference</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Direction</th><th>Triggered By</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="inline-code">socket:ready</span></td>
+            <td>Server → Client</td>
+            <td>Connection</td>
+            <td>Confirms connection with timestamp</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">analytics:updated</span></td>
+            <td>Server → All</td>
+            <td>Session create, chat log save, settings update</td>
+            <td>Triggers analytics dashboard refresh</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">information:updated</span></td>
+            <td>Server → All</td>
+            <td>Chat log created</td>
+            <td>Triggers All Information table refresh</td>
+          </tr>
+          <tr>
+            <td><span class="inline-code">chatbot:visibilityChanged</span></td>
+            <td>Server → All</td>
+            <td>Admin toggles chatbot on/off</td>
+            <td>ChatWidget shows/hides in real-time. Payload: <span class="inline-code">{ chatbotEnabled }</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     9. SECURITY LAYER
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="security">
+  <div class="section-header">
+    <div class="section-icon icon-red">&#128737;</div>
+    <div>
+      <h2>Security Layer</h2>
+      <p>Defense-in-depth middleware stack</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Middleware Execution Order</h3>
+    <p>Every request passes through this stack in order (server.js):</p>
+
+    <div class="flow">
+      <div class="flow-step highlight-red">requestId</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">securityHeaders</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">methodGuard</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">payloadGuard<small>2 MB limit</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Helmet + CORS</div>
+    </div>
+    <div class="flow">
+      <span class="flow-arrow down">&#8595;</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step">auditLogger</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step">Body Parsers</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-red">inputSanitizer</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">noSQLInjectionGuard</div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Route Handlers</div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Middleware</th><th>Purpose</th><th>On Failure</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>requestId</strong></td>
+            <td>Assigns <span class="inline-code">{timestamp}-{counter}</span> to every request for tracing</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>securityHeaders</strong></td>
+            <td>X-Content-Type-Options: nosniff, X-Frame-Options: DENY, Permissions-Policy (disables camera/mic/geo), Cache-Control: no-store</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>methodGuard</strong></td>
+            <td>Allows only GET, POST, PUT, DELETE, OPTIONS, HEAD</td>
+            <td>405 Method Not Allowed</td>
+          </tr>
+          <tr>
+            <td><strong>payloadGuard</strong></td>
+            <td>Rejects Content-Length &gt; 2 MB</td>
+            <td>413 Payload Too Large</td>
+          </tr>
+          <tr>
+            <td><strong>auditLogger</strong></td>
+            <td>Logs requestId, method, path, status, duration, IP, user-agent. Warns on errors (&ge;400) and slow requests (&gt;5s)</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>inputSanitizer</strong></td>
+            <td>Checks body &amp; query for dangerous patterns: <span class="inline-code">&lt;script&gt;</span>, <span class="inline-code">javascript:</span>, <span class="inline-code">on*=</span>, <span class="inline-code">${}</span>, <span class="inline-code">{{}}</span></td>
+            <td>400 Bad Request</td>
+          </tr>
+          <tr>
+            <td><strong>noSQLInjectionGuard</strong></td>
+            <td>Rejects body/query objects with keys starting with <span class="inline-code">$</span> (MongoDB operators like $gt, $ne)</td>
+            <td>400 Bad Request</td>
+          </tr>
+          <tr>
+            <td><strong>globalErrorHandler</strong></td>
+            <td>Catches unhandled errors. Generic message in production, detailed in development</td>
+            <td>500</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Rate Limiting</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Limiter</th><th>Route</th><th>Window</th><th>Max Requests</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-red">authLimiter</span></td>
+            <td>/api/admin/auth</td>
+            <td>60 seconds</td>
+            <td><strong>5</strong></td>
+            <td>Does not skip successful requests — brute-force defense</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">chatLimiter</span></td>
+            <td>/api/chat</td>
+            <td>60 seconds</td>
+            <td><strong>100</strong></td>
+            <td>Standard headers (RateLimit-*)</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-amber">adminLimiter</span></td>
+            <td>/api/admin</td>
+            <td>60 seconds</td>
+            <td><strong>30</strong></td>
+            <td>Standard headers</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-purple">speedLimiter</span></td>
+            <td>/api (all)</td>
+            <td>60 seconds</td>
+            <td>After 50 → <strong>500ms delay</strong></td>
+            <td>express-slow-down: progressive delay</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Helmet &amp; CORS Configuration</h3>
+    <h4>Content Security Policy (CSP)</h4>
+    <pre><code>default-src 'self'
+script-src  'self'
+style-src   'self' 'unsafe-inline'
+img-src     'self' data: https:
+connect-src 'self'
+object-src  'none'
+frame-src   'none'
+base-uri    'self'
+form-action 'self'</code></pre>
+
+    <h4>CORS</h4>
+    <ul>
+      <li><strong>Production origins:</strong> <span class="inline-code">['https://careers.unido.org']</span></li>
+      <li><strong>Development origins:</strong> <span class="inline-code">['http://localhost:5000', 'http://localhost:5173', 'http://localhost:5174']</span></li>
+      <li>Production blocks requests with no <span class="inline-code">Origin</span> header (CSRF prevention)</li>
+      <li>Allowed methods: GET, POST, PUT, DELETE &middot; Allowed headers: Content-Type, Authorization &middot; Max age: 600s</li>
+    </ul>
+
+    <h4>Other Headers</h4>
+    <ul>
+      <li>HSTS: 1 year, includeSubDomains, preload</li>
+      <li>Cross-Origin-Embedder/Opener/Resource-Policy: <span class="inline-code">same-origin</span></li>
+      <li>DNS prefetch: disabled</li>
+      <li><span class="inline-code">X-Powered-By</span>: removed</li>
+      <li>HTTPS redirect in production (via <span class="inline-code">x-forwarded-proto</span>)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     10. API REFERENCE
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="api-reference">
+  <div class="section-header">
+    <div class="section-icon icon-purple">&#128218;</div>
+    <div>
+      <h2>API Reference</h2>
+      <p>Complete list of REST endpoints</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Public Endpoints (No Auth)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Body / Params</th><th>Response</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/health</span></td>
+            <td>—</td>
+            <td>Health status of OpenAI + Elasticsearch</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/chat/visibility</span></td>
+            <td>—</td>
+            <td><span class="inline-code">{ chatbotEnabled: boolean }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">POST</span></td>
+            <td><span class="inline-code">/api/chat/session</span></td>
+            <td>—</td>
+            <td><span class="inline-code">{ success, sessionId }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">POST</span></td>
+            <td><span class="inline-code">/api/chat/ask</span></td>
+            <td><span class="inline-code">{ sessionId, question }</span></td>
+            <td><span class="inline-code">{ answer, sources }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">POST</span></td>
+            <td><span class="inline-code">/api/admin/auth/login</span></td>
+            <td><span class="inline-code">{ email, password }</span></td>
+            <td><span class="inline-code">{ token, admin }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/docs.json</span></td>
+            <td>—</td>
+            <td>OpenAPI spec</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/docs</span></td>
+            <td>—</td>
+            <td>Swagger UI (dev only)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Protected Endpoints (JWT Required)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>Path</th><th>Params / Body</th><th>Response</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="pill pill-blue">POST</span></td>
+            <td><span class="inline-code">/api/admin/auth/logout</span></td>
+            <td>—</td>
+            <td>Success confirmation</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/admin/analytics</span></td>
+            <td>?fromDate, ?toDate (ISO 8601)</td>
+            <td>Metrics object (conversations, messages, uniqueUsers, etc.)</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/admin/allInformation</span></td>
+            <td>?page, ?limit, ?search</td>
+            <td><span class="inline-code">{ logs[], pagination }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/admin/settings</span></td>
+            <td>—</td>
+            <td><span class="inline-code">{ systemPrompt, chatbotEnabled, lastScrapeAt }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-amber">PUT</span></td>
+            <td><span class="inline-code">/api/admin/settings</span></td>
+            <td><span class="inline-code">{ systemPrompt?, chatbotEnabled? }</span></td>
+            <td>Updated settings</td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-blue">POST</span></td>
+            <td><span class="inline-code">/api/admin/scrape/trigger</span></td>
+            <td>—</td>
+            <td><span class="inline-code">{ started: boolean }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/admin/scrape/status</span></td>
+            <td>—</td>
+            <td><span class="inline-code">{ lastStatus, lastError }</span></td>
+          </tr>
+          <tr>
+            <td><span class="pill pill-green">GET</span></td>
+            <td><span class="inline-code">/api/admin/reports/chat-logs</span></td>
+            <td>?startDate, ?endDate, ?type, ?limit</td>
+            <td>CSV file download</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     11. ENVIRONMENT VARIABLES
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="env-vars">
+  <div class="section-header">
+    <div class="section-icon icon-amber">&#9881;</div>
+    <div>
+      <h2>Environment Variables</h2>
+      <p>All configuration values needed to run the system</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Backend (.env)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Variable</th><th>Required</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><span class="inline-code">PORT</span></td><td>No</td><td>5000</td><td>Server port</td></tr>
+          <tr><td><span class="inline-code">NODE_ENV</span></td><td>No</td><td>development</td><td>"production" enables strict security</td></tr>
+          <tr><td><span class="inline-code">MONGO_URI</span></td><td><strong>Yes</strong></td><td>—</td><td>MongoDB connection string</td></tr>
+          <tr><td><span class="inline-code">ELASTIC_NODE</span></td><td>No</td><td>http://localhost:9200</td><td>Elasticsearch endpoint</td></tr>
+          <tr><td><span class="inline-code">ELASTIC_USERNAME</span></td><td>No</td><td>—</td><td>Elasticsearch basic auth</td></tr>
+          <tr><td><span class="inline-code">ELASTIC_PASSWORD</span></td><td>No</td><td>—</td><td>Elasticsearch basic auth</td></tr>
+          <tr><td><span class="inline-code">AZURE_OPENAI_ENDPOINT</span></td><td><strong>Yes</strong></td><td>—</td><td>Azure OpenAI endpoint URL</td></tr>
+          <tr><td><span class="inline-code">AZURE_OPENAI_KEY</span></td><td><strong>Yes</strong></td><td>—</td><td>Azure OpenAI API key</td></tr>
+          <tr><td><span class="inline-code">AZURE_OPENAI_DEPLOYMENT</span></td><td><strong>Yes</strong></td><td>—</td><td>GPT-4o-mini deployment name</td></tr>
+          <tr><td><span class="inline-code">AZURE_EMBEDDING_DEPLOYMENT</span></td><td><strong>Yes</strong></td><td>—</td><td>text-embedding-3-small deployment</td></tr>
+          <tr><td><span class="inline-code">AZURE_OPENAI_API_VERSION</span></td><td>No</td><td>2024-10-21</td><td>Azure API version</td></tr>
+          <tr><td><span class="inline-code">JWT_SECRET</span></td><td><strong>Yes</strong></td><td>—</td><td>JWT signing secret (32+ chars in prod)</td></tr>
+          <tr><td><span class="inline-code">JWT_EXPIRES</span></td><td>No</td><td>25m</td><td>JWT token expiration</td></tr>
+          <tr><td><span class="inline-code">ADMIN_EMAIL</span></td><td><strong>Yes</strong></td><td>—</td><td>Default admin email (bootstrapping)</td></tr>
+          <tr><td><span class="inline-code">ADMIN_PASSWORD</span></td><td><strong>Yes</strong></td><td>—</td><td>Default admin password (12+ chars)</td></tr>
+          <tr><td><span class="inline-code">ENABLE_CRON</span></td><td>No</td><td>false</td><td>"true" enables daily scraping cron</td></tr>
+          <tr><td><span class="inline-code">CRON_TIMEZONE</span></td><td>No</td><td>UTC</td><td>Cron job timezone</td></tr>
+          <tr><td><span class="inline-code">RAG_TOP_K</span></td><td>No</td><td>5</td><td>Max Elasticsearch results</td></tr>
+          <tr><td><span class="inline-code">RAG_MIN_SCORE</span></td><td>No</td><td>0.75</td><td>Min cosine similarity threshold</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Frontend (.env)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Variable</th><th>Default</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="inline-code">VITE_API_BASE_URL</span></td>
+            <td>http://localhost:5000</td>
+            <td>Backend API base URL — used by all service functions</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     12. ORGANIZATIONAL SECURITY
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="org-security">
+  <div class="section-header">
+    <div class="section-icon icon-red">&#128737;</div>
+    <div>
+      <h2>How Organizational Security Is Maintained</h2>
+      <p>Multi-layer security posture protecting UNIDO data, users, and infrastructure</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Security Architecture Overview</h3>
+    <p>The chatbot employs a defense-in-depth strategy with seven distinct security layers, each designed to catch what the previous layer might miss:</p>
+
+    <div class="flow">
+      <div class="flow-step highlight-red">Network<small>CORS &middot; HTTPS &middot; Helmet</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Transport<small>TLS 1.2+ &middot; HSTS Preload</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight">Rate Control<small>Limits &middot; Slow-Down</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-purple">Input Validation<small>Sanitizer &middot; NoSQL Guard</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Authentication<small>JWT HS256 &middot; bcrypt 12</small></div>
+    </div>
+    <div class="flow">
+      <span class="flow-arrow down">&#8595;</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step highlight-red">Content Guard<small>Offensive &middot; Injection &middot; PII</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-amber">Audit &amp; Monitoring<small>Request logs &middot; Error tracking</small></div>
+      <span class="flow-arrow">&#8594;</span>
+      <div class="flow-step highlight-green">Data Isolation<small>Scoped access &middot; No PII storage</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>1. Data Protection &amp; Privacy</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Measure</th><th>Implementation</th><th>Why It Matters</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>No PII Storage</strong></td>
+            <td>The chatbot does not collect or store any personally identifiable information. Chat sessions are anonymous (UUID-based) and identified only by IP for rate limiting.</td>
+            <td>Ensures GDPR and UN data protection compliance — no user data to breach</td>
+          </tr>
+          <tr>
+            <td><strong>PII Query Blocking</strong></td>
+            <td>Guard service blocks questions containing confidential patterns: "staff salary", "passport", "ssn", "credit card", "medical record", "employee data"</td>
+            <td>Prevents users from attempting to extract sensitive organizational information via the AI</td>
+          </tr>
+          <tr>
+            <td><strong>Session Isolation</strong></td>
+            <td>Each browser tab gets a unique <span class="inline-code">sessionStorage</span>-based session. Sessions cannot cross-reference each other. Closing the tab destroys the session client-side.</td>
+            <td>Prevents conversation leakage between users or tabs</td>
+          </tr>
+          <tr>
+            <td><strong>Response Grounding</strong></td>
+            <td>AI answers ONLY from retrieved UNIDO content (RAG). Temperature 0.1 prevents hallucination. System prompt explicitly forbids made-up answers.</td>
+            <td>Eliminates risk of the AI revealing data it shouldn't know or generating false information</td>
+          </tr>
+          <tr>
+            <td><strong>No External Data Leakage</strong></td>
+            <td>CSP restricts <span class="inline-code">connect-src</span> to <span class="inline-code">'self'</span>. No third-party analytics, tracking pixels, or external API calls from the frontend.</td>
+            <td>User interactions never leave the UNIDO domain boundary</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>2. Authentication &amp; Access Control</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Measure</th><th>Implementation</th><th>Standard</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Password Hashing</strong></td>
+            <td>bcrypt with 12 salt rounds — each hash takes ~250ms, making brute-force computationally expensive</td>
+            <td>OWASP recommended minimum: 10 rounds</td>
+          </tr>
+          <tr>
+            <td><strong>Timing Attack Defense</strong></td>
+            <td>Login always hashes a dummy password even when user not found — constant response time regardless of user existence</td>
+            <td>OWASP Authentication Cheat Sheet</td>
+          </tr>
+          <tr>
+            <td><strong>JWT Security</strong></td>
+            <td>Algorithm locked to HS256 (prevents "none" algorithm attack). 25-minute expiry. 32+ character secret enforced in production. <span class="inline-code">maxAge: "30m"</span> server-side verification.</td>
+            <td>RFC 7519, OWASP JWT Cheat Sheet</td>
+          </tr>
+          <tr>
+            <td><strong>Auth Rate Limiting</strong></td>
+            <td>5 login attempts per minute per IP. Does NOT skip successful requests — prevents credential stuffing even with valid credentials.</td>
+            <td>OWASP Brute Force Prevention</td>
+          </tr>
+          <tr>
+            <td><strong>Password Policy</strong></td>
+            <td>Minimum 8 characters (API validation), 12+ characters recommended and warned on bootstrap. Max 128 characters to prevent bcrypt DoS.</td>
+            <td>NIST SP 800-63B</td>
+          </tr>
+          <tr>
+            <td><strong>Role-Based Access</strong></td>
+            <td>JWT contains <span class="inline-code">role: "admin"</span>. Middleware verifies role on every request. Non-admin tokens receive 403 with IP logged.</td>
+            <td>Principle of Least Privilege</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3. Network &amp; Transport Security</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Measure</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>HTTPS Enforcement</strong></td>
+            <td>HSTS with 1-year max-age, includeSubDomains, preload. Automatic HTTP→HTTPS redirect in production via <span class="inline-code">x-forwarded-proto</span> check.</td>
+          </tr>
+          <tr>
+            <td><strong>CORS Strict Origin</strong></td>
+            <td>Production allows only <span class="inline-code">https://careers.unido.org</span>. Requests without <span class="inline-code">Origin</span> header blocked in production (prevents direct API abuse).</td>
+          </tr>
+          <tr>
+            <td><strong>Frame Protection</strong></td>
+            <td><span class="inline-code">X-Frame-Options: DENY</span> and <span class="inline-code">frame-src: 'none'</span> — prevents clickjacking by forbidding embedding in iframes.</td>
+          </tr>
+          <tr>
+            <td><strong>Content Sniffing</strong></td>
+            <td><span class="inline-code">X-Content-Type-Options: nosniff</span> — prevents browsers from MIME-sniffing responses away from declared content type.</td>
+          </tr>
+          <tr>
+            <td><strong>Permissions Policy</strong></td>
+            <td>Disables camera, microphone, and geolocation APIs — these are not needed and represent unnecessary attack surface.</td>
+          </tr>
+          <tr>
+            <td><strong>Cross-Origin Isolation</strong></td>
+            <td><span class="inline-code">Cross-Origin-Embedder-Policy</span>, <span class="inline-code">Opener-Policy</span>, and <span class="inline-code">Resource-Policy</span> all set to <span class="inline-code">same-origin</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>Fingerprint Minimization</strong></td>
+            <td><span class="inline-code">X-Powered-By</span> header removed. DNS prefetch disabled. <span class="inline-code">Cache-Control: no-store</span> prevents sensitive data caching.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>4. Input Security &amp; Injection Prevention</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Attack Vector</th><th>Defense</th><th>Layer</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Cross-Site Scripting (XSS)</strong></td>
+            <td>Input sanitizer blocks <span class="inline-code">&lt;script&gt;</span>, <span class="inline-code">javascript:</span>, <span class="inline-code">on*=</span> patterns. CSP blocks inline scripts. React's default escaping provides additional defense.</td>
+            <td>Middleware + CSP + Framework</td>
+          </tr>
+          <tr>
+            <td><strong>NoSQL Injection</strong></td>
+            <td>Dedicated <span class="inline-code">noSQLInjectionGuard</span> rejects any request body or query with keys starting with <span class="inline-code">$</span> (MongoDB operators like $gt, $ne, $or).</td>
+            <td>Middleware</td>
+          </tr>
+          <tr>
+            <td><strong>Template Injection</strong></td>
+            <td>Input sanitizer blocks <span class="inline-code">${}</span> and <span class="inline-code">{{}}</span> patterns — prevents server-side and client-side template injection.</td>
+            <td>Middleware</td>
+          </tr>
+          <tr>
+            <td><strong>ReDoS (Regex DoS)</strong></td>
+            <td>Search input in the admin table is escaped via <span class="inline-code">escapeRegExp()</span> before being used in MongoDB regex queries.</td>
+            <td>Service layer</td>
+          </tr>
+          <tr>
+            <td><strong>Prompt Injection</strong></td>
+            <td>Guard service blocks: "ignore previous instructions", "you are now", "system:", "DAN jailbreak", "[INST]", "&lt;&lt;SYS&gt;&gt;", "forget everything", and 10+ other patterns.</td>
+            <td>Application layer</td>
+          </tr>
+          <tr>
+            <td><strong>Payload Overflow</strong></td>
+            <td><span class="inline-code">payloadGuard</span> rejects bodies &gt; 2 MB. Input validation enforces max lengths on all fields (question: 2000, sessionId: 100, systemPrompt: 500, search: 200).</td>
+            <td>Middleware + Validation</td>
+          </tr>
+          <tr>
+            <td><strong>HTTP Method Abuse</strong></td>
+            <td><span class="inline-code">methodGuard</span> allows only GET, POST, PUT, DELETE, OPTIONS, HEAD — blocks TRACE, CONNECT, PATCH, etc.</td>
+            <td>Middleware</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>5. Monitoring &amp; Audit Trail</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Capability</th><th>Implementation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Request Tracing</strong></td>
+            <td>Every request gets a unique <span class="inline-code">requestId</span> (<span class="inline-code">{timestamp}-{counter}</span>). All logs reference this ID for end-to-end tracing.</td>
+          </tr>
+          <tr>
+            <td><strong>Audit Logging</strong></td>
+            <td><span class="inline-code">auditLogger</span> middleware records: request ID, HTTP method, path, status code, response time, IP address, and user-agent for every request.</td>
+          </tr>
+          <tr>
+            <td><strong>Error Alerting</strong></td>
+            <td>Responses with status &ge; 400 are logged at WARN level. Slow requests (&gt; 5 seconds) are flagged separately.</td>
+          </tr>
+          <tr>
+            <td><strong>Chat Audit</strong></td>
+            <td>Every Q&amp;A interaction is stored in <span class="inline-code">ChatLog</span> with: question, answer, status, guard reason, response timing, source count, model used, IP, and user-agent.</td>
+          </tr>
+          <tr>
+            <td><strong>Admin Activity</strong></td>
+            <td>All admin API calls go through JWT middleware — the decoded token provides admin identity for every action. Failed auth attempts log IP addresses.</td>
+          </tr>
+          <tr>
+            <td><strong>Security Events</strong></td>
+            <td>Blocked queries (offensive, injection, PII) are logged with <span class="inline-code">status: "fallback"</span> and specific <span class="inline-code">guardReason</span> for security review.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>6. AI-Specific Security</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Hallucination</strong></td>
+            <td>RAG-only architecture with temperature 0.1. System prompt: "Answer ONLY from provided CONTEXT." If no relevant chunks found (score &lt; 0.75), returns "I do not have enough information" without calling GPT.</td>
+          </tr>
+          <tr>
+            <td><strong>Data Poisoning</strong></td>
+            <td>Content is scraped only from official UNIDO domains (<span class="inline-code">careers.unido.org</span>, <span class="inline-code">unido.org</span>). No user-submitted content enters the knowledge base. Full re-index clears stale data.</td>
+          </tr>
+          <tr>
+            <td><strong>Prompt Injection</strong></td>
+            <td>Four-layer guard service filters input before it reaches the AI. Patterns block system prompt override attempts, DAN jailbreaks, and instruction manipulation.</td>
+          </tr>
+          <tr>
+            <td><strong>Scope Creep</strong></td>
+            <td>Out-of-scope pattern detection redirects users asking about code, recipes, sports, stocks, etc. The AI is scoped strictly to UNIDO careers content.</td>
+          </tr>
+          <tr>
+            <td><strong>Token Abuse</strong></td>
+            <td>Chat rate limit (100/min per IP) + input max length (2000 chars) + speed limiter (500ms delay after 50 requests) prevents excessive API/token usage.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>7. OWASP Top 10 Coverage</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>OWASP Category</th><th>Status</th><th>Controls</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>A01 — Broken Access Control</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>JWT + role check on every admin route. CORS strict origin. Frame protection.</td>
+          </tr>
+          <tr>
+            <td>A02 — Cryptographic Failures</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>bcrypt 12 rounds. HTTPS enforced. JWT HS256 with 32+ char secret. No PII stored.</td>
+          </tr>
+          <tr>
+            <td>A03 — Injection</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>Input sanitizer + NoSQL guard + express-validator + ReDoS-safe regex + prompt injection guard.</td>
+          </tr>
+          <tr>
+            <td>A04 — Insecure Design</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>Defense-in-depth: 7 middleware layers. Fail-safe defaults. Constant-time auth.</td>
+          </tr>
+          <tr>
+            <td>A05 — Security Misconfiguration</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>Helmet hardened. X-Powered-By removed. Production env enforces strict configs. assertOpenAIConfig() validates at startup.</td>
+          </tr>
+          <tr>
+            <td>A06 — Vulnerable Components</td>
+            <td><span class="pill pill-amber">Ongoing</span></td>
+            <td>Modern dependencies (Express 5, React 19). Regular <span class="inline-code">npm audit</span> recommended.</td>
+          </tr>
+          <tr>
+            <td>A07 — Auth Failures</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>Rate limiting (5/min auth). Timing-safe comparison. Token expiry + maxAge. Failed attempts logged.</td>
+          </tr>
+          <tr>
+            <td>A08 — Data Integrity Failures</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>Content sourced only from official UNIDO domains. JWT signature verification. No deserialization of untrusted data.</td>
+          </tr>
+          <tr>
+            <td>A09 — Logging &amp; Monitoring</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>auditLogger on every request. Error/slow request warnings. Chat audit trail. Security event logging.</td>
+          </tr>
+          <tr>
+            <td>A10 — SSRF</td>
+            <td><span class="pill pill-green">Mitigated</span></td>
+            <td>No user-supplied URLs are fetched. Scraping targets are hardcoded to UNIDO domains only.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     13. GO-LIVE REQUIREMENTS
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="go-live">
+  <div class="section-header">
+    <div class="section-icon icon-blue">&#128640;</div>
+    <div>
+      <h2>Go-Live Requirements from UNIDO</h2>
+      <p>Services and access credentials needed from UNIDO to deploy the chatbot to production</p>
+    </div>
+  </div>
+
+  <p style="margin: 0 0 28px; color: var(--slate-500); font-size: .95rem; line-height: 1.7;">
+    The following five services are <strong>required</strong> from UNIDO before the chatbot can go live.
+    Each service plays a specific role in the system architecture &mdash; without any one of them the chatbot
+    cannot function correctly in production.
+  </p>
+
+  <!-- 1 ─ Azure OpenAI API -->
+  <div class="card">
+    <h3>&#129302;&ensp;Azure OpenAI API</h3>
+    <p><span class="pill pill-red">Critical</span></p>
+    <p><strong>What it is:</strong> Microsoft&rsquo;s enterprise-grade AI service that hosts large language models (LLMs) such as GPT-4o-mini and embedding models like text-embedding-3-small.</p>
+    <p><strong>Why we need it:</strong> Azure OpenAI API powers the chatbot&rsquo;s core intelligence. It is responsible for two key capabilities:</p>
+    <ul style="margin: 8px 0 12px 20px; line-height: 1.9;">
+      <li><strong>Understanding questions</strong> &mdash; The embedding model converts every user question into a 1536-dimensional vector that captures its semantic meaning, enabling the system to find the most relevant career content even when the user&rsquo;s phrasing doesn&rsquo;t match the exact words on the website.</li>
+      <li><strong>Generating responses</strong> &mdash; The GPT-4o-mini chat model reads the retrieved career content and composes accurate, human-like answers grounded strictly in UNIDO&rsquo;s official information. Temperature is set to 0.1 to minimize hallucination.</li>
+    </ul>
+    <p><strong>What UNIDO needs to provide:</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential / Detail</th><th>Environment Variable</th></tr></thead>
+        <tbody>
+          <tr><td>Azure OpenAI endpoint URL</td><td><span class="inline-code">AZURE_OPENAI_ENDPOINT</span></td></tr>
+          <tr><td>API key</td><td><span class="inline-code">AZURE_OPENAI_API_KEY</span></td></tr>
+          <tr><td>Chat model deployment name (GPT-4o-mini)</td><td><span class="inline-code">AZURE_OPENAI_DEPLOYMENT</span></td></tr>
+          <tr><td>Embedding model deployment name (text-embedding-3-small)</td><td><span class="inline-code">AZURE_EMBEDDING_DEPLOYMENT</span></td></tr>
+          <tr><td>API version (default: <span class="inline-code">2024-10-21</span>)</td><td><span class="inline-code">AZURE_OPENAI_API_VERSION</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 2 ─ Elasticsearch -->
+  <div class="card">
+    <h3>&#128269;&ensp;Elasticsearch (Vector Database)</h3>
+    <p><span class="pill pill-red">Critical</span></p>
+    <p><strong>What it is:</strong> A distributed search and analytics engine that supports k-nearest-neighbor (kNN) vector search, acting as the project&rsquo;s vector database.</p>
+    <p><strong>Why we need it:</strong> Elasticsearch enables fast semantic search &mdash; the backbone of the RAG (Retrieval-Augmented Generation) pipeline. When a user asks a question:</p>
+    <ol style="margin: 8px 0 12px 20px; line-height: 1.9;">
+      <li>The question is converted into a vector embedding via Azure OpenAI.</li>
+      <li>Elasticsearch performs a kNN search across all stored content vectors to find the <strong>most semantically relevant</strong> chunks of career information.</li>
+      <li>The top-matching chunks are passed to GPT-4o-mini as context so it can generate a grounded, factual answer.</li>
+    </ol>
+    <p>Without Elasticsearch, the chatbot would have no way to locate relevant information from the hundreds of scraped pages and would be unable to answer any question.</p>
+    <p><strong>What UNIDO needs to provide:</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential / Detail</th><th>Environment Variable</th></tr></thead>
+        <tbody>
+          <tr><td>Elasticsearch node URL (e.g., <span class="inline-code">https://es-cluster.unido.org:9200</span>)</td><td><span class="inline-code">ELASTICSEARCH_NODE</span></td></tr>
+          <tr><td>Username</td><td><span class="inline-code">ELASTICSEARCH_USERNAME</span></td></tr>
+          <tr><td>Password</td><td><span class="inline-code">ELASTICSEARCH_PASSWORD</span></td></tr>
+          <tr><td>Index name (default: <span class="inline-code">unido-careers</span>)</td><td><span class="inline-code">ELASTICSEARCH_INDEX</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 8px; color: var(--slate-500); font-size: .875rem;"><strong>Note:</strong> Requires Elasticsearch 8.x+ with <span class="inline-code">dense_vector</span> field type and kNN search support (1536 dimensions). Options include Elastic Cloud, Azure-hosted Elasticsearch, or a self-managed cluster.</p>
+  </div>
+
+  <!-- 3 ─ Azure Blob Storage -->
+  <div class="card">
+    <h3>&#128451;&ensp;Azure Blob Storage</h3>
+    <p><span class="pill pill-red">Critical</span></p>
+    <p><strong>What it is:</strong> Microsoft Azure&rsquo;s scalable object storage service for unstructured data such as JSON files, HTML snapshots, and backups.</p>
+    <p><strong>Why we need it:</strong> Azure Blob Storage serves as the persistent data layer between the scraping pipeline and the indexing pipeline:</p>
+    <ul style="margin: 8px 0 12px 20px; line-height: 1.9;">
+      <li><strong>Raw scraped content</strong> &mdash; After the scraper collects job listings, FAQs, category pages, and homepage content from the UNIDO careers website, the raw JSON data is uploaded to Blob Storage. This creates a reliable, versioned archive of all scraped data.</li>
+      <li><strong>Chunked content</strong> &mdash; The chunker processes raw data into smaller, semantically meaningful pieces (chunks). These chunks are also stored in Blob Storage before being embedded and indexed into Elasticsearch.</li>
+      <li><strong>Backup &amp; re-indexing</strong> &mdash; If Elasticsearch needs to be rebuilt (e.g., after a schema change or data corruption), the system can re-read all chunks from Blob Storage and re-index without having to re-scrape the entire website.</li>
+    </ul>
+    <p><strong>What UNIDO needs to provide:</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential / Detail</th><th>Environment Variable</th></tr></thead>
+        <tbody>
+          <tr><td>Azure Storage connection string</td><td><span class="inline-code">AZURE_STORAGE_CONNECTION_STRING</span></td></tr>
+          <tr><td>Container name (default: <span class="inline-code">unido-chatbot</span>)</td><td><span class="inline-code">AZURE_STORAGE_CONTAINER</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4 ─ Azure AI Content Safety -->
+  <div class="card">
+    <h3>&#128737;&ensp;Azure AI Content Safety / Guardrails</h3>
+    <p><span class="pill pill-amber">Important</span></p>
+    <p><strong>What it is:</strong> Azure AI Content Safety is a cloud service that detects harmful or inappropriate content across text and images, providing severity scores across categories like hate, violence, sexual content, and self-harm.</p>
+    <p><strong>Why we need it:</strong> While the chatbot already includes a multi-layer guard service (offensive patterns, prompt injection detection, PII blocking, and out-of-scope filtering), Azure AI Content Safety adds an <strong>enterprise-grade, continuously-updated</strong> safety layer:</p>
+    <ul style="margin: 8px 0 12px 20px; line-height: 1.9;">
+      <li><strong>Response filtering</strong> &mdash; Before any AI-generated response is sent to the user, it can be scanned by Content Safety to ensure it does not contain inappropriate, harmful, or non-compliant content — even if the underlying model produces something unexpected.</li>
+      <li><strong>Input screening</strong> &mdash; User questions can be pre-screened to detect abusive or manipulative inputs that might bypass regex-based pattern matching.</li>
+      <li><strong>Compliance assurance</strong> &mdash; Provides auditable safety scores and categories for every interaction, helping UNIDO demonstrate responsible AI usage in line with UN digital governance standards.</li>
+      <li><strong>Adaptive protection</strong> &mdash; Unlike static regex patterns, Azure AI Content Safety uses ML models that are continuously updated by Microsoft to catch emerging threats and adversarial techniques.</li>
+    </ul>
+    <p><strong>What UNIDO needs to provide:</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential / Detail</th><th>Environment Variable</th></tr></thead>
+        <tbody>
+          <tr><td>Azure Content Safety endpoint URL</td><td><span class="inline-code">AZURE_CONTENT_SAFETY_ENDPOINT</span></td></tr>
+          <tr><td>API key</td><td><span class="inline-code">AZURE_CONTENT_SAFETY_KEY</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 8px; color: var(--slate-500); font-size: .875rem;"><strong>Note:</strong> This service complements (not replaces) the existing built-in guard service. The two work in tandem — the local guard catches known patterns instantly, while Azure Content Safety catches novel or nuanced threats.</p>
+  </div>
+
+  <!-- 5 ─ MongoDB -->
+  <div class="card">
+    <h3>&#128451;&ensp;MongoDB (Credentials)</h3>
+    <p><span class="pill pill-red">Critical</span></p>
+    <p><strong>What it is:</strong> A NoSQL document database that stores structured, schema-flexible JSON-like documents. Used as the primary operational database for the chatbot.</p>
+    <p><strong>Why we need it:</strong> MongoDB stores all the structured application data that powers the chatbot beyond just answering questions:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data Type</th><th>What It Stores</th><th>Why It Matters</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Chat Sessions</strong></td>
+            <td>Anonymous session records (UUID, IP, start time, message count)</td>
+            <td>Tracks active conversations and enables session continuity within a browser tab</td>
+          </tr>
+          <tr>
+            <td><strong>Chat Logs</strong></td>
+            <td>Every Q&amp;A interaction: question, answer, status, guard reason, response time, source count, model used, IP, user-agent</td>
+            <td>Provides the analytics data shown in the admin dashboard, enables quality monitoring and security auditing</td>
+          </tr>
+          <tr>
+            <td><strong>Admin Users</strong></td>
+            <td>Admin accounts with bcrypt-hashed passwords and roles</td>
+            <td>Secures the admin portal with proper authentication</td>
+          </tr>
+          <tr>
+            <td><strong>Admin Settings</strong></td>
+            <td>System prompt, guard toggle states, configurable parameters</td>
+            <td>Allows the admin to customize chatbot behavior without code changes</td>
+          </tr>
+          <tr>
+            <td><strong>Scraped Content Metadata</strong></td>
+            <td>Job summaries, job details, FAQs, homepage content, category data with timestamps</td>
+            <td>Powers the &ldquo;All Information&rdquo; admin view and provides the raw data for chunking and indexing</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 12px;"><strong>What UNIDO needs to provide:</strong></p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Credential / Detail</th><th>Environment Variable</th></tr></thead>
+        <tbody>
+          <tr><td>MongoDB connection string (e.g., <span class="inline-code">mongodb+srv://user:pass@cluster.mongodb.net/unido</span>)</td><td><span class="inline-code">MONGO_URI</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 8px; color: var(--slate-500); font-size: .875rem;"><strong>Note:</strong> Requires MongoDB 6+. Options include Azure Cosmos DB (MongoDB API), MongoDB Atlas, or a self-managed instance. A data retention policy should also be decided (e.g., purge chat logs older than 90 days).</p>
+  </div>
+
+  <!-- Summary Table -->
+  <div class="card">
+    <h3>Summary of Required Services</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Service</th><th>Role in System</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Azure OpenAI API</strong></td>
+            <td>Understands questions (embeddings) and generates human-like responses (GPT-4o-mini)</td>
+            <td><span class="pill pill-red">Critical</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Elasticsearch</strong></td>
+            <td>Semantic vector search to find the most relevant career content from scraped data</td>
+            <td><span class="pill pill-red">Critical</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Azure Blob Storage</strong></td>
+            <td>Stores raw scraped content and chunks for processing, backup, and re-indexing</td>
+            <td><span class="pill pill-red">Critical</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Azure AI Content Safety</strong></td>
+            <td>ML-powered guardrails ensuring responses are safe, compliant, and free of harmful content</td>
+            <td><span class="pill pill-amber">Important</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>MongoDB</strong></td>
+            <td>Stores scraped content, chat logs, admin users, settings, and analytics data</td>
+            <td><span class="pill pill-red">Critical</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+</div><!-- /.container -->
+
+<footer>
+  <p>UNIDO AI Chatbot &middot; System Flows Documentation &middot; v1.0 &middot; April 2026</p>
+  <p>Generated for UNIDO Careers RAG Chatbot by MouriTech</p>
+</footer>
+
+</body>
+</html>

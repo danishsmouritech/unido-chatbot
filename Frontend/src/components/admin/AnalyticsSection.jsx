@@ -38,79 +38,77 @@ export default function AnalyticsSection({
     { name: "Success", value: successCount }
   ];
 
-  const COLORS = ["#0d6efd", "#198754", "#dc3545", "#ffc107"];
+  const COLORS = ["#0066b3", "#059669", "#dc3545", "#d97706"];
 
   return (
     <div className="analytics-section">
 
-      {/* Filters */}
-      <div className="row g-3 justify-content-end mb-4">
-        <div className="col-12 col-md-4 col-lg-3">
-          <label className="form-label mb-1">From date</label>
-          <input
-            type="date"
-            className="form-control"
-            value={fromDate}
-            min="2026-02-12"
-            max={todayValue}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
+      {/* Section Header + Filters */}
+      <div className="analytics-header">
+        <div className="analytics-header-left">
+          <h3 className="analytics-title">
+            <i className="bi bi-graph-up" />
+            Overview
+          </h3>
+          <p className="analytics-subtitle">Real-time chatbot performance metrics</p>
         </div>
-
-        <div className="col-12 col-md-4 col-lg-3">
-          <label className="form-label mb-1">To date</label>
-          <input
-            type="date"
-            className="form-control"
-            value={toDate}
-            min={fromDate || undefined}
-            max={todayValue}
-            onChange={(e) => setToDate(e.target.value)}
-          />
+        <div className="analytics-filters">
+          <div className="filter-field">
+            <label className="filter-label">From</label>
+            <input
+              type="date"
+              className="filter-input"
+              value={fromDate}
+              min="2026-02-12"
+              max={todayValue}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
+          </div>
+          <div className="filter-field">
+            <label className="filter-label">To</label>
+            <input
+              type="date"
+              className="filter-input"
+              value={toDate}
+              min={fromDate || undefined}
+              max={todayValue}
+              onChange={(e) => setToDate(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
       {/* Metric Cards */}
-      <div className="admin-card-grid row g-3 mb-4">
-
-        {METRIC_CARDS.map((card,i) => (
-          <div className="col-12 col-sm-6 col-lg-3" key={card.key}>
-            <div className="admin-card h-100">
-              <div className="card-label">{card.title}</div> <hr />
-              <div className={`card-value ${(i == METRIC_CARDS.length - 1 || i == 0 ? "text-primary" : "")}`}>
+      <div className="metric-cards-grid">
+        {METRIC_CARDS.map((card) => (
+          <div className="metric-card" key={card.key}>
+            <div className="metric-card-icon" style={{ background: `${card.color}14`, color: card.color }}>
+              <i className={`bi ${card.icon}`} />
+            </div>
+            <div className="metric-card-body">
+              <span className="metric-card-label">{card.title}</span>
+              <span className="metric-card-value" style={{ color: card.color }}>
                 {analytics[card.key] ?? 0}
-                {card.suffix || ""}
-              </div>
-
-              <div className="card-subtitle">
-                {card.subtitle}
-              </div>
+                {card.suffix ? <small className="metric-suffix">{card.suffix}</small> : null}
+              </span>
+              <span className="metric-card-subtitle">{card.subtitle}</span>
             </div>
           </div>
         ))}
-
       </div>
 
-      {/* Pie Charts */}
-      <div className="row g-4">
-         {/* Total Data Chart */}
-        <div className="col-md-12">
-        <TotalDataChart pieTotalData={pieTotalData} COLORS={COLORS}/>
+      {/* Charts */}
+      <div className="charts-grid">
+        <div className="chart-full">
+          <TotalDataChart pieTotalData={pieTotalData} COLORS={COLORS} />
         </div>
-        {/* Message Distribution */}
-        <div className="col-md-6">
-        <MessageDistribution pieMessageData={pieMessageData} COLORS={COLORS}/>
+        <div className="chart-half">
+          <MessageDistribution pieMessageData={pieMessageData} COLORS={COLORS} />
         </div>
-
-        {/* Errors vs Success */}
-        <div className="col-md-6">
-
+        <div className="chart-half">
           <ErrorSuccess pieErrorData={pieErrorData} COLORS={COLORS} />
-
         </div>
-
       </div>
-
     </div>
   );
 }

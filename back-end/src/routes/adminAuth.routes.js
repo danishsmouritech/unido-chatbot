@@ -23,7 +23,7 @@ const handleValidationErrors = (req, res, next) => {
 router.post("/login",
   [
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('password').isString().isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+    body('password').isString().isLength({ min: 8, max: 128 }).withMessage('Password must be between 8 and 128 characters')
   ],
   handleValidationErrors,
   loginAdminController

@@ -23,6 +23,16 @@ import {
 import { openApiSpec } from "./docs/openapi.js";
 import { setSocketServer } from "./realtime/socket.js";
 import { logger } from "./utils/logger.js";
+import {
+  requestId,
+  securityHeaders,
+  inputSanitizer,
+  payloadGuard,
+  auditLogger,
+  noSQLInjectionGuard,
+  methodGuard,
+  globalErrorHandler
+} from "./middleware/security.middleware.js";
 
 dotenv.config();
 //preventing cron from running everywhere automatically on different environments
@@ -50,18 +60,24 @@ const allowedOrigins =
 
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
+    // Block requests with no origin in production (prevents CSRF)
+    if (!origin) {
+      if (process.env.NODE_ENV === 'production') {
+        return callback(new Error('Origin required'), false);
+      }
+      return callback(null, true);
+    }
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      return callback(null,false);
+      return callback(null, false);
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 600
 }));
 
 app.use(helmet({
@@ -69,14 +85,44 @@ app.use(helmet({
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
-        objectSrc: ["'none'"]
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: process.env.NODE_ENV === "production" ? [] : null
       }
     },
-    crossOriginEmbedderPolicy: true
+    crossOriginEmbedderPolicy: true,
+    crossOriginOpenerPolicy: { policy: "same-origin" },
+    crossOriginResourcePolicy: { policy: "same-origin" },
+    dnsPrefetchControl: { allow: false },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true
+    },
+    noSniff: true,
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" }
   }));
 app.disable("x-powered-by");
+
+// Security middleware stack
+app.use(requestId);
+app.use(securityHeaders);
+app.use(methodGuard);
+app.use(payloadGuard);
+app.use(auditLogger);
+
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+
+// Input sanitization & NoSQL injection guard (after body parsing)
+app.use(inputSanitizer);
+app.use(noSQLInjectionGuard);
 app.get("/api/docs.json", (_req, res) => {
   res.json(openApiSpec);
 });
@@ -100,17 +146,26 @@ app.get("/health", async(_req, res) => {
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 100,
-  message: "Too many requests, please try again later"
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later" }
 });
 
 const adminLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 50
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many admin requests. Try again later." }
 });
+
 const authLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 10,
-  message: "Too many login attempts. Try again later."
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many login attempts. Try again later." },
+  skipSuccessfulRequests: false
 });
 const speedLimiter = slowDown({
   windowMs: 60 * 1000,
@@ -125,6 +180,14 @@ app.use("/api/admin", adminLimiter);
 app.use("/api/chat", chatRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
+
+// 404 handler for unknown routes
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+// Global error handler – must be last middleware
+app.use(globalErrorHandler);
 
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
@@ -148,20 +211,36 @@ setSocketServer(io);
 
 io.on("connection", (socket) => {
   socket.emit("socket:ready", { connectedAt: new Date().toISOString() });
+
+  // Disconnect idle sockets after 30 minutes
+  const idleTimeout = setTimeout(() => {
+    socket.disconnect(true);
+  }, 30 * 60 * 1000);
+
+  socket.on("disconnect", () => {
+    clearTimeout(idleTimeout);
+  });
 });
 
-// Socket authentication - required for all connections
+// Socket authentication middleware
 io.use((socket, next) => {
   try {
     const token = socket.handshake.auth?.token;
     
-    // If token is provided, verify it
     if (token) {
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    socket.user = user;
-    socket.isAdmin = user?.role === 'admin';
+      // Validate token format before verifying
+      if (typeof token !== "string" || token.split(".").length !== 3) {
+        socket.isAdmin = false;
+        return next();
+      }
+
+      const user = jwt.verify(token, process.env.JWT_SECRET, {
+        algorithms: ["HS256"],
+        maxAge: "30m"
+      });
+      socket.user = user;
+      socket.isAdmin = user?.role === "admin";
     } else {
-      // Allow public socket connections (for public chatbot notifications)
       socket.isAdmin = false;
     }
     

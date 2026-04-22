@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { askChatQuestion, createChatSession,getChatVisibility } from "../services/chatService";
+import { askChatQuestion, createChatSession, getChatVisibility } from "../services/chatService";
 import { getSocket } from "../services/socketService";
 import { logger } from "../utils/logger";
 import "../styles/chatWidget.css";
 
-const INITIAL_MESSAGES = [{ role: "bot", text: "Hello. How can I help you?" }];
+const INITIAL_MESSAGES = [
+  {
+    role: "bot",
+    text: "Welcome to UNIDO Careers! I can help you find job opportunities, understand eligibility, and guide you through the application process. What would you like to know?"
+  }
+];
+const QUICK_ACTIONS = [
+  "What jobs are available?",
+  "How do I apply?",
+  "What are the benefits?"
+];
 const CHAT_SESSION_STORAGE_KEY = "chatWidgetSessionId";
 let sessionInitPromise = null;
 
@@ -20,8 +30,7 @@ async function getOrCreateSessionId() {
         const createdSessionId = payload?.sessionId || null;
         if (createdSessionId) {
           sessionStorage.setItem(CHAT_SESSION_STORAGE_KEY, createdSessionId);
-          // Add a small delay to ensure session is persisted on backend
-          return new Promise(resolve => setTimeout(() => resolve(createdSessionId), 100));
+          return new Promise((resolve) => setTimeout(() => resolve(createdSessionId), 100));
         }
         return createdSessionId;
       })
@@ -33,6 +42,20 @@ async function getOrCreateSessionId() {
   return sessionInitPromise;
 }
 
+function TypingIndicator() {
+  return (
+    <div className="chat-bubble bot typing-indicator">
+      <span className="dot" />
+      <span className="dot" />
+      <span className="dot" />
+    </div>
+  );
+}
+
+function formatTimestamp(date) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -41,7 +64,9 @@ export default function ChatWidget() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [chatbotEnabled, setChatbotEnabled] = useState(true);
+  const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesRef = useRef(null);
+  const inputRef = useRef(null);
 
   async function hydrateChatState() {
     try {
@@ -89,26 +114,36 @@ export default function ChatWidget() {
 
   useEffect(() => {
     if (!messagesRef.current) return;
-    messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, [messages]);
+    messagesRef.current.scrollTo({
+      top: messagesRef.current.scrollHeight,
+      behavior: "smooth"
+    });
+  }, [messages, sending]);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
 
   async function sendMessage(manualQuestion = null) {
-      const raw = manualQuestion ?? input;
+    const raw = manualQuestion ?? input;
     const question = typeof raw === "string" ? raw.trim() : "";
 
-  if (!question) {
-    setError("Please enter a message");
-    return;
-  }
+    if (!question) {
+      setError("Please enter a message");
+      return;
+    }
 
-  setError("");
-    if ( sending) return;
+    setError("");
+    if (sending) return;
 
     if (!manualQuestion) {
       setInput("");
-      setMessages((prev) => [...prev, { role: "user", text: question }]);
     }
 
+    setShowQuickActions(false);
+    setMessages((prev) => [...prev, { role: "user", text: question, time: new Date() }]);
     setSending(true);
     let currentSessionId = sessionId;
 
@@ -124,13 +159,16 @@ export default function ChatWidget() {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
           const payload = await askChatQuestion({ sessionId: currentSessionId, question });
-          setMessages((prev) => [...prev, { role: "bot", text: payload.answer || "No answer returned." }]);
+          setMessages((prev) => [
+            ...prev,
+            { role: "bot", text: payload.answer || "No answer returned.", time: new Date() }
+          ]);
           return;
-        } catch (error) {
-          logger.error("Chat error:", error);
-          const message = error.message || "Failed to get response.";
+        } catch (err) {
+          logger.error("Chat error:", err);
+          const message = err.message || "Failed to get response.";
 
-          if (error.status === 404 || message.toLowerCase().includes("not found")) {
+          if (err.status === 404 || message.toLowerCase().includes("not found")) {
             logger.log("Session not found, refreshing...");
             sessionStorage.removeItem(CHAT_SESSION_STORAGE_KEY);
             sessionInitPromise = null;
@@ -139,31 +177,47 @@ export default function ChatWidget() {
             if (refreshedSessionId) {
               currentSessionId = refreshedSessionId;
               setSessionId(refreshedSessionId);
-              continue; // retry once with a fresh session
+              continue;
             }
           }
 
-          setMessages((prev) => [...prev, { role: "bot", text: message }]);
+          setMessages((prev) => [...prev, { role: "bot", text: message, time: new Date() }]);
           return;
         }
       }
 
-      setMessages((prev) => [...prev, { role: "bot", text: "Session was reset. Please try again." }]);
-    } catch (error) {
-      logger.error("Chat error:", error);
-      const message = error.message || "Failed to get response.";
-      setMessages((prev) => [...prev, { role: "bot", text: message }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", text: "Session was reset. Please try again.", time: new Date() }
+      ]);
+    } catch (err) {
+      logger.error("Chat error:", err);
+      const message = err.message || "Failed to get response.";
+      setMessages((prev) => [...prev, { role: "bot", text: message, time: new Date() }]);
     } finally {
       setSending(false);
     }
   }
+
   if (!chatbotEnabled) return null;
+
   return (
     <div className="chat-widget-root">
       {isOpen && (
-        <div className="chat-panel">
+        <div className="chat-panel" role="dialog" aria-label="UNIDO Careers Chat">
           <div className="chat-panel-header">
-            <span className="chat-panel-title">UNIDO Chatbot</span>
+            <div className="chat-header-left">
+              <div className="chat-avatar">
+                <i className="bi bi-robot" />
+              </div>
+              <div className="chat-header-info">
+                <span className="chat-panel-title">UNIDO Careers</span>
+                <span className="chat-status-badge">
+                  <span className="status-dot" />
+                  Online
+                </span>
+              </div>
+            </div>
             <button
               className="chat-close-btn"
               type="button"
@@ -176,45 +230,84 @@ export default function ChatWidget() {
 
           <div className="chat-panel-body chat-scroll" ref={messagesRef}>
             {messages.map((message, index) => (
-              <div key={index} className={`chat-bubble ${message.role}`}>
-                 {message.text}
+              <div key={index} className={`chat-msg-row ${message.role}`}>
+                {message.role === "bot" && (
+                  <div className="chat-msg-avatar">
+                    <i className="bi bi-robot" />
+                  </div>
+                )}
+                <div className="chat-msg-content">
+                  <div className={`chat-bubble ${message.role}`}>{message.text}</div>
+                  {message.time && (
+                    <span className="chat-timestamp">{formatTimestamp(message.time)}</span>
+                  )}
+                </div>
               </div>
             ))}
+
+            {sending && <TypingIndicator />}
+
+            {showQuickActions && messages.length <= 1 && (
+              <div className="chat-quick-actions">
+                {QUICK_ACTIONS.map((action) => (
+                  <button
+                    key={action}
+                    className="quick-action-btn"
+                    type="button"
+                    onClick={() => sendMessage(action)}
+                  >
+                    {action}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-              {error && <div className="chat-error">{error}</div>}
+          {error && <div className="chat-error">{error}</div>}
+
           <div className="chat-panel-footer">
             <input
+              ref={inputRef}
               className="chat-input"
-              placeholder="Type your message..."
+              placeholder="Ask about UNIDO careers..."
               value={input}
               onChange={(event) => {
-                setInput(event.target.value)
+                setInput(event.target.value);
                 if (error) setError("");
-              }
-              }
-              onKeyDown={(event) => event.key === "Enter" && sendMessage()}
+              }}
+              onKeyDown={(event) => event.key === "Enter" && !event.shiftKey && sendMessage()}
+              disabled={sending}
+              maxLength={500}
             />
             <button
               className="chat-send-btn"
               type="button"
               onClick={() => sendMessage()}
-              disabled={sending}
+              disabled={sending || !input.trim()}
+              aria-label="Send message"
             >
-              {sending ? "..." : <i className="bi bi-send"></i>}
+              {sending ? (
+                <span className="send-spinner" />
+              ) : (
+                <i className="bi bi-send-fill" />
+              )}
             </button>
           </div>
-        
+
+          <div className="chat-panel-branding">
+            Powered by UNIDO AI
+          </div>
         </div>
       )}
 
       <button
-        className="chat-launcher-btn"
+        className={`chat-launcher-btn ${isOpen ? "active" : ""}`}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-label="Open chatbot"
+        aria-label={isOpen ? "Close chatbot" : "Open chatbot"}
       >
-        <i className="bi bi-chat-dots-fill" />
+        {isOpen ? <i className="bi bi-x-lg" /> : <i className="bi bi-chat-dots-fill" />}
+        {!isOpen && <span className="launcher-pulse" />}
       </button>
     </div>
   );

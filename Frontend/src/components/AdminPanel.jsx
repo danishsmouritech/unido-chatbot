@@ -131,7 +131,7 @@ export default function AdminPanel() {
   const activeLabel = ADMIN_TABS.find((tab) => tab.key === activeTab)?.label || "Dashboard";
 
   return (
-    <div className="admin-layout container-fluid g-0">
+    <div className="admin-layout">
       <div
         className={`admin-sidebar-overlay ${isSidebarOpen ? "show" : ""}`}
         onClick={() => setIsSidebarOpen(false)}
@@ -145,29 +145,27 @@ export default function AdminPanel() {
       />
 
       <main className="admin-content">
-        <div className="admin-shell container-xxl">
-          <div className="admin-header">
+        <div className="admin-shell">
+          <header className="admin-header">
             <div className="admin-topbar">
               <button
                 type="button"
-                className="sidebar-toggle-btn d-lg-none"
+                className="sidebar-toggle-btn"
                 onClick={() => setIsSidebarOpen(true)}
                 aria-label="Open sidebar menu"
               >
                 <i className="bi bi-list" />
               </button>
               <div className="admin-title-wrap">
-                <h1 className="d-none d-sm-block">Admin Dashboard</h1>
-                <p className="d-none d-sm-block">
-                  Manage chatbot behavior, review analytics, and run operational tasks.
-                </p>
-                <div className="admin-mobile-hero d-sm-none">
-                  <span className="admin-mobile-brand">UNIDO Careers</span>
-                </div>
+                <h1>Admin Dashboard</h1>
+                <p>Manage chatbot behavior, review analytics, and run operational tasks.</p>
               </div>
-              <span className="admin-active-pill">{activeLabel}</span>
+              <span className="admin-active-pill">
+                <i className="bi bi-circle-fill" />
+                {activeLabel}
+              </span>
             </div>
-          </div>
+          </header>
           <section className={`admin-body-card ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
             <ActiveSection
               activeTab={activeTab}

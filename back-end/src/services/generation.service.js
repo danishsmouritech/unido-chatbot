@@ -1,4 +1,4 @@
-// import { chatClient } from "../config/openai.js";
+import { getChatClient } from "../config/openai.js";
 import { getAdminSettingsRecord } from "./adminSettings.service.js";
 
 function buildContextText(chunks) {
@@ -19,8 +19,6 @@ function normalizeHistory(history = []) {
 }
 
 export async function generateAnswer(question, history, chunks) {
-  const  chatClient =  require("../config/openai.js"); // we need to remove this.
-
   const contextText = buildContextText(chunks);
   const normalizedHistory = normalizeHistory(history);
   const settings = await getAdminSettingsRecord();
@@ -28,7 +26,7 @@ export async function generateAnswer(question, history, chunks) {
 Answer ONLY from provided CONTEXT.
 If insufficient info, say you don't have enough information.`;
 
-  const completion = await chatClient.chat.completions.create({
+  const completion = await getChatClient().chat.completions.create({
     model: process.env.AZURE_OPENAI_DEPLOYMENT,
     temperature: 0.1,
     messages: [
