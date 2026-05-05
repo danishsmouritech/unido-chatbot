@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { askChatQuestion, createChatSession, getChatVisibility } from "../services/chatService";
+import { isDemoMode, getDemoResponse } from "../services/demoService";
 import { getSocket } from "../services/socketService";
 import { logger } from "../utils/logger";
 import "../styles/chatWidget.css";
@@ -56,6 +57,18 @@ function formatTimestamp(date) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+function formatMessageText(text) {
+  if (!text) return text;
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const formatted = escaped
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br />");
+  return <span dangerouslySetInnerHTML={{ __html: formatted }} />;
+}
+
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -69,6 +82,12 @@ export default function ChatWidget() {
   const inputRef = useRef(null);
 
   async function hydrateChatState() {
+    if (isDemoMode()) {
+      setChatbotEnabled(true);
+      setSessionId("demo-session");
+      return;
+    }
+
     try {
       const visibility = await getChatVisibility();
 
@@ -145,6 +164,25 @@ export default function ChatWidget() {
     setShowQuickActions(false);
     setMessages((prev) => [...prev, { role: "user", text: question, time: new Date() }]);
     setSending(true);
+
+    if (isDemoMode()) {
+      try {
+        const payload = await getDemoResponse(question);
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", text: payload.answer, time: new Date() }
+        ]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", text: "Something went wrong. Please try again.", time: new Date() }
+        ]);
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
     let currentSessionId = sessionId;
 
     try {
@@ -237,7 +275,7 @@ export default function ChatWidget() {
                   </div>
                 )}
                 <div className="chat-msg-content">
-                  <div className={`chat-bubble ${message.role}`}>{message.text}</div>
+                  <div className={`chat-bubble ${message.role}`}>{formatMessageText(message.text)}</div>
                   {message.time && (
                     <span className="chat-timestamp">{formatTimestamp(message.time)}</span>
                   )}

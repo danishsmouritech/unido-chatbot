@@ -251,10 +251,225 @@
 
     /* ── Print ─────────────────────────────────────────────────── */
     @media print {
-      .toc-bar { display: none; }
-      .hero { padding: 24px; }
-      body { font-size: 11pt; }
-      .card { break-inside: avoid; }
+      /* ── Force backgrounds to print ── */
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      /* ── Page setup ── */
+      @page {
+        size: A4;
+        margin: 18mm 16mm 20mm 16mm;
+      }
+
+      /* ── Base ── */
+      html { font-size: 10pt; }
+      body {
+        background: #fff !important;
+        color: #1e293b;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Hide non-print elements ── */
+      .toc-bar { display: none !important; }
+
+      /* ── Hero (cover-like) ── */
+      .hero {
+        background: linear-gradient(135deg, #0a1f3d 0%, #0d2b52 50%, #0066b3 100%) !important;
+        padding: 36px 28px 32px !important;
+        margin: 0 0 0 0;
+        width: 100%;
+        border-radius: 10px;
+        page-break-after: avoid;
+      }
+      .hero::after { display: none; }
+      .hero h1 { font-size: 20pt !important; }
+      .hero .subtitle { font-size: 9.5pt !important; }
+      .hero .version-badge {
+        background: rgba(255,255,255,.15) !important;
+        border: 1px solid rgba(255,255,255,.25) !important;
+      }
+
+      /* ── Container ── */
+      .container { max-width: 100%; padding: 24px 0 0 0; }
+
+      /* ── Sections ── */
+      .section {
+        margin-bottom: 28px;
+        page-break-before: auto;
+      }
+      .section-header {
+        page-break-after: avoid;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+      }
+      .section-header h2 { font-size: 14pt; }
+
+      /* ── Section icons — preserve background colors ── */
+      .section-icon {
+        width: 36px !important; height: 36px !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+      }
+      .icon-blue   { background: #e8f2fc !important; color: var(--blue) !important; }
+      .icon-green  { background: #ecfdf5 !important; color: var(--green) !important; }
+      .icon-purple { background: #f5f0ff !important; color: var(--purple) !important; }
+      .icon-amber  { background: #fffbeb !important; color: var(--amber) !important; }
+      .icon-red    { background: #fef2f2 !important; color: var(--red) !important; }
+
+      /* ── Cards — avoid splitting ── */
+      .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 14px;
+        padding: 16px 18px;
+        border: 1px solid #d0d5dd !important;
+        box-shadow: none !important;
+        border-radius: 8px !important;
+      }
+      .card h3 { font-size: 11pt; margin-bottom: 6px; }
+      .card h4 { font-size: 9.5pt; margin: 10px 0 4px; }
+      .card p, .card li { font-size: 8.5pt; }
+
+      /* ── Flow diagrams ── */
+      .flow {
+        gap: 0 !important;
+        margin: 12px 0 !important;
+        page-break-inside: avoid;
+      }
+      .flow-step {
+        padding: 8px 10px !important;
+        font-size: 7.5pt !important;
+        min-width: 80px !important;
+        border-radius: 6px !important;
+      }
+      .flow-step small { font-size: 6.5pt !important; }
+      .flow-step.highlight         { background: #e8f2fc !important; border-color: var(--blue) !important; }
+      .flow-step.highlight-green   { background: #ecfdf5 !important; border-color: var(--green) !important; }
+      .flow-step.highlight-purple  { background: #f5f0ff !important; border-color: var(--purple) !important; }
+      .flow-step.highlight-amber   { background: #fffbeb !important; border-color: var(--amber) !important; }
+      .flow-step.highlight-red     { background: #fef2f2 !important; border-color: var(--red) !important; }
+      .flow-arrow { font-size: 14px !important; padding: 0 3px !important; }
+      .flow-arrow.down { padding: 3px 0 !important; font-size: 16px !important; }
+
+      /* ── Architecture grid ── */
+      .arch-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 10px !important;
+        page-break-inside: avoid;
+      }
+      .arch-box {
+        padding: 12px !important;
+        border-radius: 8px !important;
+        background: var(--slate-50) !important;
+        border: 1px solid var(--slate-200) !important;
+      }
+      .arch-box .arch-icon { font-size: 22px !important; margin-bottom: 4px !important; }
+      .arch-box h4 { font-size: 8.5pt !important; }
+      .arch-box p { font-size: 7pt !important; }
+
+      /* ── Steps ── */
+      .steps { page-break-inside: avoid; }
+      .step {
+        page-break-inside: avoid;
+        margin-bottom: 10px !important;
+        gap: 10px !important;
+      }
+      .step::before {
+        width: 24px !important; height: 24px !important;
+        font-size: 8pt !important;
+        background: var(--blue) !important;
+        color: #fff !important;
+      }
+      .step-content strong { font-size: 9pt; }
+      .step-content p { font-size: 8.5pt !important; }
+
+      /* ── Tables ── */
+      .table-wrap { page-break-inside: avoid; }
+      table { font-size: 8pt !important; }
+      thead th {
+        background: #f1f5f9 !important;
+        font-size: 7pt !important;
+        padding: 6px 8px !important;
+        border-bottom: 2px solid #cbd5e1 !important;
+      }
+      tbody td {
+        padding: 6px 8px !important;
+        border-bottom: 1px solid #e8ecf1 !important;
+      }
+      tbody tr:hover { background: transparent !important; }
+
+      /* ── Code blocks ── */
+      pre {
+        background: #0f172a !important;
+        color: #e2e8f0 !important;
+        font-size: 7.5pt !important;
+        padding: 10px 14px !important;
+        border-radius: 6px !important;
+        page-break-inside: avoid;
+        white-space: pre-wrap !important;
+        word-wrap: break-word !important;
+      }
+      .inline-code {
+        background: #eef2f7 !important;
+        color: var(--blue-d) !important;
+        font-size: 7.5pt !important;
+        padding: 1px 4px !important;
+        border-radius: 3px !important;
+      }
+
+      /* ── Pills / Badges ── */
+      .pill { font-size: 6.5pt !important; padding: 2px 7px !important; }
+      .pill-blue   { background: #e8f2fc !important; color: var(--blue) !important; }
+      .pill-green  { background: #ecfdf5 !important; color: var(--green) !important; }
+      .pill-amber  { background: #fffbeb !important; color: var(--amber) !important; }
+      .pill-red    { background: #fef2f2 !important; color: var(--red) !important; }
+      .pill-purple { background: #f5f0ff !important; color: var(--purple) !important; }
+      .pill-slate  { background: var(--slate-100) !important; color: var(--slate-700) !important; }
+
+      /* ── Callouts ── */
+      .callout {
+        page-break-inside: avoid;
+        font-size: 8.5pt !important;
+        padding: 10px 14px !important;
+        margin: 10px 0 !important;
+        border-radius: 0 6px 6px 0 !important;
+        background: #f0f7ff !important;
+        border-left: 3px solid var(--blue) !important;
+      }
+      .callout.warn {
+        background: #fffdf5 !important;
+        border-left-color: var(--amber) !important;
+      }
+      .callout.danger {
+        background: #fff5f5 !important;
+        border-left-color: var(--red) !important;
+      }
+
+      /* ── Sequence diagrams ── */
+      .seq { page-break-inside: avoid; }
+      .seq-actor { font-size: 7pt !important; width: 90px !important; }
+      .seq-msg .label { font-size: 7.5pt !important; }
+      .seq-line .dot { background: var(--blue) !important; }
+
+      /* ── Footer ── */
+      footer {
+        margin-top: 20px;
+        padding: 16px 0 !important;
+        font-size: 7.5pt !important;
+        page-break-before: avoid;
+      }
+
+      /* ── Links — show URL in print ── */
+      a { color: var(--blue) !important; text-decoration: none !important; }
+      a[href^="#"] { color: var(--blue) !important; }
+
+      /* ── Orphan/widow control ── */
+      p, li { orphans: 3; widows: 3; }
+      h2, h3, h4 { page-break-after: avoid; orphans: 3; widows: 3; }
     }
   </style>
 </head>
