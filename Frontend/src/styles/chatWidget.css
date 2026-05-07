@@ -70,8 +70,8 @@
 
 /* --- Chat Panel --- */
 .chat-panel {
-  width: 380px;
-  height: 540px;
+  width: 360px;
+  height: 500px;
   overflow: hidden;
   background: #ffffff;
   box-shadow:
@@ -181,7 +181,17 @@
   flex-direction: column;
   gap: 6px;
 }
+.chat-panel-body::-webkit-scrollbar {
+  width: 6px;
+}
 
+.chat-panel-body::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+.chat-panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
 .chat-scroll {
   overflow-y: auto;
   overflow-x: hidden;

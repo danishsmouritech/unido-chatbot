@@ -21,8 +21,9 @@
   scrollbar-width: thin;
   padding: 0 0 16px;
 }
-.admin-scroll::-webkit-scrollbar { width: 6px; }
-.admin-scroll::-webkit-scrollbar-thumb { background: #c5cdd8; border-radius: 10px; }
+.admin-scroll::-webkit-scrollbar { width: 6px !important; }
+.admin-scroll::-webkit-scrollbar-thumb { background: #c5cdd8 !important; border-radius: 10px; }
+.admin-scroll::-webkit-scrollbar-track { background: transparent !important; }
 
 /* ---- Sidebar Overlay (mobile) ---- */
 .admin-sidebar-overlay { display: none; }
@@ -898,6 +899,14 @@
   z-index: 2;
   white-space: nowrap;
 }
+.table-responsive{
+  height: 280px;
+  min-height: 280px;
+  overflow-y: scroll;
+}
+.table-responsive::-webkit-scrollbar { width: 6px; }
+.table-responsive::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.table-responsive::-webkit-scrollbar-track { background: transparent; }
 .info-table tbody tr {
   border-bottom: 1px solid #f1f5f9;
   transition: background 0.15s;
@@ -1054,7 +1063,16 @@
   flex-direction: column;
   gap: 20px;
 }
-
+.detail-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.detail-modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.detail-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
 .detail-meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1122,7 +1140,15 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
-
+.detail-json::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.detail-json::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.detail-json::-webkit-scrollbar-track { background: transparent; }
 .detail-modal-footer {
   padding: 16px 24px;
   border-top: 1px solid #e5e9f0;

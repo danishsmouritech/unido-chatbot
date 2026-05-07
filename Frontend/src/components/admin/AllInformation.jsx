@@ -243,10 +243,12 @@ export default function AllInformation({
                 </div>
               </div>
 
-              <details className="detail-json-section">
+              <div className="json">
+                 <details className="detail-json-section">
                 <summary>Raw JSON</summary>
                 <pre className="detail-json">{JSON.stringify(selectedLog, null, 2)}</pre>
               </details>
+             </div>
             </div>
             <div className="detail-modal-footer">
               <button className="modal-btn secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(selectedLog, null, 2))}>
