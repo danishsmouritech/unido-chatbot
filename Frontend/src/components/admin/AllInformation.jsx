@@ -29,7 +29,7 @@ export default function AllInformation({
 }) {
   const [searchText, setSearchText] = useState(query?.search || "");
   const [selectedLog, setSelectedLog] = useState(null);
-
+  const [copied, setCopied] = useState(false);
   const currentPage = pagination?.page || 1;
   const totalPages = pagination?.totalPages || 1;
   const totalCount = pagination?.total ?? 0;
@@ -251,8 +251,19 @@ export default function AllInformation({
              </div>
             </div>
             <div className="detail-modal-footer">
-              <button className="modal-btn secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(selectedLog, null, 2))}>
-                <i className="bi bi-clipboard" /> Copy JSON
+              <button className="modal-btn secondary" onClick={async () => {
+    await navigator.clipboard.writeText(
+      JSON.stringify(selectedLog, null, 2)
+    );
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  }}>
+                <i className={`bi ${copied ? "bi-check2" : "bi-clipboard"}`} />
+                   {copied ? " Copied" : " Copy JSON"}
               </button>
               <button className="modal-btn primary" onClick={() => setSelectedLog(null)}>Close</button>
             </div>
