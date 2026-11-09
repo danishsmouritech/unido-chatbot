@@ -5,6 +5,7 @@ import { scrapeJobSearch } from "./scraper/jobSearch.js";
 import { scrapeJobDetail } from "./scraper/jobDetail.js";
 import scrapeAllCategories from "./scraper/scrapeAllCategories.js";
 import { scrapeCategoryContent } from "./scraper/scrapeCategoryContent.js";
+import { scrapeOneHR } from "./scraper/scrapeOneHR.js";
 import { CONTENT_CATEGORIES } from "./constants/categoriesContent.js";
 import { saveJSONBackup } from "./storage/file.storage.js";
 import { createChunksByType } from "./chunking/chunker.js";
@@ -33,38 +34,42 @@ async function runScraper() {
   const { browser, page } = await getBrowser();
   try {
     // Homepage
-    const homepage = await scrapeHomepage(page);
-    exportCareerCategories(homepage.categories);
-    await saveJSONBackup(homepage, "homepage", "data", "unido");
+    // const homepage = await scrapeHomepage(page);
+    // exportCareerCategories(homepage.categories);
+    // await saveJSONBackup(homepage, "homepage", "data", "unido");
     
-    // FAQs
-    const faqs = await scrapeFaqs(page);
-    await saveJSONBackup(faqs, "faqs","data","unido");
-    // Job summaries
-    const jobSummaries = await scrapeJobSearch(page);
-    await saveJSONBackup(jobSummaries, "jobSummaries","data","unido");
-     // Job details
-    const jobDetails = [];
-    for (const job of jobSummaries) {
-      const detail = await scrapeJobDetail(page, job.jobDetailLink);
-      jobDetails.push(detail);
-      exportJobDetailLinks(jobSummaries);
-    }
-    await saveJSONBackup(jobDetails, "jobDetails","data","unido");
+    // // FAQs
+    // const faqs = await scrapeFaqs(page);
+    // await saveJSONBackup(faqs, "faqs","data","unido");
+    // // Job summaries
+    // const jobSummaries = await scrapeJobSearch(page);
+    // await saveJSONBackup(jobSummaries, "jobSummaries","data","unido");
+    //  // Job details
+    // const jobDetails = [];
+    // for (const job of jobSummaries) {
+    //   const detail = await scrapeJobDetail(page, job.jobDetailLink);
+    //   jobDetails.push(detail);
+    //   exportJobDetailLinks(jobSummaries);
+    // }
+    // await saveJSONBackup(jobDetails, "jobDetails","data","unido");
 
-    // Categories
-    const categories = await scrapeAllCategories();
-    exportCategoryContent(categories);
-    await saveJSONBackup(categories, "categories","data","unido");
-    // Category content
-    const categoryContent = [];
-    for (const category of CONTENT_CATEGORIES) {
-      const categoryData = await scrapeCategoryContent(category);
-      categoryContent.push(categoryData);
-      await new Promise(r => setTimeout(r, 1500));
-    }
-    await saveJSONBackup(categoryContent, "categoryContent","data","unido");
+    // // Categories
+    // const categories = await scrapeAllCategories();
+    // exportCategoryContent(categories);
+    // await saveJSONBackup(categories, "categories","data","unido");
+    // // Category content
+    // const categoryContent = [];
+    // for (const category of CONTENT_CATEGORIES) {
+    //   const categoryData = await scrapeCategoryContent(category);
+    //   categoryContent.push(categoryData);
+    //   await new Promise(r => setTimeout(r, 1500));
+    // }
+    // await saveJSONBackup(categoryContent, "categoryContent", "data", "unido");
     
+    //ONEHR
+    const onehr = await scrapeOneHR(page);
+    await saveJSONBackup(onehr, "onehr", "data", "unido");
+
     // Create chunks by type (now with embeddings)
   logger.log(" Creating chunks with embeddings...");
 const chunksByType = await createChunksByType({
