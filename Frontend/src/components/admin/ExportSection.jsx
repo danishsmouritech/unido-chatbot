@@ -25,8 +25,8 @@ export default function ExportSection({ onExport }) {
   };
 
   return (
-    <div className="export-section">
-      <div className="section-header">
+    <div className="export-section d-flex flex-column gap-3">
+      <div className="section-header d-flex align-items-center gap-3">
         <div className="section-icon" style={{ background: "#ecfdf5", color: "#059669" }}>
           <i className="bi bi-download" />
         </div>
@@ -38,7 +38,7 @@ export default function ExportSection({ onExport }) {
 
       <div className="export-form-card">
         <div className="export-fields">
-          <div className="export-field">
+          <div className="export-field d-flex flex-column gap-1">
             <label className="export-label">
               <i className="bi bi-calendar-event" />
               From date
@@ -54,7 +54,7 @@ export default function ExportSection({ onExport }) {
             {errors.startDate && <span className="export-field-error">{errors.startDate}</span>}
           </div>
 
-          <div className="export-field">
+          <div className="export-field d-flex flex-column gap-1">
             <label className="export-label">
               <i className="bi bi-calendar-event" />
               To date
@@ -70,7 +70,7 @@ export default function ExportSection({ onExport }) {
             {errors.endDate && <span className="export-field-error">{errors.endDate}</span>}
           </div>
 
-          <div className="export-field">
+          <div className="export-field d-flex flex-column gap-1">
             <label className="export-label">
               <i className="bi bi-funnel" />
               Export type

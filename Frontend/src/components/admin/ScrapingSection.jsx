@@ -27,8 +27,8 @@ export default function ScrapingSection({
     : null;
 
   return (
-    <div className="scraping-section">
-      <div className="section-header">
+    <div className="scraping-section d-flex flex-column gap-3">
+      <div className="section-header d-flex align-items-center gap-3">
         <div className="section-icon" style={{ background: "#f5f0ff", color: "#7c3aed" }}>
           <i className="bi bi-arrow-repeat" />
         </div>

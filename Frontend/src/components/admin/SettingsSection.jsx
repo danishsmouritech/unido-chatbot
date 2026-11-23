@@ -21,8 +21,8 @@ export default function SettingsSection({
   const charPercent = Math.min((systemPrompt.length / maxPromptLength) * 100, 100);
 
   return (
-    <div className="settings-section">
-      <div className="section-header">
+    <div className="settings-section d-flex flex-column gap-3">
+      <div className="section-header d-flex align-items-center gap-3">
         <div className="section-icon" style={{ background: "#f0f4ff", color: "#0066b3" }}>
           <i className="bi bi-sliders2" />
         </div>
@@ -33,7 +33,7 @@ export default function SettingsSection({
       </div>
 
       <div className="settings-grid">
-        <div className="settings-prompt-area">
+        <div className="settings-prompt-area d-flex flex-column gap-1">
           <label className="settings-label">
             <i className="bi bi-chat-square-text" />
             System Prompt
@@ -58,7 +58,7 @@ export default function SettingsSection({
           </div>
         </div>
 
-        <div className="settings-controls">
+        <div className="settings-controls d-flex flex-column gap-3">
           <div className="toggle-card">
             <div className="toggle-card-content">
               <div className={`toggle-status-dot ${settings?.chatbotEnabled ? "active" : ""}`} />

@@ -5,7 +5,7 @@ export default function ErrorSuccess({ pieErrorData, COLORS }) {
   const hasData = pieErrorData && pieErrorData.some(entry => entry.value > 0);
   return (
     <div className="chart-card">
-      <div className="chart-card-header">
+      <div className="chart-card-header d-flex align-items-center gap-2">
         <i className="bi bi-shield-check" />
         <h6>Errors vs Success</h6>
       </div>
@@ -29,7 +29,7 @@ export default function ErrorSuccess({ pieErrorData, COLORS }) {
           </PieChart>
         </ResponsiveContainer>
       ) : (
-        <div className="chart-empty">
+        <div className="chart-empty d-flex flex-column align-items-center justify-content-center gap-2">
           <i className="bi bi-inbox" />
           <span>No data available for the selected period.</span>
         </div>

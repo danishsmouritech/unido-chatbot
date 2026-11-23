@@ -45,7 +45,7 @@ async function getOrCreateSessionId() {
 
 function TypingIndicator() {
   return (
-    <div className="chat-bubble bot typing-indicator">
+    <div className="chat-bubble bot typing-indicator d-flex align-items-center gap-1">
       <span className="dot" />
       <span className="dot" />
       <span className="dot" />
@@ -244,11 +244,11 @@ export default function ChatWidget() {
       {isOpen && (
         <div className="chat-panel" role="dialog" aria-label="UNIDO Careers Chat">
           <div className="chat-panel-header">
-            <div className="chat-header-left">
+            <div className="chat-header-left d-flex align-items-center gap-2">
               <div className="chat-avatar">
                 <i className="bi bi-robot" />
               </div>
-              <div className="chat-header-info">
+              <div className="chat-header-info d-flex flex-column gap-1">
                 <span className="chat-panel-title">UNIDO Careers</span>
                 <span className="chat-status-badge">
                   <span className="status-dot" />
@@ -266,15 +266,15 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          <div className="chat-panel-body chat-scroll" ref={messagesRef}>
+          <div className="chat-panel-body chat-scroll d-flex flex-column gap-1" ref={messagesRef}>
             {messages.map((message, index) => (
-              <div key={index} className={`chat-msg-row ${message.role}`}>
+              <div key={index} className={`chat-msg-row d-flex gap-2 ${message.role} ${message.role === "user" ? "align-self-end flex-row-reverse" : "align-self-start"}`}>
                 {message.role === "bot" && (
-                  <div className="chat-msg-avatar">
+                  <div className="chat-msg-avatar d-flex align-items-center justify-content-center">
                     <i className="bi bi-robot" />
                   </div>
                 )}
-                <div className="chat-msg-content">
+                <div className="chat-msg-content d-flex flex-column">
                   <div className={`chat-bubble ${message.role}`}>{formatMessageText(message.text)}</div>
                   {message.time && (
                     <span className="chat-timestamp">{formatTimestamp(message.time)}</span>
@@ -286,7 +286,7 @@ export default function ChatWidget() {
             {sending && <TypingIndicator />}
 
             {showQuickActions && messages.length <= 1 && (
-              <div className="chat-quick-actions">
+              <div className="chat-quick-actions d-flex flex-wrap gap-1">
                 {QUICK_ACTIONS.map((action) => (
                   <button
                     key={action}
@@ -301,9 +301,9 @@ export default function ChatWidget() {
             )}
           </div>
 
-          {error && <div className="chat-error">{error}</div>}
+          {error && <div className="chat-error text-center">{error}</div>}
 
-          <div className="chat-panel-footer">
+          <div className="chat-panel-footer d-flex align-items-center gap-2">
             <textarea
               ref={inputRef}
               className="chat-input"

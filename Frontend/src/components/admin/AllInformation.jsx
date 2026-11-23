@@ -4,9 +4,9 @@ const UNKNOWN_IP = "Unknown IP";
 
 function LoadingSkeleton() {
   return (
-    <div className="loading-skeleton">
+    <div className="loading-skeleton d-flex flex-column gap-2">
       {[...Array(5)].map((_, i) => (
-        <div key={i} className="skeleton-row">
+        <div key={i} className="skeleton-row d-flex align-items-center gap-3">
           <div className="skeleton-cell short" />
           <div className="skeleton-cell medium" />
           <div className="skeleton-cell medium" />
@@ -94,16 +94,16 @@ export default function AllInformation({
   };
 
   return (
-    <div className="allinfo-section">
+    <div className="allinfo-section d-flex flex-column gap-3">
       {/* Header bar */}
-      <div className="allinfo-toolbar">
-        <div className="allinfo-count">
+      <div className="allinfo-toolbar d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div className="allinfo-count d-flex align-items-center gap-2">
           <i className="bi bi-chat-square-text" />
           <span>
             <strong>{totalCount}</strong> conversations
           </span>
         </div>
-        <div className="allinfo-search">
+        <div className="allinfo-search d-flex align-items-center gap-2">
           <i className="bi bi-search" />
           <input
             type="text"
@@ -169,7 +169,7 @@ export default function AllInformation({
                 })
               ) : (
                 <tr>
-                  <td colSpan="7" className="empty-state">
+                  <td colSpan="7" className="empty-state d-flex flex-column align-items-center gap-2">
                     <i className="bi bi-inbox" />
                     <span>No conversations found</span>
                   </td>
@@ -182,11 +182,11 @@ export default function AllInformation({
 
       {/* Pagination */}
       {information.length > 0 && (
-        <div className="allinfo-pagination">
+        <div className="allinfo-pagination d-flex align-items-center justify-content-between">
           <span className="page-info">
             {rowOffset + 1}–{Math.min(rowOffset + pageSize, totalCount)} of {totalCount}
           </span>
-          <div className="page-controls">
+          <div className="page-controls d-flex align-items-center gap-1">
             <button className="page-nav" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
               <i className="bi bi-chevron-left" />
             </button>
@@ -232,7 +232,7 @@ export default function AllInformation({
                 </div>
               </div>
 
-              <div className="detail-conversation">
+              <div className="detail-conversation d-flex flex-column gap-3">
                 <div className="detail-msg user-msg">
                   <div className="detail-msg-label"><i className="bi bi-person" /> User</div>
                   <p>{selectedLog.question || "-"}</p>

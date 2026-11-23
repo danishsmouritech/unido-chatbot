@@ -37,7 +37,7 @@ export default function AdminSidebar({
 
   return (
     <aside className={`admin-sidebar ${isOpen ? "open" : ""}`}>
-      <div className="sidebar-brand">
+      <div className="sidebar-brand d-flex align-items-center gap-3">
         <div className="brand-mark">
           <i className="bi bi-building" />
         </div>
@@ -57,12 +57,12 @@ export default function AdminSidebar({
 
       <div className="sidebar-section-label">Navigation</div>
 
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav d-flex flex-column gap-1 flex-grow-1">
         {navItems.map((item) => (
           <button
             key={item.key}
             onClick={() => handleTabClick(item.key)}
-            className={activeTab === item.key ? "active" : ""}
+            className={`d-flex align-items-center gap-2 ${activeTab === item.key ? "active" : ""}`}
           >
             <i className={`bi ${item.icon}`} />
             <span>{item.label}</span>
@@ -74,7 +74,7 @@ export default function AdminSidebar({
       <div className="sidebar-divider" />
 
       <button
-        className="sidebar-logout-btn"
+        className="sidebar-logout-btn d-flex align-items-center gap-2"
         onClick={handleLogout}
         disabled={loggingOut}
       >

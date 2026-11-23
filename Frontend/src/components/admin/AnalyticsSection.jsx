@@ -41,19 +41,19 @@ export default function AnalyticsSection({
   const COLORS = ["#0066b3", "#059669", "#dc3545", "#d97706"];
 
   return (
-    <div className="analytics-section">
+    <div className="analytics-section d-flex flex-column gap-3">
 
       {/* Section Header + Filters */}
-      <div className="analytics-header">
+      <div className="analytics-header d-flex align-items-start justify-content-between flex-wrap gap-3">
         <div className="analytics-header-left">
-          <h3 className="analytics-title">
+          <h3 className="analytics-title d-flex align-items-center gap-2">
             <i className="bi bi-graph-up" />
             Overview
           </h3>
           <p className="analytics-subtitle">Real-time chatbot performance metrics</p>
         </div>
-        <div className="analytics-filters">
-          <div className="filter-field">
+        <div className="analytics-filters d-flex align-items-end gap-2">
+          <div className="filter-field d-flex flex-column gap-1">
             <label className="filter-label">From</label>
             <input
               type="date"
@@ -64,7 +64,7 @@ export default function AnalyticsSection({
               onChange={(e) => setFromDate(e.target.value)}
             />
           </div>
-          <div className="filter-field">
+          <div className="filter-field d-flex flex-column gap-1">
             <label className="filter-label">To</label>
             <input
               type="date"
@@ -81,11 +81,11 @@ export default function AnalyticsSection({
       {/* Metric Cards */}
       <div className="metric-cards-grid">
         {METRIC_CARDS.map((card) => (
-          <div className="metric-card" key={card.key}>
+          <div className="metric-card d-flex align-items-start gap-3" key={card.key}>
             <div className="metric-card-icon" style={{ background: `${card.color}14`, color: card.color }}>
               <i className={`bi ${card.icon}`} />
             </div>
-            <div className="metric-card-body">
+            <div className="metric-card-body d-flex flex-column">
               <span className="metric-card-label">{card.title}</span>
               <span className="metric-card-value" style={{ color: card.color }}>
                 {analytics[card.key] ?? 0}

@@ -44,9 +44,6 @@
 }
 
 .sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   padding: 6px 8px 18px;
   border-bottom: 1px solid #1d3b62;
 }
@@ -100,17 +97,7 @@
   color: #5a7da5;
 }
 
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-
 .sidebar-nav button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
@@ -150,9 +137,6 @@
 }
 
 .sidebar-logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   border: 1px solid rgba(220,53,69,0.25);
   border-radius: 10px;
   background: rgba(220,53,69,0.08);
@@ -214,10 +198,6 @@
   border-radius: 14px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
 }
 
 .sidebar-toggle-btn {
@@ -259,9 +239,6 @@
   line-height: 1;
   padding: 8px 14px;
   white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
 }
 .admin-active-pill i { font-size: 6px; color: #0066b3; }
 
@@ -277,16 +254,6 @@
 /* ============================================================
    ANALYTICS SECTION
    ============================================================ */
-.analytics-section { display: flex; flex-direction: column; gap: 20px; }
-
-.analytics-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
 .analytics-header-left { flex: 1; min-width: 0; }
 
 .analytics-title {
@@ -294,9 +261,6 @@
   font-size: 22px;
   font-weight: 700;
   color: #0d2340;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 .analytics-title i { color: #0066b3; font-size: 20px; }
 
@@ -305,14 +269,6 @@
   color: #64748b;
   font-size: 13px;
 }
-
-.analytics-filters {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-}
-
-.filter-field { display: flex; flex-direction: column; gap: 4px; }
 
 .filter-label {
   font-size: 11px;
@@ -345,9 +301,6 @@
   border: 1px solid #e5e9f0;
   border-radius: 12px;
   padding: 18px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .metric-card:hover {
@@ -366,8 +319,6 @@
 }
 
 .metric-card-body {
-  display: flex;
-  flex-direction: column;
   min-width: 0;
 }
 
@@ -420,9 +371,6 @@
 .chart-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
 
 .chart-card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid #f1f5f9;
@@ -436,13 +384,8 @@
 }
 
 .chart-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 48px 16px;
   color: #94a3b8;
-  gap: 8px;
 }
 .chart-empty i { font-size: 28px; }
 .chart-empty span { font-size: 13px; }
@@ -450,14 +393,6 @@
 /* ============================================================
    SETTINGS SECTION
    ============================================================ */
-.settings-section { display: flex; flex-direction: column; gap: 20px; }
-
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
 .section-icon {
   width: 44px;
   height: 44px;
@@ -487,8 +422,6 @@
   gap: 24px;
   align-items: start;
 }
-
-.settings-prompt-area { display: flex; flex-direction: column; gap: 6px; }
 
 .settings-label {
   font-size: 13px;
@@ -533,12 +466,6 @@
   text-align: right;
 }
 .char-counter-text.text-danger { color: #dc3545; }
-
-.settings-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
 
 .toggle-card {
   background: #f8fafc;
@@ -633,8 +560,6 @@
 /* ============================================================
    SCRAPING SECTION
    ============================================================ */
-.scraping-section { display: flex; flex-direction: column; gap: 20px; }
-
 .scraping-status-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -730,8 +655,6 @@
 /* ============================================================
    EXPORT SECTION
    ============================================================ */
-.export-section { display: flex; flex-direction: column; gap: 20px; }
-
 .export-form-card {
   background: #f8fafc;
   border: 1px solid #e5e9f0;
@@ -747,8 +670,6 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
 }
-
-.export-field { display: flex; flex-direction: column; gap: 6px; }
 
 .export-label {
   font-size: 12px;
@@ -803,29 +724,13 @@
 /* ============================================================
    ALL INFORMATION / TABLE SECTION
    ============================================================ */
-.allinfo-section { display: flex; flex-direction: column; gap: 16px; }
-
-.allinfo-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
 .allinfo-count {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   color: #0d2340;
   font-size: 14px;
 }
 .allinfo-count i { color: #0066b3; font-size: 18px; }
 
 .allinfo-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   background: #f8fafc;
   border: 1px solid #d0dae8;
   border-radius: 10px;
@@ -856,11 +761,8 @@
 .search-clear:hover { color: #64748b; }
 
 /* Loading Skeleton */
-.loading-skeleton { display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
+.loading-skeleton { padding: 8px 0; }
 .skeleton-row {
-  display: flex;
-  gap: 16px;
-  align-items: center;
   height: 40px;
 }
 .skeleton-cell {
@@ -950,30 +852,17 @@
   text-align: center;
   padding: 48px 16px !important;
   color: #94a3b8;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
 }
 .empty-state i { font-size: 28px; }
 .empty-state span { font-size: 14px; }
 
 /* Pagination */
 .allinfo-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .page-info { font-size: 13px; color: #64748b; }
-
-.page-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
 
 .page-nav,
 .page-btn {
@@ -1098,8 +987,6 @@
   color: #0d2340;
 }
 .detail-meta-value.mono { font-family: "SF Mono","Consolas", monospace; font-size: 13px; }
-
-.detail-conversation { display: flex; flex-direction: column; gap: 12px; }
 
 .detail-msg {
   border-radius: 10px;

@@ -147,7 +147,7 @@ export default function AdminPanel() {
       <main className="admin-content">
         <div className="admin-shell">
           <header className="admin-header">
-            <div className="admin-topbar">
+            <div className="admin-topbar d-flex align-items-center justify-content-between gap-3">
               <button
                 type="button"
                 className="sidebar-toggle-btn"
@@ -160,7 +160,7 @@ export default function AdminPanel() {
                 <h1>Admin Dashboard</h1>
                 <p>Manage chatbot behavior, review analytics, and run operational tasks.</p>
               </div>
-              <span className="admin-active-pill">
+              <span className="admin-active-pill d-inline-flex align-items-center gap-1">
                 <i className="bi bi-circle-fill" />
                 {activeLabel}
               </span>
