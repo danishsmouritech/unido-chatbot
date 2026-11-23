@@ -304,16 +304,23 @@ export default function ChatWidget() {
           {error && <div className="chat-error">{error}</div>}
 
           <div className="chat-panel-footer">
-            <input
+            <textarea
               ref={inputRef}
               className="chat-input"
               placeholder="Ask about UNIDO careers..."
               value={input}
+              rows={2}
+              aria-label="Message"
               onChange={(event) => {
                 setInput(event.target.value);
                 if (error) setError("");
               }}
-              onKeyDown={(event) => event.key === "Enter" && !event.shiftKey && sendMessage()}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  sendMessage();
+                }
+              }}
               disabled={sending}
               maxLength={500}
             />

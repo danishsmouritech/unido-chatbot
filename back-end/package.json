@@ -28,7 +28,7 @@
     "fs-extra": "^11.3.3",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.2.0",
+    "mongoose": "^9.12.3",
     "node-cron": "^4.2.1",
     "openai": "^6.21.0",
     "puppeteer": "^24.37.2",
