@@ -11,7 +11,7 @@ const OFFENSIVE_PATTERNS = [
 
 const CONFIDENTIAL_PATTERNS = [
   /\b(confidential|internal\s+document|private\s+document|leak|classified|secret)\b/i,
-  /\b(staff\s+salary|salary\s+list|employee\s+data|personal\s+data|passport|ssn|social\s+security)\b/i,
+  /\b(staff\s+salary\s+list|salary\s+list|employee\s+data|personal\s+data|passport|ssn|social\s+security)\b/i,
   /\b(credit\s+card|bank\s+account|financial\s+record|medical\s+record)\b/i,
 ];
 

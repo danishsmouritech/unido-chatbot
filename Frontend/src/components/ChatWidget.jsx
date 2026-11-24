@@ -64,6 +64,7 @@ function formatMessageText(text) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
   const formatted = escaped
+    .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\n/g, "<br />");
   return <span dangerouslySetInnerHTML={{ __html: formatted }} />;

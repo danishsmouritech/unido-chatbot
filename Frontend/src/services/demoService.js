@@ -14,7 +14,7 @@ const OFFENSIVE_PATTERNS = [
 
 const CONFIDENTIAL_PATTERNS = [
   /\b(confidential|internal\s+document|private\s+document|leak|classified|secret)\b/i,
-  /\b(staff\s+salary|salary\s+list|employee\s+data|personal\s+data|passport|ssn|social\s+security)\b/i,
+  /\b(staff\s+salary\s+list|salary\s+list|employee\s+data|personal\s+data|passport|ssn|social\s+security)\b/i,
   /\b(credit\s+card|bank\s+account|financial\s+record|medical\s+record)\b/i,
 ];
 
@@ -246,6 +246,42 @@ const FALLBACK_ANSWER =
   "• Internships and entry-level programmes\n\n" +
   "Could you rephrase your question or ask about one of these topics?";
 
+function getConfiguredExternalResourceAnswer(question) {
+  const makeResponse = (title, steps, url, label) =>
+    `${title}:\n\n${steps.map((step, index) => `${index + 1}. ${step}`).join("\n")}\n\nOfficial source: [${label}](${url})`;
+
+  if (/\b(youtube|unido\s+videos?|outreach\s+videos?|recruitment\s+videos?)\b/i.test(question)) {
+    return makeResponse("How to access UNIDO outreach videos", [
+      "Open the official UNIDO YouTube Outreach playlist",
+      "Browse the available videos",
+      "Select the relevant video",
+      "Watch the video",
+      "Enable subtitles or captions if available",
+      "Check the video description for additional resources"
+    ], "https://www.youtube.com/playlist?list=PLu54zbUJCBPlNH4HjV-QJz2LR3w0Gz4iT", "UNIDO YouTube Outreach playlist");
+  }
+
+  const namesOneHR = /\bone\s*hr\b/i.test(question);
+  const namesICSC = /\bicsc\b|international\s+civil\s+service\s+commission/i.test(question);
+  const oneHRSteps = ["Open OneHR Salary Scales", "Select the duty station", "Click Search", "Open the matching location", "Select Salary Scales", "Choose the latest available revision"];
+  const icscSteps = ["Open the official ICSC website", "Navigate to the Salary Scales section", "Locate the relevant staff category", "Scroll down to Downloads", "Select PDF, XML or CSV", "Choose the latest available revision", "Download and open the salary scale document"];
+
+  if (namesOneHR && namesICSC) {
+    return `For the latest salary scales, use the source that matches the staff category:\n\n${makeResponse("OneHR - General Service and related categories", oneHRSteps, "https://onehr.un.org/salary-survey/#/salary_scale", "OneHR Salary Scales")}\n\n${makeResponse("ICSC - Professional and higher categories", icscSteps, "https://icsc.un.org/Home/DataSalaryScales", "ICSC Salary Scales")}`;
+  }
+  if (namesOneHR) {
+    return makeResponse("How to view salary scales in OneHR", oneHRSteps, "https://onehr.un.org/salary-survey/#/salary_scale", "OneHR Salary Scales");
+  }
+  if (namesICSC) {
+    return makeResponse("How to view and download salary scales from ICSC", icscSteps, "https://icsc.un.org/Home/DataSalaryScales", "ICSC Salary Scales");
+  }
+
+  if (/\b(salary\s+scales?|pay\s+scales?|salary\s+grades?|salary\s+structure|remuneration\s+scale|un\s+salary\s+scale)\b|\b(?:p|d|g)\s*[-–]?\s*\d\b.{0,45}\b(earn|salary|pay|compensation)\b|\b(earn|salary|pay|compensation)\b.{0,45}\b(?:p|d|g)\s*[-–]?\s*\d\b/i.test(question)) {
+    return `For the latest salary scales, use the source that matches the staff category:\n\n${makeResponse("OneHR - General Service and related categories", oneHRSteps, "https://onehr.un.org/salary-survey/#/salary_scale", "OneHR Salary Scales")}\n\n${makeResponse("ICSC - Professional and higher categories", icscSteps, "https://icsc.un.org/Home/DataSalaryScales", "ICSC Salary Scales")}`;
+  }
+  return null;
+}
+
 // ── Main demo handler ────────────────────────────────────────────────────────
 
 const TYPING_DELAY_MS = 1200;
@@ -272,6 +308,12 @@ export function getDemoResponse(question) {
           guardReason,
         });
       }, 600);
+      return;
+    }
+
+    const externalResourceAnswer = getConfiguredExternalResourceAnswer(text);
+    if (externalResourceAnswer) {
+      setTimeout(() => resolve({ answer: externalResourceAnswer, sources: [] }), 600);
       return;
     }
 

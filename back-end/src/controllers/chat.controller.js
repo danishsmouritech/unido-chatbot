@@ -10,6 +10,7 @@ import { createChatLog } from "../services/chatlog.service.js";
 import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
 import { emitRealtime } from "../realtime/socket.js";
 import { logger } from "../utils/logger.js";
+import { getExternalResourceAnswer } from "../services/externalResources.service.js";
 function getClientIp(req) {
   let ip =
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
@@ -109,6 +110,22 @@ export const askQuestion = async (req, res) => {
         answer: outOfScopeAnswer,
         sources: []
       });
+    }
+
+    const externalResourceAnswer = getExternalResourceAnswer(question);
+    if (externalResourceAnswer) {
+      await addMessage(sessionId, { role: "user", content: question });
+      await addMessage(sessionId, { role: "assistant", content: externalResourceAnswer });
+      await createChatLog({
+        sessionId,
+        question,
+        answer: externalResourceAnswer,
+        status: "success",
+        sources: [],
+        requestMeta: { userAgent, ip },
+        timingMs: { total: Date.now() - startedAt }
+      });
+      return res.json({ answer: externalResourceAnswer, sources: [] });
     }
 
     const history = (await getHistory(sessionId)) || [];
