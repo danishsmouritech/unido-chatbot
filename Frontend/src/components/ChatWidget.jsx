@@ -244,21 +244,21 @@ export default function ChatWidget() {
     <div className="chat-widget-root">
       {isOpen && (
         <div className="chat-panel" role="dialog" aria-label="UNIDO Careers Chat">
-          <div className="chat-panel-header">
+          <div className="chat-panel-header d-flex align-items-center justify-content-between">
             <div className="chat-header-left d-flex align-items-center gap-2">
-              <div className="chat-avatar">
+              <div className="chat-avatar d-flex align-items-center justify-content-center">
                 <i className="bi bi-robot" />
               </div>
               <div className="chat-header-info d-flex flex-column gap-1">
                 <span className="chat-panel-title">UNIDO Careers</span>
-                <span className="chat-status-badge">
+                <span className="chat-status-badge d-flex align-items-center">
                   <span className="status-dot" />
                   Online
                 </span>
               </div>
             </div>
             <button
-              className="chat-close-btn"
+              className="chat-close-btn d-flex align-items-center justify-content-center"
               type="button"
               onClick={() => setIsOpen(false)}
               aria-label="Close chatbot"
@@ -326,7 +326,7 @@ export default function ChatWidget() {
               maxLength={500}
             />
             <button
-              className="chat-send-btn"
+              className="chat-send-btn d-flex align-items-center justify-content-center"
               type="button"
               onClick={() => sendMessage()}
               disabled={sending || !input.trim()}
@@ -347,7 +347,7 @@ export default function ChatWidget() {
       )}
 
       <button
-        className={`chat-launcher-btn ${isOpen ? "active" : ""}`}
+        className={`chat-launcher-btn d-flex align-items-center justify-content-center ${isOpen ? "active" : ""}`}
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label={isOpen ? "Close chatbot" : "Open chatbot"}

@@ -4,11 +4,7 @@
 
 /* ---- Layout ---- */
 .admin-layout {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 260px 1fr;
   background: #f4f6fa;
-  width: 100%;
   position: relative;
   overflow: hidden;
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
@@ -30,6 +26,7 @@
 
 /* ---- Sidebar ---- */
 .admin-sidebar {
+  width: 260px;
   background: linear-gradient(180deg, #0a1f3d 0%, #0d2b52 100%);
   color: #dbe6f8;
   padding: 20px 14px;
@@ -39,8 +36,6 @@
   top: 0;
   z-index: 1030;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
 }
 
 .sidebar-brand {
@@ -53,8 +48,6 @@
   height: 38px;
   border-radius: 10px;
   background: linear-gradient(135deg, #0066b3, #004080);
-  display: grid;
-  place-items: center;
   font-size: 18px;
   color: #fff;
   flex-shrink: 0;
@@ -75,13 +68,10 @@
 }
 
 .sidebar-close-btn {
-  margin-left: auto;
   border: 0;
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  display: none;
-  place-items: center;
   color: #dbe6f8;
   background: rgba(255,255,255,0.12);
   cursor: pointer;
@@ -156,20 +146,16 @@
 .sidebar-logout-btn i { font-size: 16px; width: 20px; text-align: center; }
 
 .sidebar-footer {
-  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid #1d3b62;
-  text-align: center;
 }
 
 .sidebar-footer-version {
-  display: block;
   font-size: 11px;
   color: #5a7da5;
 }
 
 .sidebar-footer-env {
-  display: inline-block;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -184,7 +170,6 @@
 /* ---- Main Content ---- */
 .admin-content {
   padding: 26px 24px 0;
-  width: 100%;
   min-width: 0;
 }
 
@@ -205,15 +190,12 @@
   background: none;
   color: #102a4b;
   font-size: 28px;
-  display: none;
-  align-items: center;
   cursor: pointer;
   border-radius: 8px;
   padding: 4px;
 }
 .sidebar-toggle-btn:hover { background: #f0f4ff; }
 
-.admin-title-wrap { flex: 1; min-width: 0; }
 .admin-header h1 {
   margin: 0;
   font-size: 28px;
@@ -247,7 +229,6 @@
   background: #ffffff;
   border-radius: 14px;
   min-height: 460px;
-  padding: 24px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
@@ -1065,15 +1046,13 @@
    RESPONSIVE
    ============================================================ */
 @media (max-width: 1200px) {
-  .admin-layout { grid-template-columns: 240px 1fr; }
+  .admin-sidebar { width: 240px; }
   .admin-header h1 { font-size: 26px; }
   .metric-cards-grid { grid-template-columns: repeat(2, 1fr); }
   .settings-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 991.98px) {
-  .admin-layout { grid-template-columns: 1fr; }
-
   .admin-sidebar-overlay.show {
     display: block;
     position: fixed;
@@ -1094,13 +1073,9 @@
   }
   .admin-sidebar.open { transform: translateX(0); }
 
-  .sidebar-close-btn { display: grid; }
-  .sidebar-toggle-btn { display: inline-flex; }
-
   .admin-content { padding: 12px 12px 0; }
   .admin-body-card { min-height: 420px; }
   .admin-scroll { max-height: calc(100vh - 200px); }
-  .admin-active-pill { display: none; }
 
   .export-fields { grid-template-columns: 1fr 1fr; }
   .scraping-status-grid { grid-template-columns: 1fr; }

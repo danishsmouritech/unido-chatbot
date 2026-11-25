@@ -36,18 +36,18 @@ export default function AdminSidebar({
   };
 
   return (
-    <aside className={`admin-sidebar ${isOpen ? "open" : ""}`}>
+    <aside className={`admin-sidebar d-flex flex-column flex-shrink-0 ${isOpen ? "open" : ""}`}>
       <div className="sidebar-brand d-flex align-items-center gap-3">
-        <div className="brand-mark">
+        <div className="brand-mark d-flex align-items-center justify-content-center">
           <i className="bi bi-building" />
         </div>
         <div className="brand-text">
-          <h2>UNIDO</h2>
+          <h2 className="m-0">UNIDO</h2>
           <p>Careers Admin</p>
         </div>
         <button
           type="button"
-          className="sidebar-close-btn d-lg-none"
+          className="sidebar-close-btn ms-auto d-flex align-items-center justify-content-center d-lg-none"
           onClick={onRequestClose}
           aria-label="Close sidebar"
         >
@@ -82,9 +82,9 @@ export default function AdminSidebar({
         <span>{loggingOut ? "Logging out..." : "Logout"}</span>
       </button>
 
-      <div className="sidebar-footer">
-        <span className="sidebar-footer-version">v1.0</span>
-        <span className="sidebar-footer-env">
+      <div className="sidebar-footer mt-auto pt-3 text-center">
+        <span className="sidebar-footer-version d-block">v1.0</span>
+        <span className="sidebar-footer-env d-inline-block mt-1">
           {process.env.NODE_ENV === "production" ? "Production" : "Development"}
         </span>
       </div>

@@ -131,7 +131,7 @@ export default function AdminPanel() {
   const activeLabel = ADMIN_TABS.find((tab) => tab.key === activeTab)?.label || "Dashboard";
 
   return (
-    <div className="admin-layout">
+    <div className="admin-layout d-flex min-vh-100">
       <div
         className={`admin-sidebar-overlay ${isSidebarOpen ? "show" : ""}`}
         onClick={() => setIsSidebarOpen(false)}
@@ -144,29 +144,29 @@ export default function AdminPanel() {
         onRequestClose={() => setIsSidebarOpen(false)}
       />
 
-      <main className="admin-content">
+      <main className="admin-content flex-grow-1">
         <div className="admin-shell">
           <header className="admin-header">
             <div className="admin-topbar d-flex align-items-center justify-content-between gap-3">
               <button
                 type="button"
-                className="sidebar-toggle-btn"
+                className="sidebar-toggle-btn d-inline-flex d-lg-none align-items-center"
                 onClick={() => setIsSidebarOpen(true)}
                 aria-label="Open sidebar menu"
               >
                 <i className="bi bi-list" />
               </button>
-              <div className="admin-title-wrap">
-                <h1>Admin Dashboard</h1>
-                <p>Manage chatbot behavior, review analytics, and run operational tasks.</p>
+              <div className="admin-title-wrap flex-grow-1">
+                <h1 className="m-0">Admin Dashboard</h1>
+                <p className="mt-1 mb-0 d-none d-md-block">Manage chatbot behavior, review analytics, and run operational tasks.</p>
               </div>
-              <span className="admin-active-pill d-inline-flex align-items-center gap-1">
+              <span className="admin-active-pill d-none d-lg-inline-flex align-items-center gap-1">
                 <i className="bi bi-circle-fill" />
                 {activeLabel}
               </span>
             </div>
           </header>
-          <section className={`admin-body-card ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
+          <section className={`admin-body-card p-4 ${activeTab !== "all-info" ? "admin-scroll" : ""}`}>
             <ActiveSection
               activeTab={activeTab}
               analytics={analytics}
