@@ -1,5 +1,6 @@
 
 import crypto from "crypto";
+import { URLS } from "../constants/urls.js";
 
 // UTILITIES
 
@@ -8,43 +9,40 @@ function clean(text = "") {
   return text.replace(/\s+/g, " ").trim();
 }
 
-function splitIntoSentences(text = "") {
-  const cleaned = clean(text);
-
-  return (
-    cleaned
-      .replace(/([a-z])\.([A-Z])/g, "$1. $2")
-      .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || []
-  );
-}
-
 function splitText(text = "", options = {}) {
-  const { maxLength = 1000, overlapSentences = 1 } = options;
+  const { maxLength = 1000, overlapChars = 120 } = options;
+  const cleaned = clean(text);
+  if (!cleaned) return [];
 
-  const sentences = splitIntoSentences(text);
   const chunks = [];
+  let start = 0;
 
-  let currentChunk = [];
-  let currentLength = 0;
+  while (start < cleaned.length) {
+    const limit = Math.min(start + maxLength, cleaned.length);
+    let end = limit;
 
-  for (let i = 0; i < sentences.length; i++) {
-    const sentence = sentences[i];
-    const sentenceLength = sentence.length;
-
-    if (currentLength + sentenceLength > maxLength && currentChunk.length) {
-      chunks.push(currentChunk.join(" ").trim());
-
-      // Overlap
-      currentChunk = currentChunk.slice(-overlapSentences);
-      currentLength = currentChunk.join(" ").length;
+    if (limit < cleaned.length) {
+      const candidate = cleaned.slice(start, limit);
+      const sentenceBreaks = [...candidate.matchAll(/[.!?](?=\s)/g)];
+      const preferredBreak = sentenceBreaks
+        .map(match => start + match.index + 1)
+        .filter(position => position - start >= Math.floor(maxLength * 0.55))
+        .at(-1);
+      const wordBreak = cleaned.lastIndexOf(" ", limit);
+      end = preferredBreak || (wordBreak > start ? wordBreak : limit);
     }
 
-    currentChunk.push(sentence);
-    currentLength += sentenceLength;
-  }
+    const chunk = cleaned.slice(start, end).trim();
+    if (chunk) chunks.push(chunk);
+    if (end >= cleaned.length) break;
 
-  if (currentChunk.length) {
-    chunks.push(currentChunk.join(" ").trim());
+    // Keep a small overlap at a word boundary. It remains bounded, even for
+    // an unusually long sentence.
+    const nextStartTarget = Math.max(start + 1, end - Math.max(0, overlapChars));
+    const nextWordBoundary = cleaned.indexOf(" ", nextStartTarget);
+    start = nextWordBoundary !== -1 && nextWordBoundary < end
+      ? nextWordBoundary + 1
+      : end;
   }
 
   return chunks;
@@ -93,7 +91,8 @@ Description: ${homepage.hero.description}.
           metadata: {
             page: "homepage",
             doc_type: "hero",
-            section: "hero"
+            section: "hero",
+            url: URLS.CAREERS_HOME
           },
           chunkIndex: index + 1,
           totalChunks: parts.length
@@ -164,7 +163,8 @@ Answer: ${faq.answer}
           metadata: {
             page: "faqs",
             doc_type: "faq",
-            question: clean(faq.question)
+            question: clean(faq.question),
+            url: faqData.url || URLS.FAQS
           },
           chunkIndex: index + 1,
           totalChunks: parts.length
@@ -245,7 +245,7 @@ ${section.content}
 
       const parts = splitText(formattedText, {
         maxLength: MAX_CHARS,
-        overlapSentences: 1
+        overlapChars: 120
       });
 
       parts.forEach((part, index) => {
@@ -386,7 +386,15 @@ function chunkCategoryContent(data = []) {
 
       if (section.table?.rows) {
         const tableText = section.table.rows
-          .map((row) => `- ${row.grade}: ${row.experience}`)
+          .map(row => {
+            if (row.grade !== undefined || row.experience !== undefined) {
+              return `- ${row.grade || ""}: ${row.experience || ""}`;
+            }
+            return `- ${Object.entries(row)
+              .filter(([, value]) => value !== undefined && value !== null && String(value).trim())
+              .map(([label, value]) => `${label}: ${value}`)
+              .join("; ")}`;
+          })
           .join("\n");
 
         contentParts.push(`Work experience requirements:\n${tableText}`);

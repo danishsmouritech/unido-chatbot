@@ -12,9 +12,10 @@ import { connectDB } from "./config/db.js";
 import chatRoutes from "./routes/chat.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
-import { assertOpenAIConfig } from "./config/openai.js";
-import { assertElasticConnection } from "./config/elasticsearch.js";
-import { ensureChunkIndex } from "./services/elasticsearch.service.js";
+import { assertVertexAIConfig } from "./config/vertexAi.js";
+import { assertVectorSearchConfig } from "./services/vectorSearch.service.js";
+import { assertFirestoreConnection } from "./config/db.js";
+import { assertCloudStorageConfig } from "./config/cloudStorage.js";
 import { getAdminSettingsRecord } from "./services/adminSettings.service.js";
 import {
   assertAdminAuthConfig,
@@ -131,8 +132,10 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.get("/health", async(_req, res) => {
   try {
-          assertOpenAIConfig();
-    await assertElasticConnection();
+    // assertVertexAIConfig();
+    // assertVectorSearchConfig();
+    // assertCloudStorageConfig();
+    // await assertFirestoreConnection();
     res.status(200).json({ status: "ok", service: "unido-rag-backend" });
   }catch (error) {
     logger.error("Health check failed:", error);
@@ -255,14 +258,12 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    assertAdminAuthConfig();
-
-    if (process.env.MONGO_URI) {
-      await connectDB();
-      await ensureDefaultAdmin();
-      await getAdminSettingsRecord();
-    }
-    // await ensureChunkIndex();
+    // assertAdminAuthConfig();
+// 
+    // await connectDB();
+    // assertCloudStorageConfig();
+    // await ensureDefaultAdmin();
+    // await getAdminSettingsRecord();
     httpServer.listen(PORT, () => {
       logger.log(`Server running on port ${PORT}`);
     });

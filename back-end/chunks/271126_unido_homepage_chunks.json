@@ -6,6 +6,7 @@
       "page": "homepage",
       "doc_type": "hero",
       "section": "hero",
+      "url": "https://careers.unido.org/",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 538,
@@ -128,6 +129,18 @@
       "doc_type": "category",
       "title": "Internship Programme",
       "url": "https://careers.unido.org/go/Internship-Programe/8954055/",
+      "chunk_index": 1,
+      "total_chunks": 1
+    }
+  },
+  {
+    "id": "homepage_category_5d61777a092d5fe250805ca5565744864c0fccf5372570206a144147e87b6ff0",
+    "content": "UNIDO offers career opportunities under the ​​​Information for Member States and Permanent Missions category.",
+    "metadata": {
+      "page": "homepage",
+      "doc_type": "category",
+      "title": "​​​Information for Member States and Permanent Missions",
+      "url": "https://careers.unido.org/content/HRM-at-UNIDO/?locale=en_US",
       "chunk_index": 1,
       "total_chunks": 1
     }

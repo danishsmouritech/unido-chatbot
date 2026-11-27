@@ -1,7 +1,8 @@
 import { cleanHTML }  from "../cleaner/cleanerHTML.js";
 import { URLS } from "../constants/urls.js";
+import { gotoScrapePage } from "../utils/scrapeNavigation.js";
 export async function scrapeHomepage(page) {
-  await page.goto(URLS.CAREERS_HOME, {
+  await gotoScrapePage(page, URLS.CAREERS_HOME, {
     waitUntil: "networkidle2",
   });
   const html = await page.content();

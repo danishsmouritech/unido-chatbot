@@ -1,4 +1,4 @@
-import { getChatClient } from "../config/openai.js";
+import { CHAT_MODEL, getVertexAIClient } from "../config/vertexAi.js";
 import { EXTERNAL_SOURCES } from "../config/externalSources.js";
 import { getAdminSettingsRecord } from "./adminSettings.service.js";
 
@@ -36,21 +36,21 @@ EXTERNAL SOURCE INSTRUCTIONS:
 - Distinguish information in the provided context from external references. Do not claim to have checked external sites in real time.`;
   const approvedExternalSources = JSON.stringify(EXTERNAL_SOURCES, null, 2);
 
-  const completion = await getChatClient().chat.completions.create({
-    model: process.env.AZURE_OPENAI_DEPLOYMENT,
-    temperature: 0.1,
-    messages: [
-      {
-        role: "system",
-        content: `${systemPrompt}\n\nAPPROVED EXTERNAL SOURCE REGISTRY (use these URLs and instructions as provided; they are not live data):\n${approvedExternalSources}`
-      },
-      ...normalizedHistory,
-      {
-        role: "user",
-        content: `QUESTION:\n${question}\n\nCONTEXT:\n${contextText}`
-      }
-    ]
+  const contents = [
+    ...normalizedHistory.map(message => ({
+      role: message.role === "assistant" ? "model" : "user",
+      parts: [{ text: message.content }]
+    })),
+    { role: "user", parts: [{ text: `QUESTION:\n${question}\n\nCONTEXT:\n${contextText}` }] }
+  ];
+  const response = await getVertexAIClient().models.generateContent({
+    model: CHAT_MODEL,
+    contents,
+    config: {
+      temperature: 0.1,
+      systemInstruction: `${systemPrompt}\n\nAPPROVED EXTERNAL SOURCE REGISTRY (use these URLs and instructions as provided; they are not live data):\n${approvedExternalSources}`
+    }
   });
 
-  return completion?.choices?.[0]?.message?.content?.trim();
+  return response.text?.trim();
 }

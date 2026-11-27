@@ -1,28 +1,18 @@
-import ChatSession from "../models/chatSession.model.js";
+import { firestore } from "../config/db.js";
 import crypto from "crypto";
 import { logger } from "../utils/logger.js";
 
+const sessions = firestore.collection("chatSessions");
+
 export async function ensureSession(sessionId) {
-  if (!sessionId) {
-    throw new Error("sessionId is required");
-  }
-
-  const session = await ChatSession.findOneAndUpdate(
-    { sessionId },
-    {
-      $setOnInsert: {
-        sessionId,
-        messages: []
-      }
-    },
-    {
-      upsert: true,
-      returnDocument: "after",
-      setDefaultsOnInsert: true
-    }
-  ).lean();
-
-  return session;
+  if (!sessionId) throw new Error("sessionId is required");
+  const ref = sessions.doc(sessionId);
+  await firestore.runTransaction(async transaction => {
+    const snapshot = await transaction.get(ref);
+    if (!snapshot.exists) transaction.create(ref, { sessionId, messages: [], createdAt: new Date(), updatedAt: new Date() });
+  });
+  const result = await ref.get();
+  return result.data();
 }
 
 export async function createSession() {
@@ -37,32 +27,26 @@ export async function createSession() {
 }
 
 export async function addMessage(sessionId, message) {
-  try {
-    await ensureSession(sessionId);
-
-    const result = await ChatSession.updateOne(
-      { sessionId },
-      { $push: { messages: message } }
-    );
-    return result;
-  } catch (error) {
-    logger.error("Error adding message:", error.message);
-    throw error;
-  }
+  await ensureSession(sessionId);
+  const sessionRef = sessions.doc(sessionId);
+  await sessionRef.collection("messages").add({ ...message, createdAt: new Date() });
+  await sessionRef.update({ updatedAt: new Date() });
 }
 
 export async function getHistory(sessionId) {
-  const session = await ChatSession.findOne(
-    { sessionId },
-    { _id: 0, messages: 1 }
-  );
-  if (!session) return null;
-  return session.messages || [];
+  const session = await sessions.doc(sessionId).get();
+  if (!session.exists) return null;
+  const snapshot = await sessions.doc(sessionId).collection("messages").orderBy("createdAt", "asc").get();
+  return snapshot.docs.map(doc => doc.data());
 }
 
 export async function clearHistory(sessionId) {
-  await ChatSession.updateOne(
-    { sessionId },
-    { $set: { messages: [] } }
-  );
+  await ensureSession(sessionId);
+  const messages = await sessions.doc(sessionId).collection("messages").get();
+  for (let offset = 0; offset < messages.docs.length; offset += 450) {
+    const batch = firestore.batch();
+    messages.docs.slice(offset, offset + 450).forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+  }
+  await sessions.doc(sessionId).update({ updatedAt: new Date() });
 }

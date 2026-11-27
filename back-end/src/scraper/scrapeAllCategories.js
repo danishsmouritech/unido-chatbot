@@ -20,6 +20,7 @@ async function scrapeAllCategories() {
         results.push(data);
       } catch (err) {
         logger.error(`Category failed: ${category.key}`, err.message);
+        throw err;
       } finally {
         await page.close();
       }

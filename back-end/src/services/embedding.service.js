@@ -1,16 +1,12 @@
-import { getEmbeddingClient } from "../config/openai.js";
+import { EMBEDDING_MODEL, getVertexAIClient } from "../config/vertexAi.js";
 
-export async function generateEmbedding(text) {
-  const embeddingClient = getEmbeddingClient();
-
-  if (!embeddingClient) {
-    throw new Error("Embedding client not initialized");
-  }
-
-  const response = await embeddingClient.embeddings.create({
-    model: process.env.AZURE_EMBEDDING_DEPLOYMENT,
-    input: text
+export async function generateEmbedding(text, taskType = "RETRIEVAL_QUERY") {
+  const response = await getVertexAIClient().models.embedContent({
+    model: EMBEDDING_MODEL,
+    contents: text,
+    config: { taskType }
   });
-
-  return response.data[0].embedding;
+  const embedding = response.embeddings?.[0]?.values;
+  if (!embedding?.length) throw new Error("Vertex AI returned no text embedding");
+  return embedding;
 }

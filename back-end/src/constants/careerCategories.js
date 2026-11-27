@@ -34,5 +34,9 @@ export const CAREER_CATEGORIES = [
   {
     "title": "Internship Programme",
     "url": "https://careers.unido.org/go/Internship-Programe/8954055/"
+  },
+  {
+    "title": "​​​Information for Member States and Permanent Missions",
+    "url": "https://careers.unido.org/content/HRM-at-UNIDO/?locale=en_US"
   }
 ];

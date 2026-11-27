@@ -85,7 +85,7 @@ export default function AdminSidebar({
       <div className="sidebar-footer mt-auto pt-3 text-center">
         <span className="sidebar-footer-version d-block">v1.0</span>
         <span className="sidebar-footer-env d-inline-block mt-1">
-          {process.env.NODE_ENV === "production" ? "Production" : "Development"}
+          {import.meta.env.MODE === "production" ? "Production" : "Development"}
         </span>
       </div>
     </aside>

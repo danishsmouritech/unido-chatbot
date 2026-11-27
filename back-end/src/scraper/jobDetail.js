@@ -1,5 +1,6 @@
 
 import { cleanHTML }  from "../cleaner/cleanerHTML.js";
+import { gotoScrapePage } from "../utils/scrapeNavigation.js";
 
 
 const clean = (t = "") =>
@@ -93,7 +94,7 @@ function extractSections(text) {
 
 
 export async function scrapeJobDetail(page, jobUrl) {
-  await page.goto(jobUrl, { waitUntil: "networkidle2", timeout: 60000 });
+  await gotoScrapePage(page, jobUrl, { waitUntil: "networkidle2", timeout: 60000 });
 
   const html = await page.content();
   const $ = cleanHTML(html);

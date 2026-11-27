@@ -1,9 +1,11 @@
-import ChatLog from "../models/chatLog.model.js";
+import { firestore } from "../config/db.js";
 import { emitRealtime } from "../realtime/socket.js";
 import { logger } from "../utils/logger.js";
+
 export async function createChatLog(payload) {
   try {
-    await ChatLog.create(payload);
+    const now = new Date();
+    await firestore.collection("chatLogs").add({ ...payload, createdAt: now, updatedAt: now });
     emitRealtime("analytics:updated", { source: "chatlog" });
     emitRealtime("information:updated", { source: "chatlog" });
   } catch (error) {

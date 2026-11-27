@@ -1,6 +1,7 @@
+import "dotenv/config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import AdminUser from "../models/adminUser.model.js";
+import { firestore } from "../config/db.js";
 import { logger } from "../utils/logger.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -29,15 +30,24 @@ export async function ensureDefaultAdmin() {
     logger.error("WARNING: ADMIN_PASSWORD should be at least 12 characters for production security");
   }
 
-  const exists = await AdminUser.findOne({ email });
-  if (exists) return;
+  const userRef = firestore.collection("adminUsers").doc(email.toLowerCase());
+  const exists = await userRef.get();
+  if (exists.exists) return;
 
   const hashedPassword = await bcrypt.hash(password, BCRYPT_ROUNDS);
-
-  await AdminUser.create({
-    username: "admin",
-    email,
-    password: hashedPassword
+  await firestore.runTransaction(async transaction => {
+    const current = await transaction.get(userRef);
+    if (!current.exists) {
+      transaction.create(userRef, {
+        username: "admin",
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role: "admin",
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
   });
 
   logger.log("Default admin created");
@@ -47,7 +57,9 @@ export async function ensureDefaultAdmin() {
 export async function loginAdmin(email, password) {
   assertAdminAuthConfig();
 
-  const user = await AdminUser.findOne({ email, isActive: true });
+  const userSnapshot = await firestore.collection("adminUsers").doc(email.toLowerCase()).get();
+  const user = userSnapshot.exists ? userSnapshot.data() : null;
+  if (user && user.isActive === false) return null;
 
   // Constant-time comparison: always hash even if user not found
   if (!user) {
@@ -60,7 +72,7 @@ export async function loginAdmin(email, password) {
 
   const token = jwt.sign(
     {
-      id: user._id,
+      id: userSnapshot.id,
       role: user.role,
       iat: Math.floor(Date.now() / 1000)
     },
@@ -74,7 +86,7 @@ export async function loginAdmin(email, password) {
   return {
     token,
     admin: {
-      id: user._id,
+      id: userSnapshot.id,
       username: user.username,
       email: user.email
     }

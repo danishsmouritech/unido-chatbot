@@ -1,8 +1,9 @@
 import { cleanHTML }  from "../cleaner/cleanerHTML.js";
 import { URLS } from "../constants/urls.js";
+import { gotoScrapePage } from "../utils/scrapeNavigation.js";
 
 async function scrapeFaqs(page) {
-  await page.goto(URLS.FAQS, { waitUntil: "networkidle2", timeout: 60000});
+  await gotoScrapePage(page, URLS.FAQS, { waitUntil: "networkidle2", timeout: 60000});
   await page.waitForSelector(".node__content", { timeout: 30000 });
   const html = await page.content();
  
@@ -33,7 +34,7 @@ async function scrapeFaqs(page) {
       answer: answerBuffer.join(" ").trim()
     });
   }
-  return { page: "faqs", faqs };
+  return { page: "faqs", url: URLS.FAQS, faqs };
 
 }
 export default scrapeFaqs;

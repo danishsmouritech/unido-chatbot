@@ -11,6 +11,7 @@ import { getAdminSettingsRecord } from "../services/adminSettings.service.js";
 import { emitRealtime } from "../realtime/socket.js";
 import { logger } from "../utils/logger.js";
 import { getExternalResourceAnswer } from "../services/externalResources.service.js";
+import { CHAT_MODEL, EMBEDDING_MODEL } from "../config/vertexAi.js";
 function getClientIp(req) {
   let ip =
     req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
@@ -150,8 +151,8 @@ export const askQuestion = async (req, res) => {
         minRelevanceScore: Number(process.env.RAG_MIN_SCORE || 0.75)
       },
       model: {
-        chatDeployment: process.env.AZURE_OPENAI_DEPLOYMENT || null,
-        embeddingDeployment: process.env.AZURE_EMBEDDING_DEPLOYMENT || null
+        chatDeployment: CHAT_MODEL,
+        embeddingDeployment: EMBEDDING_MODEL
       },
       requestMeta: { userAgent, ip },
       timingMs: { total: Date.now() - startedAt }

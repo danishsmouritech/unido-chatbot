@@ -1,42 +1,45 @@
 [
   {
     "id": "faq_8208d83a5b5ccb151a18864e14734a2349636ac6e2894ea473f915551508eb85_1",
-    "content": "Question: Does UNIDO charge any fees regarding applications? Answer: UNIDO does not charge any application, processing, training, interviewing, testing or other fee in connection with the application or recruitment process. If you have received a solicitation for the payment of a fee, please disregard it. Vacant positions within UNIDO are advertised on the official UNIDO website. Should you have any questions concerning persons or companies claiming to be recruiting on behalf of UNIDO and requesting payment of a fee, please contact: recruitment@unido. org For more information, please read our Scam Alert.",
+    "content": "Question: Does UNIDO charge any fees regarding applications? Answer: UNIDO does not charge any application, processing, training, interviewing, testing or other fee in connection with the application or recruitment process. If you have received a solicitation for the payment of a fee, please disregard it. Vacant positions within UNIDO are advertised on the official UNIDO website. Should you have any questions concerning persons or companies claiming to be recruiting on behalf of UNIDO and requesting payment of a fee, please contact: recruitment@unido.org For more information, please read our Scam Alert.",
     "metadata": {
       "page": "faqs",
       "doc_type": "faq",
       "question": "Does UNIDO charge any fees regarding applications?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
-      "content_length": 611,
+      "content_length": 610,
       "embedding_version": "v1",
       "source": "unido_careers"
     }
   },
   {
     "id": "faq_de26673771b1af3ad3961e91521b382af9ea72f03fa2ba611dcd7d2d0ca29080_1",
-    "content": "Question: What is the difference between the various hiring modalities? Answer: Detailed information on the various hiring modalities in UNIDO can be found here: https://www. youtube. com/watch? v=kG5uW_UJisc",
+    "content": "Question: What is the difference between the various hiring modalities? Answer: Detailed information on the various hiring modalities in UNIDO can be found here: https://www.youtube.com/watch?v=kG5uW_UJisc",
     "metadata": {
       "page": "faqs",
       "doc_type": "faq",
       "question": "What is the difference between the various hiring modalities?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
-      "content_length": 208,
+      "content_length": 205,
       "embedding_version": "v1",
       "source": "unido_careers"
     }
   },
   {
     "id": "faq_fe479412c844f30458422a28dcb873cc388d105b13237f83c881ba944d05220f_1",
-    "content": "Question: How do I apply? Answer: To apply for a vacancy announcement: Please go to the UNIDO Career Portal and click on \"Sign-In/ My Profile\" to login. If you are a new user, please click on \"Create an account\" to create your account by uploading your CV and other relevant documents and updating other relevant information in your profile. After creating your profile, you may search the open vacancies and submit your application for the vacancy announcement for which you qualify. You can learn how to make your application stronger by watching the online tutorial on optimizing job applications here: https://www. youtube. com/watch? v=BnMW69qkF8E",
+    "content": "Question: How do I apply? Answer: To apply for a vacancy announcement: Please go to the UNIDO Career Portal and click on \"Sign-In/ My Profile\" to login. If you are a new user, please click on \"Create an account\" to create your account by uploading your CV and other relevant documents and updating other relevant information in your profile. After creating your profile, you may search the open vacancies and submit your application for the vacancy announcement for which you qualify. You can learn how to make your application stronger by watching the online tutorial on optimizing job applications here: https://www.youtube.com/watch?v=BnMW69qkF8E",
     "metadata": {
       "page": "faqs",
       "doc_type": "faq",
       "question": "How do I apply?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
-      "content_length": 652,
+      "content_length": 649,
       "embedding_version": "v1",
       "source": "unido_careers"
     }
@@ -48,6 +51,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "I have created a candidate profile, does that mean that I have applied?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 544,
@@ -62,6 +66,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "Can I apply via e-mail or other application systems?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 228,
@@ -76,6 +81,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "I have already submitted my application online. Can I still make changes?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 334,
@@ -90,6 +96,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "When do vacancies close?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 281,
@@ -104,6 +111,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "What happens if I started my application before the closing time but did not manage to submit it before midnight?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 334,
@@ -113,14 +121,15 @@
   },
   {
     "id": "faq_488816b3286633e147c58a80b1ec47082334ad8e7f02640150b8a152e7478471_1",
-    "content": "Question: I have forgotten my username/password. How can I retrieve it? Answer: On the logon screen, please click on \"Forgot your password? \". You will then be asked to enter your registered email. After doing so, you will receive an email sent to your registered email with a link to reset the password.",
+    "content": "Question: I have forgotten my username/password. How can I retrieve it? Answer: On the logon screen, please click on \"Forgot your password?\". You will then be asked to enter your registered email. After doing so, you will receive an email sent to your registered email with a link to reset the password.",
     "metadata": {
       "page": "faqs",
       "doc_type": "faq",
       "question": "I have forgotten my username/password. How can I retrieve it?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
-      "content_length": 304,
+      "content_length": 303,
       "embedding_version": "v1",
       "source": "unido_careers"
     }
@@ -132,6 +141,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "For how long will my Candidate Profile remain in the system?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 272,
@@ -146,6 +156,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "What does a Job Alert do?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 433,
@@ -160,6 +171,7 @@
       "page": "faqs",
       "doc_type": "faq",
       "question": "What are the salary levels for full-time, fixed-term staff positions?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
       "content_length": 318,
@@ -169,14 +181,15 @@
   },
   {
     "id": "faq_dcb9a6f8f7086af588c287ca34a3542ca6988a568423120a3bd37fb000e8aee0_1",
-    "content": "Question: Whom should I contact if I experience problems with the submission of my application? Answer: In such cases, please contact: recruitment@unido. org",
+    "content": "Question: Whom should I contact if I experience problems with the submission of my application? Answer: In such cases, please contact: recruitment@unido.org",
     "metadata": {
       "page": "faqs",
       "doc_type": "faq",
       "question": "Whom should I contact if I experience problems with the submission of my application?",
+      "url": "https://www.unido.org/employment/faqs",
       "chunk_index": 1,
       "total_chunks": 1,
-      "content_length": 157,
+      "content_length": 156,
       "embedding_version": "v1",
       "source": "unido_careers"
     }

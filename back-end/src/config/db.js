@@ -1,13 +1,20 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import "dotenv/config";
+import { Firestore } from "@google-cloud/firestore";
 import { logger } from "../utils/logger.js";
-dotenv.config();
+
+export const firestore = new Firestore({
+  projectId: process.env.GOOGLE_CLOUD_PROJECT,
+  databaseId: process.env.FIRESTORE_DATABASE_ID || "unido-rag",
+  ignoreUndefinedProperties: true
+});
+
 export async function connectDB() {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    logger.log("MongoDB connected");
-  } catch (err) {
-    logger.error("MongoDB connection failed", err);
-    process.exit(1);
-  }
+  // Firestore uses Application Default Credentials (Cloud Run service account
+  // in production, `gcloud auth application-default login` locally).
+  await firestore.collection("_health").doc("firestore").get();
+  logger.log("Firestore connected");
+}
+
+export async function assertFirestoreConnection() {
+  await firestore.collection("_health").doc("firestore").get();
 }

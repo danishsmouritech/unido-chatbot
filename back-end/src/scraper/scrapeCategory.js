@@ -1,8 +1,9 @@
 import { cleanHTML }  from "../cleaner/cleanerHTML.js";
 import { cleanText } from "../scraper/jobCleaner.js";
 import { URLS } from "../constants/urls.js";
+import { gotoScrapePage } from "../utils/scrapeNavigation.js";
 export async function scrapeCategory(page, category) {
-  await page.goto(category.url, {
+  await gotoScrapePage(page, category.url, {
     waitUntil: "networkidle2",
     timeout: 60000
   });
@@ -11,9 +12,16 @@ export async function scrapeCategory(page, category) {
   const $ = cleanHTML(html);
   const descriptionParts = [];
 
-  $(".inner.col-sm-6 p").each((_, p) => {
+  let descriptionParagraphs = $(".inner.col-sm-6 p");
+  if (!descriptionParagraphs.length) {
+    descriptionParagraphs = $(".jpo-section .jpo-para");
+  }
+
+  descriptionParagraphs.each((_, p) => {
     const text = cleanText($(p).text());
-    if (text) descriptionParts.push(text);
+    if (text && !/cookie consent manager|required cookies|jsessionid/i.test(text)) {
+      descriptionParts.push(text);
+    }
   });
 
   const description = descriptionParts.join(" ");

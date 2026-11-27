@@ -1,76 +1,88 @@
 # UNIDO RAG Backend
 
-Node.js backend for scraping, indexing, retrieval, chat generation, and admin operations.
+Node.js backend for scraping, retrieval augmented chat, and admin operations. The application services now target the client's Scenario A: Firestore, Vertex AI Vector Search, Gemini on Vertex AI, Vertex text embeddings, Cloud Storage, and Cloud Run.
 
-## Prerequisites
+## GCP resources to provision
 
-- Node.js 20+
-- MongoDB (for sessions, logs, admin settings/users)
-- Elasticsearch (for vector retrieval)
-- Azure OpenAI deployments (chat + embedding)
-- Azure Blob Storage (for JSON backups)
+Create these resources before starting the application:
 
-## Environment Variables
+1. A Google Cloud project with billing enabled and the Vertex AI, Firestore, and Cloud Storage APIs enabled.
+2. A Firestore Native mode database named `unido-rag` in the chosen region (or set `FIRESTORE_DATABASE_ID` to the database ID provisioned for this app).
+3. A Vertex AI Vector Search index and deployed index endpoint. The index dimensions must match the `text-embedding-005` model output. Set its update method to streaming so changed chunks can be upserted and deleted online.
+4. A public index endpoint domain (or implement private endpoint access from the Cloud Run VPC).
+5. A Cloud Storage bucket for scrape and chunk JSON backups.
+6. A Cloud Run service identity with Firestore read/write, Vertex AI user, and Storage object creator permissions. For backup retention deletion, also grant object delete/list.
 
-Create `back-end/.env` with the following values.
+The app does not create billable Vector Search infrastructure. Configure the IDs for an existing index and endpoint. The code uses the public endpoint domain shown for the deployed endpoint; a private endpoint needs VPC access plus an adapter URL change.
 
-Required for startup:
+## Environment
 
-- `PORT=5000`
-- `MONGO_URI=...`
-- `JWT_SECRET=...`
-- `ADMIN_EMAIL=...`
-- `ADMIN_PASSWORD=...`
+Set these values locally in `back-end/.env` or as Cloud Run environment variables/secrets:
 
-Required for Azure OpenAI:
+```dotenv
+PORT=8080
+NODE_ENV=production
+GOOGLE_CLOUD_PROJECT=your-project-id
+GOOGLE_CLOUD_LOCATION=us-central1
+FIRESTORE_DATABASE_ID=unido-rag
+VERTEX_GEMINI_MODEL=gemini-3.5-flash-lite
+VERTEX_EMBEDDING_MODEL=text-embedding-005
+VERTEX_VECTOR_INDEX_ID=your-index-id
+VERTEX_VECTOR_INDEX_ENDPOINT_ID=your-index-endpoint-id
+VERTEX_VECTOR_DEPLOYED_INDEX_ID=your-deployed-index-id
+VERTEX_VECTOR_PUBLIC_ENDPOINT=your-public-endpoint-domain
+GCS_BUCKET_NAME=your-backup-bucket
+JWT_SECRET=use-a-random-secret-at-least-32-characters
+ADMIN_EMAIL=admin@example.org
+ADMIN_PASSWORD=use-a-strong-password-at-least-12-characters
+RAG_TOP_K=5
+RAG_MIN_SCORE=0.75
+ENABLE_CRON=false
+CRON_TIMEZONE=UTC
+```
 
-- `AZURE_OPENAI_ENDPOINT=...`
-- `AZURE_OPENAI_KEY=...`
-- `AZURE_OPENAI_DEPLOYMENT=...`
-- `AZURE_EMBEDDING_DEPLOYMENT=...`
-- `AZURE_OPENAI_API_VERSION=2024-10-21`
+For local development, authenticate with Application Default Credentials (`gcloud auth application-default login`). Cloud Run uses its attached service account. Do not commit credentials or `.env` files.
 
-Required for Elasticsearch:
-
-- `ELASTIC_NODE=http://localhost:9200`
-- `ELASTIC_USERNAME=...` (optional if unsecured local node)
-- `ELASTIC_PASSWORD=...` (optional if unsecured local node)
-- `RAG_TOP_K=5`
-- `RAG_MIN_SCORE=0.75`
-
-Required for Azure Blob backup:
-
-- `AZURE_STORAGE_CONNECTION_STRING=...`
-- `AZURE_STORAGE_CONTAINER=...`
-
-Optional:
-
-- `ENABLE_CRON=true` (enables scheduled scraping job)
-- `CRON_TIMEZONE=UTC`
-
-## Install
+## Install and run locally
 
 ```bash
 npm install
-```
-
-## Run
-
-Start API server:
-
-```bash
 npm run dev
 ```
 
-Run full scrape + chunk + embed + index pipeline manually:
+Run a full scrape and synchronize its chunks:
 
 ```bash
 npm run pipeline
 ```
 
-## Important Behavior
+## Data flow
 
-- Server startup fails if `JWT_SECRET` is missing.
-- Default admin creation requires `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
-- When scraping is triggered, Elasticsearch index content is cleared and re-indexed from the latest scrape to avoid stale jobs.
-- Chat endpoints return `503` when chatbot is disabled from admin settings.
+- Scraped source JSON and chunk JSON are written under `data/` and `chunks/` locally and uploaded to the configured Cloud Storage bucket.
+- Chat sessions, messages, chat logs, admin users, settings, and chunk text/metadata are stored in Firestore.
+- Chunk embeddings are created with Vertex AI `text-embedding-005`; vectors are upserted into the configured Vertex AI Vector Search index. Unchanged chunk content does not trigger a new embedding or vector upsert. Chunks missing from a complete scrape are removed from Firestore and Vector Search.
+- Before changing the knowledge index, the pipeline checks page responses and required source counts/fields, rejects empty or duplicate chunks, then reads changed datapoints back from the deployed vector index and verifies Firestore chunk text. Any failed check aborts the run before stale IDs are deleted. Streaming index read-back polls for up to 15 seconds to allow propagation.
+- Chat answers are generated by the configured Gemini model on Vertex AI. The current default is `gemini-3.5-flash-lite`, the documented successor to the discontinued Gemini 2.0 Flash model.
+- Existing HTTP routes and Socket.IO events remain the application interface.
+
+Firestore message records are stored in a subcollection (`chatSessions/{sessionId}/messages`) to avoid the per-document size limit. Existing MongoDB data is not copied automatically; migrate it before switching production traffic if it must be retained.
+
+After provisioning the GCP resources, run `npm run pipeline` once to populate Firestore and Vector Search. Existing MongoDB and Elasticsearch data are not imported by the application; plan a one-time data migration if chat history, admin users/settings, or the current knowledge index must be retained.
+
+## Deploy to Cloud Run
+
+Build and deploy from `back-end/` after configuring the GCP resources and environment variables:
+
+```bash
+gcloud run deploy unido-rag-backend --source . --region us-central1 --allow-unauthenticated
+```
+
+Set secrets (including `JWT_SECRET` and `ADMIN_PASSWORD`) through Secret Manager and bind the Cloud Run service account with the permissions listed above. The scrape endpoint starts work in the background, so configure Cloud Run with always-allocated CPU and at least one minimum instance. If `ENABLE_CRON=true`, keep the service at a single instance to avoid duplicate scheduled scrapes; otherwise, trigger scraping from a controlled scheduler.
+
+## Operational notes
+
+- Server startup validates Firestore connectivity, model configuration, Vector Search resource IDs, and admin bootstrap credentials.
+- Admin login creates the initial Firestore admin document when it does not already exist.
+- `ENABLE_CRON=true` enables the scheduled scrape job.
+- After a successful scrape and index, local `.json` files and Cloud Storage `.json` objects older than `BACKUP_RETENTION_DAYS` are removed recursively from the `data/` and `chunks/` paths. The setting defaults to 7 days; Cloud Storage cleanup runs when `GCS_BUCKET_NAME` is configured.
+- Cloud Storage backup uploads are currently disabled, so this cleanup can remove existing bucket objects but new scrape backups remain local.
